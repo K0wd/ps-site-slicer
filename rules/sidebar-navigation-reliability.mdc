@@ -1,0 +1,24 @@
+---
+description: Reliable sidebar navigation clicks in Playwright steps
+globs: features/steps/**/*.ts
+alwaysApply: false
+---
+
+# Sidebar Navigation Reliability
+
+- Use sidebar menu locators anchored by stable attributes (example: `a[@title='MenuItemName']`), not text-only `span` locators.
+- Before clicking submenu links, confirm parent menu is expanded using a deterministic expanded-state locator.
+- Prefer normal click first; if pointer interception occurs, fallback to DOM click (`dispatchEvent('click')`).
+- Always `scrollIntoViewIfNeeded()` before click attempts for sidebar items.
+- After menu/link clicks that navigate, assert `waitForURL(...)` immediately.
+
+## Example Pattern
+
+```typescript
+await menuLocator.scrollIntoViewIfNeeded();
+try {
+  await menuLocator.click({ timeout: actionTimeout });
+} catch {
+  await menuLocator.dispatchEvent("click");
+}
+```

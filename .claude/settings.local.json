@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/User/.claude/**)",
+      "Read(//c/Users/User/AppData/Roaming/Code/User/**)",
+      "Bash(claude config:*)",
+      "Bash(claude auth:*)",
+      "Bash(git -C /c/Users/User/projects/powerslice/ps-site-slicer log --oneline)",
+      "Bash(git:*)"
+    ]
+  }
+}

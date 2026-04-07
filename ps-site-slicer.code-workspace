@@ -1,0 +1,200 @@
+{
+  "folders": [
+    {
+      "name": "PWA - sm-pwa (Next.js)",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.rulers": [100],
+    "editor.suggestSelection": "first",
+    "editor.inlineSuggest.enabled": true,
+
+    "files.autoSave": "onFocusChange",
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/.git": true
+    },
+    "files.associations": {
+      "*.ctp": "php",
+      "*.php": "php"
+    },
+
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "javascript.preferences.importModuleSpecifier": "relative",
+
+    "php.validate.enable": true,
+    "php.validate.executablePath": "php",
+    "intelephense.environment.phpVersion": "8.1.0",
+    "intelephense.files.associations": ["*.php", "*.ctp", "*.thtml"],
+    "intelephense.stubs": [
+      "apache", "bcmath", "bz2", "calendar", "com_dotnet",
+      "Core", "curl", "date", "dba", "dom", "enchant",
+      "exif", "fileinfo", "filter", "fpm", "ftp", "gd",
+      "hash", "iconv", "imap", "interbase", "intl", "json",
+      "ldap", "libxml", "mbstring", "mcrypt", "meta",
+      "mssql", "mysql", "mysqli", "oci8", "openssl",
+      "pcntl", "pcre", "PDO", "pdo_ibm", "pdo_mysql",
+      "pdo_pgsql", "pdo_sqlite", "pgsql", "Phar", "posix",
+      "pspell", "readline", "recode", "Reflection", "regex",
+      "session", "shmop", "SimpleXML", "snmp", "soap",
+      "sockets", "sodium", "SPL", "sqlite3", "standard",
+      "superglobals", "sybase", "sysvmsg", "sysvsem",
+      "sysvshm", "tidy", "tokenizer", "wddx", "xml",
+      "xmlreader", "xmlrpc", "xmlwriter", "xsl", "Zend OPcache",
+      "zip", "zlib"
+    ],
+
+    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+    "eslint.run": "onSave",
+
+    "playwright.reuseBrowser": false,
+    "playwright.showTrace": true,
+
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "gitlab.instanceUrl": "https://gitlab.com",
+
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.env.windows": {
+      "NODE_ENV": "development"
+    },
+
+    "claude.enableMCP": true,
+
+    "tailwindCSS.includeLanguages": {
+      "typescript": "javascript",
+      "typescriptreact": "javascript"
+    },
+    "tailwindCSS.experimental.classRegex": [
+      ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+    ],
+
+    "thunder-client.saveToWorkspace": true,
+    "thunder-client.workspaceRelativePath": ".vscode/thunder-client"
+  },
+  "extensions": {
+    "recommendations": [
+      "bmewburn.vscode-intelephense-client",
+      "xdebug.php-debug",
+      "MehediDracula.php-namespace-resolver",
+      "neilbrayfield.php-docblocker",
+      "dsznajder.es7-react-js-snippets",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "formulahendry.auto-rename-tag",
+      "ms-playwright.playwright",
+      "rangav.vscode-thunder-client",
+      "anthropics.claude-code",
+      "GitLab.gitlab-workflow",
+      "Gruntfuggly.todo-tree",
+      "streetsidesoftware.code-spell-checker",
+      "wayou.vscode-todo-highlight",
+      "aaron-bond.better-comments",
+      "usernamehw.errorlens",
+      "eamodio.gitlens",
+      "cweijan.vscode-mysql-client2",
+      "mikestead.dotenv",
+      "redhat.vscode-yaml",
+      "ms-vscode.powershell"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Start PWA Dev Server",
+        "type": "shell",
+        "command": "npm run dev",
+        "group": { "kind": "build", "isDefault": true },
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Run Playwright Tests",
+        "type": "shell",
+        "command": "npx playwright test",
+        "group": { "kind": "test", "isDefault": true },
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Playwright UI Mode",
+        "type": "shell",
+        "command": "npx playwright test --ui",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Playwright Report",
+        "type": "shell",
+        "command": "npx playwright show-report",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Install Dependencies",
+        "type": "shell",
+        "command": "npm install",
+        "presentation": { "reveal": "always", "panel": "shared" }
+      },
+      {
+        "label": "Open testpwa",
+        "type": "shell",
+        "command": "start https://testserver.betacom.com/testpwa",
+        "presentation": { "reveal": "silent" }
+      },
+      {
+        "label": "Open stagepwa",
+        "type": "shell",
+        "command": "start https://testserver.betacom.com/stagepwa",
+        "presentation": { "reveal": "silent" }
+      },
+      {
+        "label": "Launch Claude",
+        "type": "shell",
+        "command": "kl0wd",
+        "presentation": { "reveal": "always", "panel": "new", "focus": true },
+        "isBackground": true,
+        "problemMatcher": []
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Playwright: Debug Tests",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npx",
+        "args": ["playwright", "test", "--debug"],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Next.js: Debug Dev Server",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/node_modules/.bin/next",
+        "args": ["dev"],
+        "console": "integratedTerminal",
+        "serverReadyAction": {
+          "pattern": "started server on .+, url: (https?://.+)",
+          "uriFormat": "%s",
+          "action": "openExternally"
+        }
+      },
+      {
+        "name": "PHP: XDebug CakePHP",
+        "type": "php",
+        "request": "launch",
+        "port": 9003,
+        "pathMappings": {
+          "/var/www/html": "${workspaceFolder}"
+        }
+      }
+    ]
+  }
+}
