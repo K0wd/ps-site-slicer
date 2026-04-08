@@ -116,16 +116,30 @@
         "presentation": { "reveal": "always", "panel": "new" }
       },
       {
+        "label": "Generate BDD Specs",
+        "type": "shell",
+        "command": "npx bddgen",
+        "presentation": { "reveal": "silent", "panel": "shared" }
+      },
+      {
         "label": "Run Playwright Tests",
         "type": "shell",
-        "command": "npx playwright test",
+        "command": "npm test",
         "group": { "kind": "test", "isDefault": true },
+        "dependsOn": "Generate BDD Specs",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Run Playwright Tests (Edge Only)",
+        "type": "shell",
+        "command": "npm run test:edge",
+        "dependsOn": "Generate BDD Specs",
         "presentation": { "reveal": "always", "panel": "new" }
       },
       {
         "label": "Playwright UI Mode",
         "type": "shell",
-        "command": "npx playwright test --ui",
+        "command": "npx bddgen && npx playwright test --ui",
         "presentation": { "reveal": "always", "panel": "new" }
       },
       {

@@ -10,6 +10,8 @@
     "bradlc.vscode-tailwindcss",
     "formulahendry.auto-rename-tag",
     "ms-playwright.playwright",
+    "alexkrechik.cucumberautocomplete",
+    "CucumberOpen.cucumber-official",
     "rangav.vscode-thunder-client",
     "anthropics.claude-code",
     "GitLab.gitlab-workflow",

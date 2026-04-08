@@ -1,3 +1,17 @@
 {
-  "terminal.integrated.cwd": ".\\launch-claude.ps1"
+  "playwright.env": {
+    "BASE_URL": "https://testserver.betacom.com/"
+  },
+  "playwright.reuseBrowser": false,
+  "playwright.showTrace": true,
+
+  "cucumberautocomplete.steps": [
+    "tests/steps/**/*.steps.ts"
+  ],
+  "cucumberautocomplete.syncfeatures": "tests/features/**/*.feature",
+  "cucumberautocomplete.strictGherkinCompletion": true,
+
+  "files.associations": {
+    "*.feature": "cucumber"
+  }
 }
