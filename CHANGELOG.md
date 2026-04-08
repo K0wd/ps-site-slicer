@@ -4,6 +4,29 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
+## 2026-04-09 — Test Runner, Lint Fixes, Multi-Machine Sync
+
+### Cucumber Test Runner Integration
+- Added `alexkrechik.cucumberautocomplete` and `CucumberOpen.cucumber-official` extensions
+- Configured `.vscode/settings.json` with Cucumber autocomplete for steps and features
+- Added `.feature` → `cucumber` file association for Gherkin syntax highlighting
+- Added "Generate BDD Specs" and "Run Playwright Tests (Edge Only)" tasks to workspace
+- Tests now visible in VS Code Testing sidebar (Playwright Test Explorer)
+
+### Lint Fixes
+- Installed `@types/node` to resolve `Cannot find name 'process'` TypeScript errors in `playwright.config.ts`
+
+### Flakiness Detection
+- Enabled 1 retry locally (`retries: 1`) to detect flaky tests
+- Flaky tests show as yellow in the HTML report (pass on retry)
+- CI retains 2 retries
+
+### Documentation
+- Added "Flakiness Detection", "Multi-Machine Sync", and "VS Code Integration" sections to README
+- Updated CHANGELOG
+
+---
+
 ## 2026-04-08 — Dashboard Widgets, Forgot Password, Multi-Browser & Archiving
 
 ### Dashboard Widget Tests (20 new scenarios)

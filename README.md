@@ -169,6 +169,28 @@ Snapshots are saved to `html/` (gitignored).
 | `webkit` | Safari | Desktop |
 | `edge-mobile` | MS Edge | Pixel 5 (mobile) |
 
+## Flakiness Detection
+
+Tests retry once locally (twice in CI). If a test fails then passes on retry, Playwright marks it **flaky** (yellow) in the HTML report. View with `npm run test:report`.
+
+## Multi-Machine Sync
+
+This repo is synced via GitHub. To set up on a new machine (Mac or Windows):
+
+```powershell
+# Clone and install
+git clone git@github.com:K0wd/ps-site-slicer.git
+cd ps-site-slicer
+npm install
+npx playwright install
+
+# Create .env
+Copy-Item .env.example .env
+# Edit .env with your credentials
+```
+
+For full environment setup including Claude Code brain files, see the [k0wd-template](https://github.com/K0wd/k0wd-template) repo and its `mac-setup.sh` script.
+
 ## Tech Stack
 
 - **Playwright** — Browser automation
@@ -176,3 +198,10 @@ Snapshots are saved to `html/` (gitignored).
 - **@cucumber/cucumber** — Gherkin parser
 - **TypeScript** — Step definitions and properties
 - **dotenv** — Environment variable management
+
+## VS Code Integration
+
+- **Playwright Test Explorer** — Run/debug tests from the Testing sidebar (beaker icon)
+- **Cucumber Autocomplete** — Go-to-definition and autocomplete in `.feature` files
+- **Cucumber Official** — Gherkin syntax highlighting
+- Run "Generate BDD Specs" task if tests don't appear in Test Explorer
