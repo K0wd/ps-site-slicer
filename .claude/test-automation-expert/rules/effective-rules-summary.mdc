@@ -1,0 +1,79 @@
+---
+description: Consolidated QA automation rules (under 200)
+alwaysApply: false
+---
+
+# Effective QA Rules (Condensed)
+
+## Scope And Risk
+
+- Prioritize regressions that can affect production behavior, especially auth, permissions, status transitions, money values, and bulk actions.
+- Prefer deterministic validations over timing-only checks.
+- Treat selector changes as high-risk and include test impact notes.
+
+## Project Structure
+
+- Keep Gherkin scenarios in `features/*.feature`.
+- Keep step logic in `features/steps/*.steps.ts`.
+- Keep shared hooks/world in `features/support/`.
+- Keep reusable constants and XPath locators in `properties/*.ts`.
+- Use TypeScript for support, hooks, and step files.
+
+## Navigation And Waiting
+
+- Use resilient sidebar locators anchored by stable attributes such as `@title`.
+- Ensure parent menus are expanded before clicking submenu links.
+- Prefer normal click, fallback to `dispatchEvent("click")` only when needed.
+- Use `scrollIntoViewIfNeeded()` before click attempts on sidebar items.
+- Assert `waitForURL(...)` after navigation clicks.
+- Prefer `waitForURL`, `waitForLoadState`, and visible/attached checks over sleeps.
+- In headless runs, keep a desktop viewport for dashboard stability.
+
+## Selectors And Self-Heal
+
+- Use XPath selectors in page property files.
+- Use plain constants or `Record<string, string>` maps for locator lookup.
+- Self-heal only locator drift, not business-logic/assertion failures.
+- Model self-heal with ordered fallback XPaths (2-3 alternates max).
+- Resolve selector candidates by first unique match (`count === 1`), otherwise fail fast.
+- Log fallback usage behind explicit `.env` flags.
+- Remove stale fallback selectors during maintenance.
+
+## Assertions And Validation
+
+- Ensure assertion target XPaths resolve to expected uniqueness before interaction.
+- Keep assertion messages short, clear, and reusable.
+- For table-driven checks, map user-facing names to property-file locator keys.
+- Add at least one failure-path assertion when adding new positive flow coverage.
+
+## Export Flow Standards
+
+- Reuse a consistent flow for export validation:
+- `Page Ready -> Export -> View Exports -> Refresh until ready -> Download -> Parse -> Assert data`.
+- Keep export/download utility logic shared; keep metric-specific logic in dedicated steps.
+- Assert exported files contain data rows (not just file existence).
+
+## Logging And Diagnostics
+
+- Gate verbose logs with `.env` flags.
+- Use stable, grep-friendly debug output format for scenario-row logs.
+- Sanitize debug table values for plain-text logging.
+- For selector investigation, check `html/` first; if missing, capture and save `htmlBody` snapshots to `html/` with deterministic page-based filenames (no timestamp suffix).
+
+## Cross-System Context
+
+- Consider whether behavior belongs to the frontend UI, the backend API, or cross-system integration.
+- Document cross-system dependencies when scenario behavior depends on sibling apps.
+
+## Documentation Hygiene
+
+- Update `README.md` when setup, scripts, dependencies, or run flow changes.
+- Update `changelogs.md` for coverage/behavior/process changes.
+- Keep changelog newest-first.
+- Use one date section per day in changelog and append same-day updates under it.
+
+## Engineering Principles
+
+- Keep implementations KISS and readable.
+- Avoid brittle selectors and sleep-heavy tests.
+- Double-check changes with targeted validation.

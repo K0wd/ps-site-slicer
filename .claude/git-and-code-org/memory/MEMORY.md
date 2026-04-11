@@ -1,0 +1,3 @@
+- [NEVER commit or push without explicit permission](feedback_no_push_commit.md) — do not git commit/push unless the user explicitly asks
+- [Always read rules before generating code](feedback_rules_check.md) — read rules/ and .claude/*.md before writing code; run tests after every change
+- [Code organization principles](feedback_code_organization.md) — follow existing patterns, KISS, no premature abstractions

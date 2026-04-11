@@ -37,26 +37,31 @@ tests/
 ├── features/                    # Gherkin feature files (plain English)
 │   ├── login.feature            #   3 scenarios — login flow
 │   ├── dashboard.feature        #  25 scenarios — dashboard + 20 widgets
-│   └── forgot-password.feature  #   3 scenarios — forgot password view
+│   ├── forgot-password.feature  #   3 scenarios — forgot password view
+│   └── sidebar-navigation.feature # 76 scenarios — sidebar page navigation
 ├── steps/                       # Step definitions (Playwright code)
 │   ├── login.steps.ts
 │   ├── dashboard.steps.ts
-│   └── forgot-password.steps.ts
-├── properties/                  # XPath locators per page (POM)
+│   ├── forgot-password.steps.ts
+│   └── sidebar-navigation.steps.ts
+├── properties/                  # XPath locators per page (POM) — 80 files
 │   ├── login-username.properties.ts
 │   ├── login-password.properties.ts
 │   ├── dashboard.properties.ts
-│   └── forgot-password.properties.ts
+│   ├── forgot-password.properties.ts
+│   └── <76 sidebar page properties>
 ├── capture-page.spec.ts         # Page snapshot utility
 └── capture-widget.spec.ts       # Widget flow snapshot utility
 
 scripts/
-└── archive-results.js           # Archives test runs (keeps last 5)
+├── archive-results.js           # Archives test runs (keeps last 5)
+├── generate-sidebar-properties.ts # Generates stub properties files from sidebar data
+└── surf-sidebar.ts              # Surfs all sidebar pages, captures HTML + generates properties
 
 html/                            # Captured htmlBody snapshots (gitignored)
 test-archives/                   # Archived test runs (gitignored)
 rules/                           # QA rules and ISTQB reference files
-.claude/                         # quality.md, wiki.md
+.claude/                         # Agent configs, wiki.md
 .features-gen/                   # Auto-generated specs from BDD (gitignored)
 ```
 
@@ -76,9 +81,13 @@ npm run test:ui
 npx bddgen; if ($?) { npx playwright test -g "Login" }
 npx bddgen; if ($?) { npx playwright test -g "Dashboard" }
 npx bddgen; if ($?) { npx playwright test -g "Forgot Password" }
+npx bddgen; if ($?) { npx playwright test -g "Sidebar Navigation" }
 
 # Run a specific widget test
 npx bddgen; if ($?) { npx playwright test -g "Add widget - Alerts" }
+
+# Run a specific sidebar navigation test
+npx bddgen; if ($?) { npx playwright test -g "Navigate to \"Users Admin\"" }
 
 # View last HTML report
 npm run test:report
@@ -87,7 +96,7 @@ npm run test:report
 npm run test:archive
 ```
 
-## Test Coverage (31 tests)
+## Test Coverage (107 scenarios)
 
 ### Login (3 scenarios)
 - Display the username page
@@ -107,6 +116,12 @@ npm run test:archive
 - Display page branding
 - Display reset form elements
 - Display navigation links
+
+### Sidebar Navigation (76 scenarios)
+- **73 page navigation tests** (Scenario Outline) — each clicks a sidebar menu item, verifies the page loads at the expected route, and saves an htmlBody snapshot:
+  - Account Management, Admin Alerts, Asset Control Panel, Audit Inspector, BI Admin, Capabilities Admin, Carrier Keys, Client Admin, Close Outs, Company Directory, Company Files, Cron Utility, Dashboard, DB Query Screen, Director Admin, Divisions Admin, Document Signature Admin, Drivers Admin, Eversign, Forms Admin, Hiring, IT Support, Import Costs, Incidents Admin, Job Titles, Keys Admin, LOB Admin, Locks Admin, Logs, Maintenance, Maintenance Admin, Market Admin, Material Category Admin, Menu Editor, Message Queue, Message Recipients, Mobile Assets, Office Locations, PM Transfer, PMO Admin, PMO Dashboard, PMO SharePoint Dashboard, PTO Admin, Performance, Personal Assets, Project Tracker, Projects, Projects Admin, Purchasing, Purchasing Admin, Quoting, Report DB, Reports, Search, Site Alerts, Site Upload Admin, Tax Group Admin, Temp Files, Texting, Time Zone Admin, Timedata, Timesheet Admin, Timesheets, Training, Transfer Tickets, UAC System, UI Config, Update Users Import, Users Admin, Vendor Admin, Vendor Admin-Old, WO Folder Setup, WO Tracker, WOT Export Queue
+- **3 parent menu expansion tests** — each clicks a parent menu and verifies the submenu expands:
+  - Certificates, Files, RTWP
 
 ## Video Recording & Archiving
 

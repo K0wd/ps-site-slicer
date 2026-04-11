@@ -4,6 +4,55 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
+## 2026-04-12 — Sidebar Navigation Tests, Page Surfing Scripts & 76 Properties Files
+
+### Sidebar Navigation Feature (76 new scenarios)
+- Created `tests/features/sidebar-navigation.feature` with two Scenario Outlines:
+  - **Navigate to page via sidebar** — 73 pages: clicks sidebar menu item, verifies URL route loads, saves htmlBody snapshot
+  - **Expand parent menu** — 3 parent menus (Certificates, Files, RTWP): clicks parent, verifies submenu expands
+- Created `tests/steps/sidebar-navigation.steps.ts`:
+  - Dynamic XPath builders: `sidebarLinkXpath(title, href)` and `sidebarParentXpath(title)` — no hardcoded selectors
+  - Saves htmlBody snapshots to `html/<slug>.html` for each navigated page
+  - Fallback click via `dispatchEvent('click')` for stubborn sidebar items
+  - URL verification with regex pattern match + content visibility fallback
+- Created `tests/features/nav-bar.feature` — stub feature for dashboard nav bar tests
+
+### Sidebar Page Surfing Scripts
+- Created `scripts/surf-sidebar.ts`:
+  - Launches Edge browser, logs in, surfs all 73 navigable sidebar pages
+  - Captures full HTML snapshots and extracts actionable elements (inputs, buttons, tables, etc.)
+  - Auto-generates stub properties files with XPaths derived from element attributes
+  - Generates `sidebar-surfing-report.md` with success/error/skipped summary
+- Created `scripts/generate-sidebar-properties.ts`:
+  - Offline generator that creates stub properties files from the sidebar items list
+  - Produces sidebar navigation XPaths, icon XPaths, text XPaths, and Gherkin-facing element maps
+  - Skips existing files to avoid overwriting curated properties
+
+### 76 New Properties Files (Page Object Model)
+- Generated individual properties files for all sidebar pages in `tests/properties/`:
+  - 73 navigable page stubs (e.g., `account-management.properties.ts`, `users-admin.properties.ts`)
+  - 3 parent menu stubs (e.g., `certificates.properties.ts`, `files.properties.ts`, `rtwp.properties.ts`)
+  - Each file exports: sidebar XPath, icon XPath, text XPath, and an element map
+  - Marked with TODO for page-specific elements to be populated after live app surfing
+- Total properties files: **80** (4 existing + 76 new)
+
+### Claude Agent Configurations
+- Added `.claude/client-powerslice/` — client-specific agent config with brain and wiki files
+- Added `.claude/qa-expert/` — QA domain expert agent with ISTQB reference materials
+- Added `.claude/test-automation-expert/` — test automation agent with specialized rules
+- Added `.claude/git-and-code-org/` — git workflow and code organization agent
+- Removed `.claude/quality.md` (content moved to `qa-expert` agent)
+
+### Documentation
+- Updated `README.md`:
+  - Test coverage updated from 31 to **107 scenarios**
+  - Added Sidebar Navigation section with all 76 scenarios
+  - Updated project structure with new files/scripts
+  - Added sidebar navigation run examples
+- Updated `CHANGELOG.md`
+
+---
+
 ## 2026-04-09 — Test Runner, Lint Fixes, Multi-Machine Sync
 
 ### Cucumber Test Runner Integration

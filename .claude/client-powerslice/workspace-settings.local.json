@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where code:*)",
+      "Read(//c/Users/User/projects/**)",
+      "Bash(where kl0wd:*)",
+      "Bash(where powershell:*)",
+      "Bash(ls -d /c/Users/User/projects/ps-site-slicer*)",
+      "Bash(ls /c/Users/User/projects/ps-site-slicer/*.code-workspace)",
+      "Read(//c/Users/User/**)",
+      "Bash(ls /c/Users/User/projects/powerslice/ps-site-slicer/*.code-workspace)"
+    ]
+  }
+}
