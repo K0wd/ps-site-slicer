@@ -4,22 +4,45 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
-## 2026-04-12 — Sidebar Navigation Tests, Page Surfing Scripts & 76 Properties Files
+## 2026-04-12 — Nav Bar Feature, Sidebar Navigation Merge, Full Page Snapshots
 
-### Sidebar Navigation Feature (76 new scenarios)
-- Created `tests/features/sidebar-navigation.feature` with two Scenario Outlines:
-  - **Navigate to page via sidebar** — 73 pages: clicks sidebar menu item, verifies URL route loads, saves htmlBody snapshot
-  - **Expand parent menu** — 3 parent menus (Certificates, Files, RTWP): clicks parent, verifies submenu expands
-- Created `tests/steps/sidebar-navigation.steps.ts`:
-  - Dynamic XPath builders: `sidebarLinkXpath(title, href)` and `sidebarParentXpath(title)` — no hardcoded selectors
-  - Saves htmlBody snapshots to `html/<slug>.html` for each navigated page
-  - Fallback click via `dispatchEvent('click')` for stubborn sidebar items
-  - URL verification with regex pattern match + content visibility fallback
-- Created `tests/features/nav-bar.feature` — stub feature for dashboard nav bar tests
+### Nav Bar Feature (13 new scenarios)
+- Created `tests/features/nav-bar.feature` with 13 dashboard-focused scenarios:
+  - **7 display checks**: sidebar toggle button, navbar brand link, refresh icon, dashboard icon, notifications icon + badge, contact support icon, search input + button
+  - **6 interaction tests**: toggle sidebar collapse/expand, navigate via brand, refresh, open notifications panel, open contact support panel, search from navbar
+- Created `tests/steps/nav-bar.steps.ts`:
+  - Generic `I should see the {string} in the nav bar` step using element map lookup
+  - Generic `I click the {string} in the nav bar` step with `dispatchEvent` fallback
+  - Sidebar toggle validation via sidebar width measurement (< 200px = collapsed)
+  - Notifications/contact support panel visibility checks
+  - Navbar search with URL verification
+- Created `tests/properties/nav-bar.properties.ts`:
+  - 10 XPath selectors for all navbar elements (sidebar toggle, brand, refresh, dashboard icon, notifications, badge, contact support, search input, search button)
+  - `NAV_BAR_ELEMENTS` map for Gherkin-facing element name → XPath lookup
+
+### Sidebar Navigation & Nav Bar Merge
+- Merged redundant per-page Scenario Outlines: sidebar navigation now verifies nav bar persistence (toggle, search, notifications) on every page visit — no duplicate navigation across features
+- `sidebar-navigation.feature` handles all per-page testing (navigate + verify route + check nav bar + save snapshot)
+- `nav-bar.feature` handles only dashboard-specific navbar display and interaction tests
+- Removed duplicate `I navigate to` step and nav bar snapshot step from `nav-bar.steps.ts`
+
+### Sidebar Navigation Updates
+- Added **Cascade Templates** (`/spa/main/cascade-template-admin`) — new sidebar item discovered from live app HTML
+- Fixed **Report DB** route: `/spa/admins/pma` → `/spa/pma3` (server redirects to `/spa/pma3/`)
+- Fixed **Account Management** route: `/spa/users/vendorselfedit` → `/spa/dashboard/index` (permission-based redirect for test user)
+- Improved sidebar click step: added direct `page.goto(href)` fallback when sidebar click doesn't change the URL
+- Total sidebar pages: **75** navigable + **3** parent menus = **78 scenarios**
+- Created `tests/properties/cascade-templates.properties.ts` with sidebar navigation XPaths
+
+### Full Page htmlBody Snapshots (75 pages captured)
+- Ran full sidebar navigation suite on Edge — captured htmlBody for all 75 navigable sidebar pages
+- All snapshots saved to `html/<slug>.html` with complete page DOM
+- Total HTML snapshots in `html/`: **81** (75 sidebar pages + 6 pre-existing: login, password, forgot-password, home, home-with-modal, dashboard)
+- All snapshots ready for next phase: building page-specific properties files with real inputs, buttons, tables, and forms
 
 ### Sidebar Page Surfing Scripts
 - Created `scripts/surf-sidebar.ts`:
-  - Launches Edge browser, logs in, surfs all 73 navigable sidebar pages
+  - Launches Edge browser, logs in, surfs all navigable sidebar pages
   - Captures full HTML snapshots and extracts actionable elements (inputs, buttons, tables, etc.)
   - Auto-generates stub properties files with XPaths derived from element attributes
   - Generates `sidebar-surfing-report.md` with success/error/skipped summary
@@ -28,13 +51,12 @@ All notable changes to this project are documented here. Newest entries first.
   - Produces sidebar navigation XPaths, icon XPaths, text XPaths, and Gherkin-facing element maps
   - Skips existing files to avoid overwriting curated properties
 
-### 76 New Properties Files (Page Object Model)
+### Properties Files (Page Object Model)
 - Generated individual properties files for all sidebar pages in `tests/properties/`:
-  - 73 navigable page stubs (e.g., `account-management.properties.ts`, `users-admin.properties.ts`)
-  - 3 parent menu stubs (e.g., `certificates.properties.ts`, `files.properties.ts`, `rtwp.properties.ts`)
-  - Each file exports: sidebar XPath, icon XPath, text XPath, and an element map
-  - Marked with TODO for page-specific elements to be populated after live app surfing
-- Total properties files: **80** (4 existing + 76 new)
+  - 75 navigable page stubs + 3 parent menu stubs + `nav-bar.properties.ts`
+  - Each sidebar file exports: sidebar XPath, icon XPath, text XPath, and an element map
+  - Marked with TODO for page-specific elements to be populated from htmlBody snapshots
+- Total properties files: **82** (4 existing + 78 new)
 
 ### Claude Agent Configurations
 - Added `.claude/client-powerslice/` — client-specific agent config with brain and wiki files
@@ -45,10 +67,11 @@ All notable changes to this project are documented here. Newest entries first.
 
 ### Documentation
 - Updated `README.md`:
-  - Test coverage updated from 31 to **107 scenarios**
-  - Added Sidebar Navigation section with all 76 scenarios
-  - Updated project structure with new files/scripts
-  - Added sidebar navigation run examples
+  - Test coverage updated from 31 to **122 scenarios**
+  - Added Nav Bar section (13 scenarios)
+  - Updated Sidebar Navigation section (78 scenarios, including nav bar persistence checks)
+  - Updated project structure with all new files, steps, and properties
+  - Added nav bar and sidebar navigation run examples
 - Updated `CHANGELOG.md`
 
 ---

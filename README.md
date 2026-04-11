@@ -38,18 +38,21 @@ tests/
 │   ├── login.feature            #   3 scenarios — login flow
 │   ├── dashboard.feature        #  25 scenarios — dashboard + 20 widgets
 │   ├── forgot-password.feature  #   3 scenarios — forgot password view
-│   └── sidebar-navigation.feature # 76 scenarios — sidebar page navigation
+│   ├── nav-bar.feature          #  13 scenarios — navbar display + interactions
+│   └── sidebar-navigation.feature # 78 scenarios — sidebar page nav + nav bar persistence
 ├── steps/                       # Step definitions (Playwright code)
 │   ├── login.steps.ts
 │   ├── dashboard.steps.ts
 │   ├── forgot-password.steps.ts
+│   ├── nav-bar.steps.ts
 │   └── sidebar-navigation.steps.ts
-├── properties/                  # XPath locators per page (POM) — 80 files
+├── properties/                  # XPath locators per page (POM) — 82 files
 │   ├── login-username.properties.ts
 │   ├── login-password.properties.ts
 │   ├── dashboard.properties.ts
 │   ├── forgot-password.properties.ts
-│   └── <76 sidebar page properties>
+│   ├── nav-bar.properties.ts
+│   └── <77 sidebar page properties>
 ├── capture-page.spec.ts         # Page snapshot utility
 └── capture-widget.spec.ts       # Widget flow snapshot utility
 
@@ -58,7 +61,7 @@ scripts/
 ├── generate-sidebar-properties.ts # Generates stub properties files from sidebar data
 └── surf-sidebar.ts              # Surfs all sidebar pages, captures HTML + generates properties
 
-html/                            # Captured htmlBody snapshots (gitignored)
+html/                            # Captured htmlBody snapshots — 81 pages (gitignored)
 test-archives/                   # Archived test runs (gitignored)
 rules/                           # QA rules and ISTQB reference files
 .claude/                         # Agent configs, wiki.md
@@ -81,6 +84,7 @@ npm run test:ui
 npx bddgen; if ($?) { npx playwright test -g "Login" }
 npx bddgen; if ($?) { npx playwright test -g "Dashboard" }
 npx bddgen; if ($?) { npx playwright test -g "Forgot Password" }
+npx bddgen; if ($?) { npx playwright test -g "Nav Bar" }
 npx bddgen; if ($?) { npx playwright test -g "Sidebar Navigation" }
 
 # Run a specific widget test
@@ -89,6 +93,9 @@ npx bddgen; if ($?) { npx playwright test -g "Add widget - Alerts" }
 # Run a specific sidebar navigation test
 npx bddgen; if ($?) { npx playwright test -g "Navigate to \"Users Admin\"" }
 
+# Run a specific nav bar interaction test
+npx bddgen; if ($?) { npx playwright test -g "Toggle sidebar" }
+
 # View last HTML report
 npm run test:report
 
@@ -96,32 +103,9 @@ npm run test:report
 npm run test:archive
 ```
 
-## Test Coverage (107 scenarios)
+## Test Coverage
 
-### Login (3 scenarios)
-- Display the username page
-- Submit username and see password page
-- Login with valid credentials (full flow + Safe Day's Alert modal)
-
-### Dashboard (25 scenarios)
-- Display top bar elements (search, refresh, add widget)
-- Display user profile controls (my profile, logout)
-- Display sidebar navigation (80+ menu items)
-- Filter sidebar menu
-- Display version info
-- **20 widget tests** — each adds a widget, verifies it appears, then removes it:
-  - Site Manager Performance, Known Employee Locations, Announcements, Favorites, Alerts, Clocked In, Materials Over Budget, Subcontractors Over Budget, Equipment Over Budget, Profitability By Department, Past Due Tickets, Timesheet/WO discrepancies, Scheduled Tickets, Vendor Announcements, Manager Announcements, Weather Widget, TEST HTML, Add Client Shares, View Client Shares, Vendor PO List
-
-### Forgot Password (3 scenarios)
-- Display page branding
-- Display reset form elements
-- Display navigation links
-
-### Sidebar Navigation (76 scenarios)
-- **73 page navigation tests** (Scenario Outline) — each clicks a sidebar menu item, verifies the page loads at the expected route, and saves an htmlBody snapshot:
-  - Account Management, Admin Alerts, Asset Control Panel, Audit Inspector, BI Admin, Capabilities Admin, Carrier Keys, Client Admin, Close Outs, Company Directory, Company Files, Cron Utility, Dashboard, DB Query Screen, Director Admin, Divisions Admin, Document Signature Admin, Drivers Admin, Eversign, Forms Admin, Hiring, IT Support, Import Costs, Incidents Admin, Job Titles, Keys Admin, LOB Admin, Locks Admin, Logs, Maintenance, Maintenance Admin, Market Admin, Material Category Admin, Menu Editor, Message Queue, Message Recipients, Mobile Assets, Office Locations, PM Transfer, PMO Admin, PMO Dashboard, PMO SharePoint Dashboard, PTO Admin, Performance, Personal Assets, Project Tracker, Projects, Projects Admin, Purchasing, Purchasing Admin, Quoting, Report DB, Reports, Search, Site Alerts, Site Upload Admin, Tax Group Admin, Temp Files, Texting, Time Zone Admin, Timedata, Timesheet Admin, Timesheets, Training, Transfer Tickets, UAC System, UI Config, Update Users Import, Users Admin, Vendor Admin, Vendor Admin-Old, WO Folder Setup, WO Tracker, WOT Export Queue
-- **3 parent menu expansion tests** — each clicks a parent menu and verifies the submenu expands:
-  - Certificates, Files, RTWP
+**122 scenarios** across 5 feature files. See [TestCoverage.md](TestCoverage.md) for the full breakdown.
 
 ## Video Recording & Archiving
 

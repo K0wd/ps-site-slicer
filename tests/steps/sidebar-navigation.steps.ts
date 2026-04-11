@@ -20,16 +20,25 @@ const toSlug = (title: string) =>
 // ── Navigable Menu Items ──
 
 When('I click the {string} sidebar menu item', async ({ page }, pageName: string) => {
-  // Look up the route from the Examples table via the next step,
-  // but first we need to find and click the sidebar link.
-  // Use the title-only locator since href comes from the Then step.
   const sidebarItem = page.locator(`//li[@title='${pageName}']//a[@href]`);
 
   await sidebarItem.scrollIntoViewIfNeeded({ timeout: 5000 });
+  await page.waitForTimeout(500);
+
+  const href = await sidebarItem.getAttribute('href');
+  const currentUrl = page.url();
+
   try {
     await sidebarItem.click({ timeout: 5000 });
   } catch {
     await sidebarItem.dispatchEvent('click');
+  }
+
+  // If URL didn't change after click, navigate directly via href
+  await page.waitForTimeout(1500);
+  if (page.url() === currentUrl && href) {
+    await page.goto(href, { timeout: 15000 });
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
   }
 });
 

@@ -6,17 +6,21 @@ Feature: Sidebar Navigation
   Scenario Outline: Navigate to "<Page>" via sidebar
     When I click the "<Page>" sidebar menu item
     Then the "<Page>" page should load at "<Route>"
+    And I should see the "sidebar toggle button" in the nav bar
+    And I should see the "navbar search input" in the nav bar
+    And I should see the "navbar notifications icon" in the nav bar
     And I save the htmlBody snapshot for "<Page>"
 
     Examples:
       | Page                     | Route                              |
-      | Account Management       | /spa/users/vendorselfedit          |
+      | Account Management       | /spa/dashboard/index               |
       | Admin Alerts             | /spa/uac/admin_alerts              |
       | Asset Control Panel      | /spa/generators/cp                 |
       | Audit Inspector          | /spa/dbupdates/auditinspector      |
       | BI Admin                 | /spa/bi/dashboardlist              |
       | Capabilities Admin       | /spa/requests/capabilitiesadmin    |
       | Carrier Keys             | /spa/carriers/index                |
+      | Cascade Templates        | /spa/main/cascade-template-admin   |
       | Client Admin             | /spa/clientmanagements/index       |
       | Close Outs               | /spa/sitephotos/index-new          |
       | Company Directory        | /spa/companydirectory/index        |
@@ -61,7 +65,7 @@ Feature: Sidebar Navigation
       | Purchasing               | /spa/pos/index-new                 |
       | Purchasing Admin         | /spa/pos/admin                     |
       | Quoting                  | /spa/boms/index-new                |
-      | Report DB                | /spa/admins/pma                    |
+      | Report DB                | /spa/pma3                          |
       | Reports                  | /spa/reports/index                 |
       | Search                   | /spa/requests/searchtab            |
       | Site Alerts              | /spa/sitealerts/index              |
