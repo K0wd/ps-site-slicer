@@ -1,10 +1,5 @@
 node_modules/
 test-results/
 playwright-report/
-blob-report/
-.next/
 .env
 .env.local
-html/
-.features-gen/
-test-archives/

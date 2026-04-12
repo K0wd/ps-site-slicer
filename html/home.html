@@ -1,0 +1,349 @@
+<!DOCTYPE html><html style="--primary-color: black;"><head>
+    <base href="/spa/">
+        <meta charset="utf-8">
+        <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">
+        <link rel="icon" type="image/png" href="./assets/img/favicon.ico">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Site Manager</title>
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+        <meta name="viewport" content="width=device-width">
+
+        <!--     Fonts and icons     -->
+        <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet"> -->
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/alasql/0.5.5/alasql.min.js"></script>
+        <script async="" defer="" type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyDrDCHzwTWHEmM9gtR3PQvaNWUBb-baSiY&amp;libraries=places"> </script>
+    <link rel="stylesheet" href="styles.b3f9c58527736019dc55.css"><script charset="utf-8" src="2.f5552d69368aa8a03648.js"></script><script charset="utf-8" src="6.b2fa1ee095b80c2abd7d.js"></script><script charset="utf-8" src="common.b5d4690b2f16f26f583c.js"></script><script charset="utf-8" src="7.239cdaaeb8bc54626ff8.js"></script><script src="https://cdn.onesignal.com/sdks/OneSignalPageSDKES6.js?v=151607" async=""></script><style>.fixed-plugin[_ngcontent-yka-c3] {
+    position: fixed;
+    top: 80px;
+    right: 0;
+    width: 50px;
+    background: rgba(0,0,0,.3);
+    z-index: 1031;
+    border-radius: 8px 0 0 8px;
+    text-align: center;
+}
+.fixed-plugin[_ngcontent-yka-c3]   .setting-icon[_ngcontent-yka-c3] {
+    color: #fff;
+    padding: 5px;
+    border-radius: 0 0 6px 6px;
+    width: auto;
+}
+.dropdown-menu[_ngcontent-yka-c3] {
+  right: 20px;
+}
+.dropdown-menu[_ngcontent-yka-c3]:after {
+  top: 0px;
+  right:0px;
+}
+.fixed-plugin[_ngcontent-yka-c3]   .dropdown-menu[_ngcontent-yka-c3]:after {
+    border-bottom: 12px solid rgba(0, 0, 0, 0);
+    border-right: 21px solid #FFFFFF;
+    border-top: 26px solid rgba(0, 0, 0, 0);
+    border-left: 20px solid rgba(0, 0, 0, 0);
+    right: 0px;
+}
+.fixed-plugin[_ngcontent-yka-c3]   .dropdown-menu[_ngcontent-yka-c3]:before {
+    border-bottom: 0px;
+    border-right: 0px;
+    border-top: 0px solid rgba(0, 0, 0, 0);
+    border-left: 0px solid rgba(0, 0, 0, 0);
+    right: 0px;
+}</style><style>.mat-icon{background-repeat:no-repeat;display:inline-block;fill:currentColor;height:24px;width:24px}.mat-icon.mat-icon-inline{font-size:inherit;height:inherit;line-height:inherit;width:inherit}[dir=rtl] .mat-icon-rtl-mirror{transform:scale(-1, 1)}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon{display:block}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button .mat-icon,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button .mat-icon{margin:auto}
+</style><style>[_nghost-yka-c5]   .main-content[_ngcontent-yka-c5] {
+  padding: 30px 0 !important;
+}
+
+[_nghost-yka-c5]   .dashboard-container[_ngcontent-yka-c5] {
+  background-color: lightgray;
+  height: calc(100vh - 100px) !important;
+  overflow: auto;
+}
+
+[_nghost-yka-c5]   .btn-info[_ngcontent-yka-c5] {
+  color: #ffffff;
+  background-color: #3498db;
+  border-color: #3498db;
+}
+
+[_nghost-yka-c5]   .add_widget[_ngcontent-yka-c5] {
+  margin: 10px;
+}</style><style>[_nghost-yka-c1]   .arrow-btn[_ngcontent-yka-c1] {
+  margin-top: 10px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+[_nghost-yka-c1]   .nav-width[_ngcontent-yka-c1] {
+  width: 100%;
+}
+
+[_nghost-yka-c1]   .navbar[_ngcontent-yka-c1] {
+  z-index: 10;
+}
+
+[_nghost-yka-c1]   .search-form-fixed[_ngcontent-yka-c1] {
+  position: absolute;
+  top: 10px;
+  right: 180px;
+  margin: 0;
+  z-index: 100;
+}
+
+.notification-drop-down[_ngcontent-yka-c1] {
+  border: 0;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  position: absolute;
+  top: 100%;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  font-size: 14px;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  right: 0;
+  left: auto;
+  border-radius: 3px !important;
+  display: block;
+}
+
+.list-item[_ngcontent-yka-c1] {
+  position: relative;
+  box-sizing: border-box;
+  box-sizing: border-box;
+  padding-left: 15px;
+  height: 350px;
+  overflow-y: auto;
+}
+
+.list-item[_ngcontent-yka-c1]   p[_ngcontent-yka-c1] {
+  font-size: 14px;
+  padding: 10px 20px;
+  margin: 0 5px;
+  border-radius: 2px;
+  transition: all 150ms linear;
+  color: black;
+}
+
+.list-item[_ngcontent-yka-c1]   p[_ngcontent-yka-c1]   a[_ngcontent-yka-c1] {
+  text-decoration: none;
+  color: black;
+}
+
+.list-item[_ngcontent-yka-c1]   p[_ngcontent-yka-c1]:hover {
+  background-color: #9c27b0;
+  color: #FFFFFF;
+  box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4);
+}
+
+.list-item[_ngcontent-yka-c1]   p[_ngcontent-yka-c1]:hover   a[_ngcontent-yka-c1] {
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.alertsCount[_ngcontent-yka-c1] {
+  background-color: #f44336;
+}
+
+.alert-badge[_ngcontent-yka-c1] {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.badge-critical[_ngcontent-yka-c1] {
+  background-color: #f44336;
+  box-shadow: 0 0 8px rgba(244, 67, 54, 0.6);
+}
+
+.badge-warning[_ngcontent-yka-c1] {
+  background-color: #ff9800;
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.6);
+}
+
+.cert-alert-text[_ngcontent-yka-c1] {
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+  display: inline-block;
+}
+
+.cert-alert-critical[_ngcontent-yka-c1] {
+  border-left: 4px solid #f44336;
+}
+
+.cert-alert-warning[_ngcontent-yka-c1] {
+  border-left: 4px solid #ff9800;
+}</style><style>[_nghost-yka-c0]   .sidebar-container[_ngcontent-yka-c0] {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+}
+
+[_nghost-yka-c0]   .nav.children[_ngcontent-yka-c0] {
+  margin-left: 62px;
+}
+
+[_nghost-yka-c0]   .nav[_ngcontent-yka-c0] {
+  padding-bottom: 10px;
+}
+
+[_nghost-yka-c0]   .profile-icon[_ngcontent-yka-c0]   mat-icon[_ngcontent-yka-c0] {
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+[_nghost-yka-c0]   .test-size[_ngcontent-yka-c0] {
+  background-color: red;
+  color: black;
+  padding: 11px;
+  display: inline;
+  margin-left: 15px;
+  font-size: 14px;
+}
+
+[_nghost-yka-c0]   .flex-container[_ngcontent-yka-c0] {
+  display: flex;
+}
+
+[_nghost-yka-c0]   .flex-container[_ngcontent-yka-c0]    > .profile-icon[_ngcontent-yka-c0] {
+  align-items: flex-start;
+}
+
+[_nghost-yka-c0]   .profile[_ngcontent-yka-c0] {
+  width: 125px;
+  word-wrap: break-word;
+  white-space: normal !important;
+}
+
+[_nghost-yka-c0]   li[_ngcontent-yka-c0]   a[data-toggle=collapse][_ngcontent-yka-c0] {
+  position: relative;
+}
+
+[_nghost-yka-c0]   li[_ngcontent-yka-c0]   a[data-toggle=collapse][_ngcontent-yka-c0]   .collapse-icon[_ngcontent-yka-c0] {
+  position: absolute;
+  top: 10px;
+  right: 0px;
+}
+
+[_nghost-yka-c0]   li[_ngcontent-yka-c0]   a[_ngcontent-yka-c0]:focus {
+  transform: scale(1);
+  outline: none;
+  background: #41D3FE;
+  color: #333;
+}
+
+[_nghost-yka-c0]   li[_ngcontent-yka-c0]   a[data-toggle=collapse][aria-expanded=true][_ngcontent-yka-c0]   .collapse-icon[_ngcontent-yka-c0] {
+  transform: rotate(180deg);
+}
+
+[_nghost-yka-c0]   li[_ngcontent-yka-c0]   .nav-child-container[_ngcontent-yka-c0]   .nav[_ngcontent-yka-c0] {
+  padding: 10px 0 10px 25px;
+}
+
+[_nghost-yka-c0]   li[_ngcontent-yka-c0]   .nav-child-container[_ngcontent-yka-c0]   .nav[_ngcontent-yka-c0]   li[_ngcontent-yka-c0]   a[_ngcontent-yka-c0] {
+  align-items: center;
+  justify-content: flex-start;
+  display: flex;
+}
+
+[_nghost-yka-c0]   .version-value[_ngcontent-yka-c0] {
+  color: #a5a1a1;
+  text-align: center;
+  margin-top: 10px;
+}</style><style>.mat-button .mat-button-focus-overlay,.mat-icon-button .mat-button-focus-overlay{opacity:0}.mat-button:hover .mat-button-focus-overlay,.mat-stroked-button:hover .mat-button-focus-overlay{opacity:.04}@media(hover: none){.mat-button:hover .mat-button-focus-overlay,.mat-stroked-button:hover .mat-button-focus-overlay{opacity:0}}.mat-button,.mat-icon-button,.mat-stroked-button,.mat-flat-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-button[disabled],.mat-icon-button[disabled],.mat-stroked-button[disabled],.mat-flat-button[disabled]{cursor:default}.mat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-button.cdk-program-focused .mat-button-focus-overlay,.mat-icon-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-icon-button.cdk-program-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-program-focused .mat-button-focus-overlay,.mat-flat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-flat-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-raised-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1)}.mat-raised-button::-moz-focus-inner{border:0}.mat-raised-button[disabled]{cursor:default}.mat-raised-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-raised-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-raised-button::-moz-focus-inner{border:0}._mat-animation-noopable.mat-raised-button{transition:none;animation:none}.mat-stroked-button{border:1px solid currentColor;padding:0 15px;line-height:34px}.mat-stroked-button .mat-button-ripple.mat-ripple,.mat-stroked-button .mat-button-focus-overlay{top:-1px;left:-1px;right:-1px;bottom:-1px}.mat-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:56px;height:56px;padding:0;flex-shrink:0}.mat-fab::-moz-focus-inner{border:0}.mat-fab[disabled]{cursor:default}.mat-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-fab{transition:none;animation:none}.mat-fab .mat-button-wrapper{padding:16px 0;display:inline-block;line-height:24px}.mat-mini-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:40px;height:40px;padding:0;flex-shrink:0}.mat-mini-fab::-moz-focus-inner{border:0}.mat-mini-fab[disabled]{cursor:default}.mat-mini-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-mini-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-mini-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-mini-fab{transition:none;animation:none}.mat-mini-fab .mat-button-wrapper{padding:8px 0;display:inline-block;line-height:24px}.mat-icon-button{padding:0;min-width:0;width:40px;height:40px;flex-shrink:0;line-height:40px;border-radius:50%}.mat-icon-button i,.mat-icon-button .mat-icon{line-height:24px}.mat-button-ripple.mat-ripple,.mat-button-focus-overlay{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-button-ripple.mat-ripple:not(:empty){transform:translateZ(0)}.mat-button-focus-overlay{opacity:0;transition:opacity 200ms cubic-bezier(0.35, 0, 0.25, 1),background-color 200ms cubic-bezier(0.35, 0, 0.25, 1)}._mat-animation-noopable .mat-button-focus-overlay{transition:none}.cdk-high-contrast-active .mat-button-focus-overlay{background-color:#fff}.cdk-high-contrast-black-on-white .mat-button-focus-overlay{background-color:#000}.mat-button-ripple-round{border-radius:50%;z-index:1}.mat-button .mat-button-wrapper>*,.mat-flat-button .mat-button-wrapper>*,.mat-stroked-button .mat-button-wrapper>*,.mat-raised-button .mat-button-wrapper>*,.mat-icon-button .mat-button-wrapper>*,.mat-fab .mat-button-wrapper>*,.mat-mini-fab .mat-button-wrapper>*{vertical-align:middle}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button{display:block;font-size:inherit;width:2.5em;height:2.5em}.cdk-high-contrast-active .mat-button,.cdk-high-contrast-active .mat-flat-button,.cdk-high-contrast-active .mat-raised-button,.cdk-high-contrast-active .mat-icon-button,.cdk-high-contrast-active .mat-fab,.cdk-high-contrast-active .mat-mini-fab{outline:solid 1px}
+</style><style>.mat-menu-panel{min-width:112px;max-width:280px;overflow:auto;-webkit-overflow-scrolling:touch;max-height:calc(100vh - 48px);border-radius:4px;outline:0;min-height:64px}.mat-menu-panel.ng-animating{pointer-events:none}.cdk-high-contrast-active .mat-menu-panel{outline:solid 1px}.mat-menu-content:not(:empty){padding-top:8px;padding-bottom:8px}.mat-menu-item{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:48px;height:48px;padding:0 16px;text-align:left;text-decoration:none;max-width:100%;position:relative}.mat-menu-item::-moz-focus-inner{border:0}.mat-menu-item[disabled]{cursor:default}[dir=rtl] .mat-menu-item{text-align:right}.mat-menu-item .mat-icon{margin-right:16px;vertical-align:middle}.mat-menu-item .mat-icon svg{vertical-align:top}[dir=rtl] .mat-menu-item .mat-icon{margin-left:16px;margin-right:0}.mat-menu-item[disabled]{pointer-events:none}.cdk-high-contrast-active .mat-menu-item.cdk-program-focused,.cdk-high-contrast-active .mat-menu-item.cdk-keyboard-focused,.cdk-high-contrast-active .mat-menu-item-highlighted{outline:dotted 1px}.mat-menu-item-submenu-trigger{padding-right:32px}.mat-menu-item-submenu-trigger::after{width:0;height:0;border-style:solid;border-width:5px 0 5px 5px;border-color:transparent transparent transparent currentColor;content:"";display:inline-block;position:absolute;top:50%;right:16px;transform:translateY(-50%)}[dir=rtl] .mat-menu-item-submenu-trigger{padding-right:16px;padding-left:32px}[dir=rtl] .mat-menu-item-submenu-trigger::after{right:auto;left:16px;transform:rotateY(180deg) translateY(-50%)}button.mat-menu-item{width:100%}.mat-menu-item .mat-menu-ripple{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}
+</style><style>.widget-content[_ngcontent-yka-c8] {
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid gray;
+}
+
+.widget-header[_ngcontent-yka-c8]:hover {
+  cursor: pointer;
+}
+
+.widget-icons[_ngcontent-yka-c8] {
+  color: gray;
+  margin: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.widget-title[_ngcontent-yka-c8] {
+  float: left;
+  margin-left: 15px;
+  margin-top: 10px;
+  color: gray;
+  font-size: 17px;
+  font-weight: bold;
+}</style><style>[_nghost-yka-c9] {
+      position: relative;
+      display: block;
+    }
+
+    [_nghost-yka-c9]     .widget {
+      position: absolute;
+      top: 0;
+      left: 0;
+      -webkit-touch-callout: none; 
+      -webkit-user-select: none; 
+      -khtml-user-select: none; 
+      -moz-user-select: none; 
+      -ms-user-select: none; 
+      user-select: none;
+      
+    }
+
+    [_nghost-yka-c9]     .widget.animate {
+      -webkit-transition: all 300ms ease-out;
+      -moz-transition: all 300ms ease-out;
+      -o-transition: all 300ms ease-out;
+      transition: all 300ms ease-out;
+    }
+
+    [_nghost-yka-c9]     .widget.active {
+      z-index: 100000;
+    }</style></head>
+
+    <body class="bootstrap-collapse">
+    <app-my-app ng-version="9.1.13"><div><router-outlet></router-outlet><app-layout><div class="wrapper"><!----><div class="sidebar" data-active-color="orange" data-background-color="black" data-image="../assets/img/sidebar-1.jpg"><!----><app-sidebar-cmp _nghost-yka-c0=""><div _ngcontent-yka-c0="" class="sidebar-container"><div _ngcontent-yka-c0="" class="logo "><div _ngcontent-yka-c0="" class="logo-normal"><a _ngcontent-yka-c0="" class="simple-text" style="cursor: pointer;"><img _ngcontent-yka-c0="" style="max-width: 100px;" src="/main/downloads/logoimage"><!----></a></div></div><div _ngcontent-yka-c0="" class="user"><div _ngcontent-yka-c0="" class="photo" title="My Profile"><img _ngcontent-yka-c0="" src="./assets/img/profile_photo.jpeg"></div><div _ngcontent-yka-c0="" class="flex-container"><a _ngcontent-yka-c0="" class="profile info" title="My Profile" href="/spa/profile"><span _ngcontent-yka-c0=""> Bandeleonk </span></a><a _ngcontent-yka-c0="" class="profile-icon"><mat-icon _ngcontent-yka-c0="" class="mat-icon notranslate material-icons mat-icon-no-color" role="img" title="Log out" aria-hidden="true"> exit_to_app</mat-icon></a></div></div><form _ngcontent-yka-c0="" class="navbar-form search-form-container ng-untouched ng-pristine ng-valid" novalidate="" role="search"><div _ngcontent-yka-c0="" class="form-group form-search is-empty"><input _ngcontent-yka-c0="" autocomplete="off" class="form-control ng-untouched ng-pristine ng-valid" id="sidebarFilter" name="filter" placeholder="Filter Menu" type="text" style=""><mat-icon _ngcontent-yka-c0="" class="mat-icon notranslate material-icons mat-icon-no-color" role="img" aria-hidden="true">search</mat-icon><span _ngcontent-yka-c0="" class="material-input"></span><span _ngcontent-yka-c0="" class="material-input"></span></div></form><div _ngcontent-yka-c0="" class="sidebar-wrapper ps ps--active-y"><!----><div _ngcontent-yka-c0="" class="nav-container"><ul _ngcontent-yka-c0="" class="nav"><!----><li _ngcontent-yka-c0="" routerlinkactive="active" title="Admin"><!----><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Account Management"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/users/vendorselfedit"><i _ngcontent-yka-c0="" class="material-icons">table_chart</i><p _ngcontent-yka-c0="">Account Management</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Admin Alerts"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/uac/admin_alerts"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Admin Alerts</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Asset Control Panel"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/generators/cp"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Asset Control Panel</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Audit Inspector"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/dbupdates/auditinspector"><i _ngcontent-yka-c0="" class="material-icons">table_chart</i><p _ngcontent-yka-c0="">Audit Inspector</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="BI Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/bi/dashboardlist"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">BI Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Capabilities Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/requests/capabilitiesadmin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Capabilities Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Carrier Keys"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/carriers/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Carrier Keys</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Certificates"><!----><!----><a _ngcontent-yka-c0="" rel="prefetch" style="cursor: pointer;"><i _ngcontent-yka-c0="" class="material-icons">monetization_on</i><p _ngcontent-yka-c0="">Certificates</p></a></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Client Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/clientmanagements/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Client Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Close Outs"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/sitephotos/index-new"><i _ngcontent-yka-c0="" class="material-icons">linked_camera</i><p _ngcontent-yka-c0="">Close Outs</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Company Directory"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/companydirectory/index"><i _ngcontent-yka-c0="" class="material-icons">account_balance</i><p _ngcontent-yka-c0="">Company Directory</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Company Files"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/commons/index"><i _ngcontent-yka-c0="" class="material-icons">folder_shared</i><p _ngcontent-yka-c0="">Company Files</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Cron Utility"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/admins/cronutility"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Cron Utility</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="DB Query Screen"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/dbupdates/query"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">DB Query Screen</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Dashboard" class="active"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/dashboard/index"><i _ngcontent-yka-c0="" class="material-icons">dashboard</i><p _ngcontent-yka-c0="">Dashboard</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Director Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/director-admin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Director Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Divisions Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/main/division-admin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Divisions Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Document Signature Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/prepare-sign-doc"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Document Signature Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Drivers Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/Drivers/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Drivers Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Eversign"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/dashboard/onlinesigning"><i _ngcontent-yka-c0="" class="material-icons">fiber_new</i><p _ngcontent-yka-c0="">Eversign</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Files"><!----><!----><a _ngcontent-yka-c0="" rel="prefetch" style="cursor: pointer;"><i _ngcontent-yka-c0="" class="material-icons">folder_open</i><p _ngcontent-yka-c0="">Files</p></a></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Forms Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/forms/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Forms Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Hiring"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/hires/index"><i _ngcontent-yka-c0="" class="material-icons">fiber_new</i><p _ngcontent-yka-c0="">Hiring</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="IT Support"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/ittickets/freshdesklogin"><i _ngcontent-yka-c0="" class="material-icons">help</i><p _ngcontent-yka-c0="">IT Support</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Import Costs"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/requests/importcosts"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Import Costs</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Incidents Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/incidents/index-new"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Incidents Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Job Titles"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/requests/job-title-admin"><i _ngcontent-yka-c0="" class="material-icons">account_balance</i><p _ngcontent-yka-c0="">Job Titles</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Keys Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/admin/keys"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Keys Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="LOB Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/main/lob-admin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">LOB Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Locks Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/locks/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Locks Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Logs"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/admins/logs"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Logs</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Maintenance"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/sites/pickmarket"><i _ngcontent-yka-c0="" class="material-icons">settings_input_antenna</i><p _ngcontent-yka-c0="">Maintenance</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Maintenance Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/requests/maintadmin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Maintenance Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Market Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/requests/marketadmin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Market Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Material Category Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/drivers/admin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Material Category Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Menu Editor"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/main/admin"><i _ngcontent-yka-c0="" class="material-icons">fiber_new</i><p _ngcontent-yka-c0="">Menu Editor</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Message Queue"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/messages/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Message Queue</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Message Recipients"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/recipients/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Message Recipients</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Mobile Assets"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/generators/index"><i _ngcontent-yka-c0="" class="material-icons">commute</i><p _ngcontent-yka-c0="">Mobile Assets</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Office Locations"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/officelocations/index"><i _ngcontent-yka-c0="" class="material-icons">location_city</i><p _ngcontent-yka-c0="">Office Locations</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="PM Transfer"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/pm_transfer"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">PM Transfer</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="PMO Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/dashboard/pmoadmin"><i _ngcontent-yka-c0="" class="material-icons">dashboard</i><p _ngcontent-yka-c0="">PMO Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="PMO Dashboard"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/dashboard/index/pmo"><i _ngcontent-yka-c0="" class="material-icons">table_chart</i><p _ngcontent-yka-c0="">PMO Dashboard</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="PMO SharePoint Dashboard"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/iframes/sharepoint1"><i _ngcontent-yka-c0="" class="material-icons">table_chart</i><p _ngcontent-yka-c0="">PMO SharePoint Dashboard</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="PTO Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/timesheets/benefitsadmin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">PTO Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Performance"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/admins/timelogview"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Performance</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Personal Assets"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/passets/index"><i _ngcontent-yka-c0="" class="material-icons">phonelink</i><p _ngcontent-yka-c0="">Personal Assets</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Project Tracker"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/clients"><i _ngcontent-yka-c0="" class="material-icons">format_list_numbered</i><p _ngcontent-yka-c0="">Project Tracker</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Projects"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/projects/tracker"><i _ngcontent-yka-c0="" class="material-icons">format_list_numbered</i><p _ngcontent-yka-c0="">Projects</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Projects Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/projects/admin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Projects Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Purchasing"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/pos/index-new"><i _ngcontent-yka-c0="" class="material-icons">monetization_on</i><p _ngcontent-yka-c0="">Purchasing</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Purchasing Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/pos/admin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Purchasing Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Quoting"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/boms/index-new"><i _ngcontent-yka-c0="" class="material-icons">money</i><p _ngcontent-yka-c0="">Quoting</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="RTWP"><!----><!----><a _ngcontent-yka-c0="" rel="prefetch" style="cursor: pointer;"><i _ngcontent-yka-c0="" class="material-icons">table_chart</i><p _ngcontent-yka-c0="">RTWP</p></a></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Report DB"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/admins/pma"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Report DB</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Reports"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/reports/index"><i _ngcontent-yka-c0="" class="material-icons">multiline_chart</i><p _ngcontent-yka-c0="">Reports</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Search"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/requests/searchtab"><i _ngcontent-yka-c0="" class="material-icons">search</i><p _ngcontent-yka-c0="">Search</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Site Alerts"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/sitealerts/index"><i _ngcontent-yka-c0="" class="material-icons">alarm</i><p _ngcontent-yka-c0="">Site Alerts</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Site Upload Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/Sites/massupdate"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Site Upload Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Tax Group Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/main/taxes-admin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Tax Group Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Temp Files"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/downloads/temps"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Temp Files</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Texting"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/texting/index"><i _ngcontent-yka-c0="" class="material-icons">message</i><p _ngcontent-yka-c0="">Texting</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Time Zone Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/admins/states"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Time Zone Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Timedata"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/timedatas/index"><i _ngcontent-yka-c0="" class="material-icons">table_chart</i><p _ngcontent-yka-c0="">Timedata</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Timesheet Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/timesheets/admin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Timesheet Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Timesheets"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/timesheets/review"><i _ngcontent-yka-c0="" class="material-icons">history</i><p _ngcontent-yka-c0="">Timesheets</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Training"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/training/index"><i _ngcontent-yka-c0="" class="material-icons">thumb_up</i><p _ngcontent-yka-c0="">Training</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Transfer Tickets"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/requests/transfer"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Transfer Tickets</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="UAC System"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/uac/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">UAC System</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="UI Config"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/keys/uiconfig"><i _ngcontent-yka-c0="" class="material-icons">multiline_chart</i><p _ngcontent-yka-c0="">UI Config</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Update Users Import"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/users/import"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Update Users Import</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Users Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/users/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Users Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Vendor Admin"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/main/vendors-admin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">Vendor Admin</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="Vendor Admin-Old"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/users/vendorreview"><i _ngcontent-yka-c0="" class="material-icons">business</i><p _ngcontent-yka-c0="">Vendor Admin-Old</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="WO Folder Setup"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/directoryservices/permadmin"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">WO Folder Setup</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="WO Tracker"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/wots/index-new"><i _ngcontent-yka-c0="" class="material-icons">table_chart</i><p _ngcontent-yka-c0="">WO Tracker</p></a><!----></li><li _ngcontent-yka-c0="" routerlinkactive="active" title="WOT Export Queue"><!----><a _ngcontent-yka-c0="" rel="prefetch" href="/spa/wotexports/index"><i _ngcontent-yka-c0="" class="material-icons">lock</i><p _ngcontent-yka-c0="">WOT Export Queue</p></a><!----></li></ul></div><div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; height: 486px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 50px;"></div></div><div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; height: 486px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 50px;"></div></div></div><hr _ngcontent-yka-c0="" style="margin:0 5%; z-index: 4;border-color: rgba(180,180,180, .3);"><div _ngcontent-yka-c0="" data-title="Version" routerlinkactive="active" style="z-index: 4"><p _ngcontent-yka-c0="" class="version-value">SM VERSION : 10.9185</p></div></div></app-sidebar-cmp><div class="sidebar-background" style=""></div></div><div class="main-panel ps"><!----><app-navbar-cmp _nghost-yka-c1=""><nav _ngcontent-yka-c1="" class="navbar navbar-transparent navbar-absolute nav-width"><div _ngcontent-yka-c1="" class="container-fluid"><div _ngcontent-yka-c1="" class="navbar-minimize"><button _ngcontent-yka-c1="" class="btn btn-round btn-white btn-fill btn-just-icon" id="minimizeSidebar"><i _ngcontent-yka-c1="" class="material-icons visible-on-sidebar-regular">more_vert</i><i _ngcontent-yka-c1="" class="material-icons visible-on-sidebar-mini">view_list</i></button></div><div _ngcontent-yka-c1="" class="row"><div _ngcontent-yka-c1="" class="navbar-header" style="min-width: 400px;"><button _ngcontent-yka-c1="" class="navbar-toggle" type="button"><span _ngcontent-yka-c1="" class="sr-only">Toggle navigation</span><span _ngcontent-yka-c1="" class="icon-bar"></span><span _ngcontent-yka-c1="" class="icon-bar"></span><span _ngcontent-yka-c1="" class="icon-bar"></span></button><a _ngcontent-yka-c1="" class="navbar-brand" href="/spa/dashboard/index">  </a><!----><mat-icon _ngcontent-yka-c1="" class="arrow-btn mat-icon notranslate material-icons mat-icon-no-color" role="img" style="margin-left: 8%;" aria-hidden="true">refresh</mat-icon></div><div _ngcontent-yka-c1="" class="collapse navbar-collapse "><div _ngcontent-yka-c1=""><ul _ngcontent-yka-c1="" class="nav navbar-nav navbar-right"><li _ngcontent-yka-c1=""><a _ngcontent-yka-c1="" class="dropdown-toggle" data-toggle="dropdown" href="/spa/"><i _ngcontent-yka-c1="" class="material-icons">dashboard</i><p _ngcontent-yka-c1="" class="hidden-lg hidden-md">Dashboard</p></a></li><li _ngcontent-yka-c1="" style="cursor:pointer;"><a _ngcontent-yka-c1="" cdkoverlayorigin=""><i _ngcontent-yka-c1="" class="material-icons">notifications</i><span _ngcontent-yka-c1="" class="notification alertsCount">0</span><p _ngcontent-yka-c1="" class="hidden-lg hidden-md"> Notifications <b _ngcontent-yka-c1="" class="caret"></b></p></a><!----></li><li _ngcontent-yka-c1="" style="cursor:pointer;"><a _ngcontent-yka-c1="" cdkoverlayorigin=""><i _ngcontent-yka-c1="" class="material-icons">contact_support</i><p _ngcontent-yka-c1="" class="hidden-lg hidden-md"> Notifications <b _ngcontent-yka-c1="" class="caret"></b></p></a><!----></li><li _ngcontent-yka-c1="" class="separator hidden-lg hidden-md"></li></ul><form _ngcontent-yka-c1="" class="navbar-form navbar-right search-form-fixed ng-untouched ng-pristine ng-valid" novalidate="" role="search"><div _ngcontent-yka-c1="" class="form-group form-search is-empty"><input _ngcontent-yka-c1="" class="form-control ng-untouched ng-pristine ng-valid" name="searchTerm" placeholder="Search" type="text" style=""><span _ngcontent-yka-c1="" class="material-input"></span></div><button _ngcontent-yka-c1="" class="btn btn-white btn-round btn-just-icon" type="button"><i _ngcontent-yka-c1="" class="material-icons">search</i><div _ngcontent-yka-c1="" class="ripple-container"></div></button></form></div></div></div></div></nav></app-navbar-cmp><!----><!----><!----><router-outlet></router-outlet><app-dashboard _nghost-yka-c5=""><div _ngcontent-yka-c5="" class="main-content"><div _ngcontent-yka-c5="" class="container-fluid"><div _ngcontent-yka-c5="" class="row"><!----><div _ngcontent-yka-c5="" class="col-md-12 dashboard-container ng-star-inserted"><div _ngcontent-yka-c5="" class="add_widget text-right"><button _ngcontent-yka-c5="" aria-haspopup="true" class="btn btn-info mat-focus-indicator mat-menu-trigger mat-flat-button mat-button-base" mat-flat-button=""><span class="mat-button-wrapper"> Add Widget </span><div class="mat-button-ripple mat-ripple" matripple=""></div><div class="mat-button-focus-overlay"></div></button><mat-menu _ngcontent-yka-c5="" class="ng-tns-c7-0"><!----></mat-menu></div><app-dashboard-widget _ngcontent-yka-c5="" _nghost-yka-c8=""><dashboard _ngcontent-yka-c8="" _nghost-yka-c9="" style="height: 0px;"><div _ngcontent-yka-c9=""></div></dashboard></app-dashboard-widget></div></div></div></div></app-dashboard><!----><div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div></div><div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div></div></div><!----><app-fixedplugin _nghost-yka-c3=""><div _ngcontent-yka-c3="" class="fixed-plugin"><mat-icon _ngcontent-yka-c3="" class="setting-icon mat-icon notranslate material-icons mat-icon-no-color" data-toggle="dropdown" role="img" style="cursor: pointer; height: 35px" aria-hidden="true">settings </mat-icon><ul _ngcontent-yka-c3="" class="dropdown-menu" style="margin-top: 16px;"><li _ngcontent-yka-c3="" class="header-title"> Sidebar Filters</li><li _ngcontent-yka-c3="" class="adjustments-line"><a _ngcontent-yka-c3="" class="switch-trigger active-color" href="javascript:void(0)"><div _ngcontent-yka-c3="" class="badge-colors text-center"><span _ngcontent-yka-c3="" class="badge filter badge-purple" data-color="purple"></span><span _ngcontent-yka-c3="" class="badge filter badge-blue" data-color="blue"></span><span _ngcontent-yka-c3="" class="badge filter badge-green" data-color="green"></span><span _ngcontent-yka-c3="" class="badge filter badge-orange active" data-color="orange"></span><span _ngcontent-yka-c3="" class="badge filter badge-red" data-color="red"></span><span _ngcontent-yka-c3="" class="badge filter badge-white" data-color="white"></span><span _ngcontent-yka-c3="" class="badge filter badge-rose" data-color="rose"></span></div><div _ngcontent-yka-c3="" class="clearfix"></div></a></li><li _ngcontent-yka-c3="" class="header-title">Sidebar Background</li><li _ngcontent-yka-c3="" class="adjustments-line"><a _ngcontent-yka-c3="" class="switch-trigger background-color" href="javascript:void(0)"><div _ngcontent-yka-c3="" class="text-center"><span _ngcontent-yka-c3="" class="badge filter badge-white" data-color="white"></span><span _ngcontent-yka-c3="" class="badge filter badge-black active" data-color="black"></span><span _ngcontent-yka-c3="" class="badge filter badge-red" data-color="red"></span><span _ngcontent-yka-c3="" class="badge filter badge-rose" data-color="rose"></span></div><div _ngcontent-yka-c3="" class="clearfix"></div></a></li><li _ngcontent-yka-c3="" class="adjustments-line"><a _ngcontent-yka-c3="" class="switch-trigger" href="javascript:void(0)"><p _ngcontent-yka-c3="">Sidebar Mini</p><div _ngcontent-yka-c3="" class="togglebutton switch-sidebar-mini"><label _ngcontent-yka-c3=""><input _ngcontent-yka-c3="" type="checkbox" unchecked="" style=""><span class="toggle"></span></label></div><div _ngcontent-yka-c3="" class="clearfix"></div></a></li><li _ngcontent-yka-c3="" class="adjustments-line"><a _ngcontent-yka-c3="" class="switch-trigger" href="javascript:void(0)"><p _ngcontent-yka-c3="">Sidebar Image</p><div _ngcontent-yka-c3="" class="togglebutton switch-sidebar-image"><label _ngcontent-yka-c3=""><input _ngcontent-yka-c3="" type="checkbox" style=""><span class="toggle"></span></label></div><div _ngcontent-yka-c3="" class="clearfix"></div></a></li><li _ngcontent-yka-c3="" class="header-title">Images</li><li _ngcontent-yka-c3=""><a _ngcontent-yka-c3="" class="img-holder switch-trigger" href="javascript:void(0)"><img _ngcontent-yka-c3="" alt="" src="./assets/img/sidebar-1.jpg"></a></li><li _ngcontent-yka-c3=""><a _ngcontent-yka-c3="" class="img-holder switch-trigger" href="javascript:void(0)"><img _ngcontent-yka-c3="" alt="" src="./assets/img/sidebar-2.jpg"></a></li><li _ngcontent-yka-c3=""><a _ngcontent-yka-c3="" class="img-holder switch-trigger" href="javascript:void(0)"><img _ngcontent-yka-c3="" alt="" src="./assets/img/sidebar-3.jpg"></a></li><li _ngcontent-yka-c3=""><a _ngcontent-yka-c3="" class="img-holder switch-trigger" href="javascript:void(0)"><img _ngcontent-yka-c3="" alt="" src="./assets/img/sidebar-4.jpg"></a></li></ul></div></app-fixedplugin></div></app-layout></div></app-my-app>
+    <app-redirect ng-version="9.1.13"></app-redirect>
+    <script>
+        function inIframe() {
+            try {
+                return window.self !== window.top;
+            } catch (e) {
+                return true;
+            }
+        }
+        if (inIframe()) {
+            window.top.location.reload();
+        }
+    </script>
+    <script>
+
+    </script>
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+     <!--
+     <script>
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+            OneSignal.init({
+            appId: "6da67105-c4f0-41da-ba50-1c2f3e14d65e",
+            });
+        });
+    </script>
+-->
+
+<script src="runtime.ec148ba4969434d0835c.js" defer=""></script><script src="polyfills-es5.754f966747867a3dacc9.js" nomodule="" defer=""></script><script src="polyfills.f53a52542e559d58eb5a.js" defer=""></script><script src="scripts.5e9f50b4cea7e6d62441.js" defer=""></script><script src="main.89c3fff15b989acd49a7.js" defer=""></script>
+
+<div class="cdk-live-announcer-element cdk-visually-hidden" aria-atomic="true" aria-live="polite"></div></body></html>
