@@ -102,6 +102,99 @@ properties/
 - Do not collapse multiple feature files into a single grouped stage when the intent is feature-level visibility.
 - For single-feature stage execution, pass `FEATURE_FILE` as an environment variable and run `npm run test` (avoid passing feature paths as CLI positional arguments).
 
+## Claude CLI Usage For Automation Scripting
+
+- Use `claude -p "<prompt>"` (print mode) for non-interactive, scriptable one-shot prompts that print the response and exit.
+- Pipe file content as context: `cat ticket.txt | claude -p "create a test plan for this ticket"`.
+- Pipe command output as context: `echo "<details>" | claude -p "<prompt>"`.
+- Use `--output-format json` for machine-parseable output in scripts: `claude -p --output-format json "<prompt>"`.
+- Use interactive mode (no `-p`) for conversational follow-ups: `claude "your question"`.
+- In shell scripts, pass variables directly:
+  ```bash
+  TICKET="ticket description here"
+  claude -p "Create a test plan for: $TICKET"
+  ```
+- Use `claude -p --allowedTools Read,Grep,Glob "<prompt>"` to limit which tools Claude can use in non-interactive mode.
+- Use `claude -p --model <model-id> "<prompt>"` to target a specific model (e.g. `claude-sonnet-4-6` for faster/cheaper scripted tasks).
+- Use `claude -c` to continue the most recent conversation.
+- Use `claude -r <session-id>` to resume a specific past session.
+
+### Key CLI Flags Reference
+
+| Flag | Purpose | Use Case |
+|------|---------|----------|
+| `-p, --print` | Non-interactive, exit after response | Scripts, CI/CD |
+| `--bare` | Minimal mode, skip auto-discovery | Lightweight scripts |
+| `-c, --continue` | Resume most recent conversation | Continue prior work |
+| `-r, --resume` | Resume by session ID | Pick up specific session |
+| `-w, --worktree` | Isolated git worktree | Parallel runs |
+| `--max-turns` | Limit agentic loops | Prevent runaway agents |
+| `--max-budget-usd` | Cost limit per run | Constrain expenses |
+| `--output-format` | `text`, `json`, or `stream-json` | Machine parsing |
+| `--permission-mode` | `default`, `acceptEdits`, `plan`, `auto`, `bypassPermissions` | Automation level |
+| `--append-system-prompt-file` | Load custom rules from file | Inject testing guidelines |
+| `--model` | Override model choice | Force specific model |
+| `--effort` | `low`, `medium`, `high`, `max` | Balance speed vs accuracy |
+| `--tools` | Restrict available tools | Security, isolation |
+| `--debug` | Debug logging with category filter | Troubleshooting |
+
+### Configuration Files
+
+| File | Scope | Purpose |
+|------|-------|---------|
+| `~/.claude/settings.json` | User (all projects) | Global preferences, permissions |
+| `.claude/settings.json` | Project (committed) | Shared team config |
+| `.claude/settings.local.json` | Project (gitignored) | Local-only, secrets |
+| `CLAUDE.md` | Project | Instructions, context, rules |
+| `.claude/hooks/` | Project | Hook scripts (shell, HTTP) |
+
+### Hook Events (Lifecycle Order)
+
+1. `SessionStart` — once at session begin
+2. `UserPromptSubmit` — before Claude processes prompt (blockable)
+3. `PreToolUse` — before tool execution (blockable)
+4. `PermissionRequest` — permission dialog appears (blockable)
+5. `PostToolUse` — after tool success
+6. `Stop` — Claude finishes response
+7. `SessionEnd` — at session end
+
+### Permissions Syntax (for settings.json)
+
+| Pattern | Behavior |
+|---------|----------|
+| `"Read"` | Allow all file reads |
+| `"Bash(npm test)"` | Exact command match |
+| `"Bash(npm *)"` | Wildcard pattern |
+| `"Bash(git:*)"` | Regex-style (colon = regex) |
+
+### Environment Variables For Automation
+
+| Variable | Purpose |
+|----------|---------|
+| `CLAUDE_CODE_SIMPLE` | Set by `--bare` flag; simplifies startup |
+| `CLAUDE_PROJECT_DIR` | In hooks: absolute path to project root |
+| `CLAUDE_ENV_FILE` | In SessionStart hooks: persist env vars |
+
+### Claude Code Learning Resources
+
+| Resource | URL |
+|----------|-----|
+| Quickstart | `https://docs.anthropic.com/en/docs/claude-code/overview` |
+| CLI Reference | `https://docs.anthropic.com/en/docs/claude-code/cli-reference` |
+| Hooks Guide | `https://docs.anthropic.com/en/docs/claude-code/hooks` |
+| Settings | `https://docs.anthropic.com/en/docs/claude-code/settings` |
+| MCP Integration | `https://docs.anthropic.com/en/docs/claude-code/mcp` |
+| Permissions | `https://docs.anthropic.com/en/docs/claude-code/permissions` |
+| Claude API Docs | `https://docs.anthropic.com/en/api` |
+
+### Recommended Learning Order For Test Automation
+
+1. CLI Reference — automation entry point
+2. Hooks Guide — validation and blocking
+3. Permissions — security model
+4. MCP — tool integration
+5. Agent SDK — programmatic control
+
 ## Documentation And Changelog Maintenance
 
 - Always update `README.md` and `changelogs.md` when needed for any change that affects setup, scripts, dependencies, test coverage, project structure, or execution/reporting behavior.

@@ -1,0 +1,114 @@
+  - CleanShot 2025-05-13 at 11.01.29.mp4 (55390311 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13810
+  - Screen Shot 2025-03-03 at 8.46.37 AM.png (375044 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/12987
+  - Screen Shot 2025-03-04 at 5.22.06 PM.png (420086 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13013
+  - Screen Shot 2025-03-04 at 5.22.06 PM (2a0e3037-35d0-47f3-a077-1b914c03c752).png (420086 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13083
+  - Screen Shot 2025-03-04 at 5.23.15 PM.png (329687 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13014
+  - Screen Shot 2025-03-04 at 5.23.15 PM (7ce3220d-981e-439e-a771-2c3d350d100a).png (329687 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13100
+  - Screen Shot 2025-03-04 at 5.29.24 PM.png (261339 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13020
+  - Screen Shot 2025-03-04 at 5.29.24 PM (75fe95c1-56a8-4b01-9f8c-feba93e557f8).png (261339 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13085
+  - Screen Shot 2025-03-04 at 5.29.35 PM.png (322891 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13021
+  - Screen Shot 2025-03-04 at 5.29.35 PM (58aa5418-6c95-4a11-bda3-1c25949b114a).png (322891 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13080
+  - Screen Shot 2025-03-04 at 5.38.05 PM.png (370063 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13019
+  - Screen Shot 2025-03-04 at 5.38.05 PM (6a8910e9-a6d0-4729-978f-945f80b43a91).png (370063 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13093
+  - Screen Shot 2025-03-04 at 5.41.13 PM.png (361639 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13017
+  - Screen Shot 2025-03-04 at 5.51.07 PM.png (430042 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13015
+  - Screen Shot 2025-03-04 at 5.51.07 PM (7cad106c-edff-4fa1-a996-eaf3827b38a3).png (430042 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13084
+  - Screen Shot 2025-03-04 at 5.52.55 PM.png (353098 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13018
+  - Screen Shot 2025-03-04 at 5.52.55 PM (23df0716-80e9-4b95-ba8e-e703539bfc43).png (353098 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13099
+  - Screen Shot 2025-03-04 at 6.02.48 PM.png (406298 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13012
+  - Screen Shot 2025-03-04 at 6.02.48 PM (786c0ae3-3c3e-408a-88fc-1c63d537fc63).png (406298 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13082
+  - Screen Shot 2025-03-04 at 6.04.20 PM.png (400196 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13016
+  - Screen Shot 2025-03-04 at 6.04.20 PM (337e9c15-c385-4548-8abb-f401ae78952a).png (400196 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13095
+  - Screen Shot 2025-03-05 at 4.24.42 PM.png (330588 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13032
+  - Screen Shot 2025-03-05 at 4.24.42 PM (fd3d6ead-a4b3-4387-807d-aaefbce7e569).png (330588 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13097
+  - Screen Shot 2025-03-05 at 4.24.52 PM.png (399240 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13029
+  - Screen Shot 2025-03-05 at 4.24.52 PM (00e576b1-02f8-40bd-b30b-c1531f6f2096).png (399240 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13087
+  - Screen Shot 2025-03-05 at 4.27.21 PM.png (396698 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13028
+  - Screen Shot 2025-03-05 at 4.27.21 PM (430d903d-98ad-4bd4-804e-12312925b753).png (396698 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13103
+  - Screen Shot 2025-03-05 at 4.28.36 PM.png (510167 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13034
+  - Screen Shot 2025-03-05 at 4.28.36 PM (812ac67e-102c-403f-b07a-d45662a22f4c).png (510167 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13091
+  - Screen Shot 2025-03-05 at 4.32.14 PM.png (480415 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13031
+  - Screen Shot 2025-03-05 at 4.32.14 PM (5efd3a33-1802-45c6-9303-7c0e5e6b10de).png (480415 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13090
+  - Screen Shot 2025-03-05 at 4.32.36 PM.png (380119 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13035
+  - Screen Shot 2025-03-05 at 4.32.36 PM (e974d6ff-2ae2-4929-885f-cc173fd70e91).png (380119 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13079
+  - Screen Shot 2025-03-05 at 4.53.56 PM.png (323584 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13030
+  - Screen Shot 2025-03-05 at 4.54.53 PM.png (290777 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13033
+  - Screen Shot 2025-03-06 at 7.35.47 AM.png (374421 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13036
+  - Screen Shot 2025-03-06 at 7.35.47 AM (c8e22d1e-6187-48ac-b8e2-483a3ead1205).png (374421 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13098
+  - Screen Shot 2025-03-06 at 7.36.23 AM.png (142116 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13041
+  - Screen Shot 2025-03-06 at 7.36.23 AM (660a37ea-95db-4b87-84cf-e7106030bc1c).png (142116 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13088
+  - Screen Shot 2025-03-06 at 7.39.05 AM.png (403707 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13039
+  - Screen Shot 2025-03-06 at 7.39.05 AM (e4f93173-4e42-486e-a4e2-858b95d4f9ca).png (403707 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13104
+  - Screen Shot 2025-03-06 at 7.39.22 AM.png (279427 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13043
+  - Screen Shot 2025-03-06 at 7.39.22 AM (ce14ffd7-bf0c-4508-8dac-947beec4a0ed).png (279427 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13094
+  - Screen Shot 2025-03-06 at 7.41.25 AM.png (347542 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13045
+  - Screen Shot 2025-03-06 at 7.41.25 AM (8e4cd683-270c-4d22-85fe-26c778c05650).png (347542 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13105
+  - Screen Shot 2025-03-06 at 7.41.55 AM.png (399402 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13038
+  - Screen Shot 2025-03-06 at 7.41.55 AM (bb8ff781-3792-477b-908e-4a02f46fbc6f).png (399402 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13081
+  - Screen Shot 2025-03-06 at 7.48.24 AM.png (397170 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13037
+  - Screen Shot 2025-03-06 at 7.48.24 AM (81f79945-6324-488a-a05d-cc84322a3393).png (397170 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13096
+  - Screen Shot 2025-03-06 at 7.48.41 AM.png (314203 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13040
+  - Screen Shot 2025-03-06 at 7.48.41 AM (f6b53beb-864a-4d9f-aabc-f552e12faf3d).png (314203 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13089
+  - Screen Shot 2025-03-06 at 7.51.10 AM.png (391038 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13044
+  - Screen Shot 2025-03-06 at 7.51.10 AM (e35340af-ce96-429f-8049-e58b3b883b03).png (391038 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13092
+  - Screen Shot 2025-03-06 at 7.51.24 AM.png (521672 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13042
+  - Screen Shot 2025-03-06 at 7.51.24 AM (317fcc6d-7e70-4ded-91ef-bac61fe340b7).png (521672 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13101
+  - Screen Shot 2025-03-11 at 12.24.53 PM.png (398936 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13102
+  - Screen Shot 2025-03-11 at 12.45.37 PM.png (333392 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13086
+  - Screen Shot 2025-03-18 at 10.28.12 AM.png (395728 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13172
+  - Screen Shot 2025-03-18 at 10.30.40 AM.png (207810 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13173
+  - Screenshot 2025-05-03 at 1.07.35 PM.png (164750 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13703
+  - Screenshot 2025-05-03 at 1.07.35 PM (79e33b7e-a0c1-4f9f-8e8d-079886d8d486).png (164750 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14214
+  - Screenshot 2025-05-03 at 1.07.35 PM (aa32e58d-77d8-4fd6-bafb-785504adfb60).png (164750 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14192
+  - Screenshot 2025-05-03 at 1.11.29 PM.png (293205 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13698
+  - Screenshot 2025-05-03 at 1.13.17 PM.png (400485 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13704
+  - Screenshot 2025-05-03 at 1.14.49 PM.png (276226 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13702
+  - Screenshot 2025-05-03 at 1.15.28 PM.png (141430 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13699
+  - Screenshot 2025-05-03 at 1.16.50 PM.png (290278 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13709
+  - Screenshot 2025-05-03 at 1.18.10 PM.png (222272 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13708
+  - Screenshot 2025-05-03 at 1.22.06 PM.png (295414 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13724
+  - Screenshot 2025-05-03 at 1.24.07 PM.png (283834 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13696
+  - Screenshot 2025-05-03 at 1.27.30 PM.png (299425 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13710
+  - Screenshot 2025-05-03 at 11.38.40 AM.png (315713 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13717
+  - Screenshot 2025-05-03 at 11.47.29 AM.png (193728 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13692
+  - Screenshot 2025-05-03 at 11.47.55 AM.png (342130 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13713
+  - Screenshot 2025-05-03 at 11.50.07 AM.png (302327 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13690
+  - Screenshot 2025-05-03 at 11.52.18 AM.png (398154 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13701
+  - Screenshot 2025-05-03 at 11.54.50 AM.png (299500 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13706
+  - Screenshot 2025-05-03 at 11.56.26 AM.png (198793 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13695
+  - Screenshot 2025-05-03 at 11.58.16 AM.png (282923 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13689
+  - Screenshot 2025-05-03 at 11.59.12 AM.png (201344 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13721
+  - Screenshot 2025-05-03 at 12.14.39 PM.png (257955 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13697
+  - Screenshot 2025-05-03 at 12.16.38 PM.png (348599 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13719
+  - Screenshot 2025-05-03 at 12.19.21 PM.png (343711 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13718
+  - Screenshot 2025-05-03 at 12.25.02 PM.png (311491 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13726
+  - Screenshot 2025-05-03 at 12.25.09 PM.png (345398 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13711
+  - Screenshot 2025-05-03 at 12.28.04 PM.png (369814 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13716
+  - Screenshot 2025-05-03 at 12.29.44 PM.png (100598 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13714
+  - Screenshot 2025-05-03 at 12.30.59 PM.png (324403 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13725
+  - Screenshot 2025-05-03 at 12.34.02 PM.png (199559 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13720
+  - Screenshot 2025-05-03 at 12.34.44 PM.png (174832 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13715
+  - Screenshot 2025-05-03 at 12.35.04 PM.png (338658 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13712
+  - Screenshot 2025-05-03 at 12.38.36 PM.png (345148 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13694
+  - Screenshot 2025-05-03 at 12.41.23 PM.png (343111 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13705
+  - Screenshot 2025-05-03 at 12.42.43 PM.png (185211 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13700
+  - Screenshot 2025-05-03 at 12.46.16 PM.png (278184 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13693
+  - Screenshot 2025-05-03 at 12.46.50 PM.png (161276 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13691
+  - Screenshot 2025-05-03 at 12.55.04 PM.png (312679 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13722
+  - Screenshot 2025-05-03 at 12.55.12 PM.png (206046 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13723
+  - Screenshot 2025-05-03 at 12.56.55 PM.png (309740 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13707
+  - Screenshot 2025-05-03 at 12.57.00 PM.png (226124 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/13688
+  - Screenshot 2025-06-27 at 6.33.47 PM.png (323172 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14164
+  - Screenshot 2025-06-27 at 6.34.40 PM.png (136324 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14163
+  - Screenshot 2025-06-28 at 11.41.56 AM.png (390519 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14165
+  - Screenshot 2025-06-30 at 7.20.00 PM.png (451057 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14195
+  - Screenshot 2025-06-30 at 7.48.55 PM.png (350866 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14194
+  - Screenshot 2025-06-30 at 7.49.42 PM.png (619799 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14196
+  - Screenshot 2025-06-30 at 8.13.25 PM.png (340364 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14193
+  - Screenshot 2025-07-20 at 4.48.59 PM.png (334150 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14286
+  - Screenshot 2025-07-20 at 4.49.27 PM.png (243865 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14287
+  - Screenshot 2025-07-23 at 5.51.55 PM.png (490282 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14293
+  - Screenshot 2025-07-23 at 5.52.05 PM.png (189999 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14294
+  - Screenshot 2025-09-09 at 2.32.58 PM.png (166002 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14779
+  - Screenshot 2025-09-09 at 2.33.47 PM.png (176610 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/14778
+  - Screenshot 2025-09-24 at 1.56.44 PM.png (62012 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/15000

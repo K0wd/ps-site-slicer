@@ -7,22 +7,6 @@
         "PLAYWRIGHT_BROWSERS_PATH": "0",
         "BASE_URL": "https://testserver.betacom.com/testpwa"
       }
-    },
-    "cakephp-sm": {
-      "command": "node",
-      "args": ["C:\\Users\\User\\projects\\powerslice\\ps-site-slicer\\mcp\\cakephp-mcp-server.js"],
-      "env": {
-        "SM_API_BASE": "https://testserver.betacom.com",
-        "SM_API_KEY": "YOUR_SM_API_KEY_HERE"
-      }
-    },
-    "filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "C:\\Users\\User\\projects\\powerslice\\ps-site-slicer"
-      ]
     }
   }
 }

@@ -1,0 +1,3 @@
+Authentication successful!
+  Display name: Kim Bandeleon
+  Email: kbandeleon@gmail.com

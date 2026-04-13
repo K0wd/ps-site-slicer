@@ -4,6 +4,81 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
+## 2026-04-13 — Bite: Automated QA Pipeline via Claude CLI
+
+### Bite Pipeline (`bite/`)
+- Created `bite/` — a CLI-driven QA automation pipeline that uses Claude Code CLI + Jira API to test tickets end-to-end
+- 10-step pipeline: auth → find ticket → review → code review → test plan → write tests → execute → determine result → post to Jira → transition ticket
+- `bite/bite.sh` — sequential step runner with range support (`./bite.sh 1-6 SM-754`)
+- `bite/chomp.sh` — journey log viewer (`summary`, `list`, `tree`, `latest`)
+- `bite/jira_api.py` — portable Jira REST API helper (reads credentials from `.env` or `.jira-config.json`, certifi SSL fix for macOS)
+- `bite/steps/chomp-logger.sh` — shared journey logger with Jira link support, collapsible code blocks
+- Journey logs stored as `bite/logs/<dd-MMM-yy>/<HH:MM-AM/PM>/<TICKET>/story.md` with all artifacts (issue, comments, attachments, commits, plan, test results) bundled per ticket with step-number prefixes
+
+### Step Scripts (`bite/steps/`)
+- `step1-verify-auth.sh` — Jira API authentication check
+- `step2-find-ticket.sh` — JQL search for next Testing ticket or validate specific key
+- `step3-review-ticket.sh` — fetch issue details, comments, attachments
+- `step4-review-code.sh` — find git commits and changed files for ticket
+- `step5-draft-test-plan.sh` — Claude CLI generates test plan from ticket context
+- `step5b-write-tests.sh` — Claude CLI generates Playwright-BDD test code (feature + steps + properties) following POM conventions from `.claude/test-automation-expert/rules/`
+- `step6-execute-test-plan.sh` — Claude CLI + Playwright executes test plan
+- `step7-determine-result.sh` — extracts PASS/FAIL/NOT TESTED from results
+- `step8-post-results.sh` — uploads screenshots and posts results comment to Jira
+- `step9-transition-ticket.sh` — transitions ticket (Verify or QA Failed)
+
+### macOS Scheduler
+- `bite/run-qa.sh` — hourly runner with 5PM-5AM time window
+- `bite/setup-scheduler.sh` — installs macOS launchd agent (`com.fulcrum.sm-qa-automation`)
+
+### Configuration
+- Added Jira credentials (`JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_BASE_URL`) to `.env`
+- Added Claude CLI reference section to `.claude/test-automation-expert/rules/automation.mdc`
+- Added markdown preview as default for `.md` files in VS Code settings
+
+### Documentation
+- Created `bite/QA_AUTOMATION_SETUP_GUIDE.md` — macOS setup guide
+- Updated `README.md` with Bite section
+
+---
+
+## 2026-04-12 — Workspace Cleanup & Mac Migration
+
+### Workspace Configuration Overhaul
+- Renamed workspace from "PWA - sm-pwa (Next.js)" to "PS Site Slicer"
+- Moved editor/file/TypeScript/git settings from `ps-site-slicer.code-workspace` into `.vscode/settings.json` (workspace file now delegates to folder settings)
+- Removed all legacy PHP, CakePHP, Next.js, Tailwind, and PowerShell configuration
+- Removed legacy MCP servers (`cakephp-sm`, `filesystem`) from `.vscode/mcp.json`
+
+### Extension Recommendations Cleanup
+- Removed PHP extensions (`intelephense`, `php-debug`, `php-namespace-resolver`, `php-docblocker`)
+- Removed React/Tailwind extensions (`es7-react-js-snippets`, `tailwindcss`)
+- Removed Windows-specific extensions (`ms-vscode.powershell`)
+- Removed unused extensions (`auto-rename-tag`, `todo-highlight`, `mysql-client2`, `gitlab-workflow`)
+- Fixed Claude Code extension ID: `anthropics.claude-code` → `anthropic.claude-code`
+
+### Mac Platform Adaptation
+- Changed terminal default profile from Windows PowerShell to macOS zsh
+- Changed `start` (Windows) to `open` (macOS) for URL-opening tasks
+- Simplified task commands to use npm scripts (`npm run test:ui`, `npm run test:report`)
+- Removed Next.js and PHP XDebug launch configurations
+
+### Documentation Split
+- Split `README.md` into platform-specific files:
+  - `README-MAC.md` — bash commands, `cp`, `&&` chaining, `open` for URLs, `mac-setup.sh` reference
+  - `README-WIN.md` — PowerShell commands, `Copy-Item`, `if ($?)` chaining, `start` for URLs
+- `README.md` is now a slim pointer to both platform READMEs and test coverage
+
+### VS Code Settings Enhancements
+- Added `editor.formatOnSave`, `editor.tabSize: 2`, `editor.rulers: [100]`
+- Added ESLint auto-fix on save
+- Added `files.autoSave: onFocusChange`
+- Added file exclusions for `node_modules`, `.git`, `test-results`, `playwright-report`, `.features-gen`
+- Added `typescript.tsdk` and workspace TypeScript SDK prompt
+- Added `chat.agent.enabled` and `chat.defaultProvider: claude`
+
+---
+
 ## 2026-04-12 — Nav Bar Feature, Sidebar Navigation Merge, Full Page Snapshots
 
 ### Nav Bar Feature (13 new scenarios)

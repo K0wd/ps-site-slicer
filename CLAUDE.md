@@ -1,5 +1,11 @@
 # PS Site Slicer — Claude Instructions
 
+## ABSOLUTE RULE — NO EXCEPTIONS
+
+- **NEVER commit** — do not run `git commit` under any circumstances
+- **NEVER push** — do not run `git push` under any circumstances
+- The user will commit and push manually when ready
+
 ## Mandatory: Read Before Any Test Activity
 
 Before writing, reviewing, modifying, or planning any test-related code (features, steps, properties, config), you MUST read:

@@ -1,29 +1,18 @@
 {
   "recommendations": [
-    "bmewburn.vscode-intelephense-client",
-    "xdebug.php-debug",
-    "MehediDracula.php-namespace-resolver",
-    "neilbrayfield.php-docblocker",
-    "dsznajder.es7-react-js-snippets",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "bradlc.vscode-tailwindcss",
-    "formulahendry.auto-rename-tag",
     "ms-playwright.playwright",
     "alexkrechik.cucumberautocomplete",
     "CucumberOpen.cucumber-official",
-    "rangav.vscode-thunder-client",
-    "anthropics.claude-code",
-    "GitLab.gitlab-workflow",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "anthropic.claude-code",
+    "eamodio.gitlens",
+    "usernamehw.errorlens",
+    "aaron-bond.better-comments",
     "Gruntfuggly.todo-tree",
     "streetsidesoftware.code-spell-checker",
-    "wayou.vscode-todo-highlight",
-    "aaron-bond.better-comments",
-    "usernamehw.errorlens",
-    "eamodio.gitlens",
-    "cweijan.vscode-mysql-client2",
     "mikestead.dotenv",
     "redhat.vscode-yaml",
-    "ms-vscode.powershell"
+    "rangav.vscode-thunder-client"
   ]
 }

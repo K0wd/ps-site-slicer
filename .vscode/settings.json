@@ -1,4 +1,28 @@
 {
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.rulers": [100],
+  "editor.inlineSuggest.enabled": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  "files.autoSave": "onFocusChange",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/test-results": true,
+    "**/playwright-report": true,
+    "**/.features-gen": true
+  },
+  "files.associations": {
+    "*.feature": "cucumber"
+  },
+
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
   "playwright.env": {
     "BASE_URL": "https://testserver.betacom.com/"
   },
@@ -11,7 +35,20 @@
   "cucumberautocomplete.syncfeatures": "tests/features/**/*.feature",
   "cucumberautocomplete.strictGherkinCompletion": true,
 
-  "files.associations": {
-    "*.feature": "cucumber"
+  "git.autofetch": true,
+  "git.confirmSync": false,
+
+  "claude.enableMCP": true,
+
+  "chat.agent.enabled": true,
+  "chat.defaultProvider": "claude",
+
+  "terminal.integrated.defaultProfile.osx": "zsh",
+
+  "thunder-client.saveToWorkspace": true,
+  "thunder-client.workspaceRelativePath": ".vscode/thunder-client",
+
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
   }
 }
