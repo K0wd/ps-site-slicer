@@ -25,13 +25,13 @@ echo "=== Step 2: Find Ticket ==="
 if [ -n "$TICKET_KEY" ]; then
     echo "Validating specific ticket: $TICKET_KEY"
     RESULT=$(python3 "$BITE_DIR/jira_api.py" search \
-        "project in (SM, 'SM-PWA') AND key = $TICKET_KEY AND status = Testing AND (labels is EMPTY OR labels not in (no_ai_test)) ORDER BY priority ASC, rank ASC" \
+        "project = SM AND key = $TICKET_KEY AND status = Testing AND (labels is EMPTY OR labels not in (no_ai_test)) ORDER BY priority ASC, rank ASC" \
         --fields summary,description,status,labels,priority,attachment \
         --max-results 1 2>&1)
 else
     echo "Searching for next eligible Testing ticket..."
     RESULT=$(python3 "$BITE_DIR/jira_api.py" search \
-        "project in (SM, 'SM-PWA') AND status = Testing AND (labels is EMPTY OR labels not in (no_ai_test)) ORDER BY priority ASC, rank ASC" \
+        "project = SM AND status = Testing AND (labels is EMPTY OR labels not in (no_ai_test)) ORDER BY priority ASC, rank ASC" \
         --fields summary,description,status,labels,priority,attachment \
         --max-results 1 2>&1)
 fi

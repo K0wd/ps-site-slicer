@@ -1,4 +1,4 @@
-# Chomp Story — 13 Apr 2026, 09:01 AM
+# Chomp Story — 13 Apr 2026, 11:45 PM
 
 > Automated QA journey for **[SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)**
 
@@ -6,7 +6,7 @@
 
 
 ## Step 1 — Verify Jira Auth
-**Time:** 09:01:21 AM
+**Time:** 11:45:22 PM
 
 - Email: kbandeleon@gmail.com
 - Base URL: https://powerslicesoftware.atlassian.net
@@ -27,7 +27,7 @@ Authentication successful!
 
 
 ## Step 2 — Find Ticket
-**Time:** 09:01:21 AM
+**Time:** 11:45:22 PM
 
 - Mode: Validate specific ticket **[SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)**
 - Found ticket: **[SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)**
@@ -2863,7 +2863,7 @@ Authentication successful!
 
 
 ## Step 3 — Review Ticket
-**Time:** 09:01:21 AM
+**Time:** 11:45:23 PM
 
 - Ticket: **[SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)**
 - Fetched issue details
@@ -5922,7 +5922,7 @@ Authentication successful!
       "percent": 100
     },
     "customfield_10044": null,
-    "customfield_10000": "{repository={count=8, dataType=repository}, json={\"cachedValue\":{\"errors\":[],\"summary\":{\"repository\":{\"overall\":{\"count\":8,\"lastUpdated\":\"2025-09-26T03:58:05.000+0800\",\"dataType\":\"repository\"},\"byInstanceType\":{\"GitLab\":{\"count\":8,\"name\":\"GitLab\"}}}}},\"isStale\":true}}",
+    "customfield_10000": "{repository={count=8, dataType=repository}, json={\"cachedValue\":{\"errors\":[],\"summary\":{\"repository\":{\"overall\":{\"count\":8,\"lastUpdated\":\"2025-09-26T03:58:05.000+0800\",\"dataType\":\"repository\"},\"byInstanceType\":{\"GitLab\":{\"count\":8,\"name\":\"GitLab\"},\"oAuth-gitlab-jira-connect-gitlab.com\":{\"count\":8,\"name\":\"GitLab\"}}}}},\"isStale\":true}}",
     "customfield_10045": null,
     "customfield_10001": null,
     "customfield_10046": null,
@@ -27000,7 +27000,7 @@ Authentication successful!
 
 
 ## Step 4 — Review Code
-**Time:** 09:01:26 AM
+**Time:** 11:45:30 PM
 
 - Ticket: **[SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)**
 - Found **0** commit(s) referencing [SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)
@@ -27019,11 +27019,120 @@ Authentication successful!
 
 
 ## Step 5 — Draft Test Plan
-**Time:** 09:01:27 AM
+**Time:** 11:45:30 PM
 
 - Ticket: **[SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)**
 - Context gathered from previous step outputs
-- Test plan written to `/Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/logs/13-Apr-26/09:01-AM/SM-754/5_plan.md`
+- Test plan written to `/Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/logs/13-Apr-26/11:45-PM/SM-754/5_plan.md`
 
 > **PASS** — Test plan drafted for [SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)
 
+
+## Step 6 — Write Tests
+**Time:** 11:46:48 PM
+
+- Ticket: **[SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)**
+- Prompt built with rules, examples, and ticket context
+- Prompt saved to `/Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/logs/13-Apr-26/11:45-PM/SM-754/6_prompt.txt`
+- 6a generated/modified files:
+  - features/purchasing-tracker.feature
+  - steps/purchasing-tracker.steps.ts
+  - properties/purchasing-tracker.properties.ts
+
+> **PASS** — Test code generated for [SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)
+
+
+<details>
+<summary>6a generation log (tail)</summary>
+
+```
+All three files are written. Here's a summary of what was generated:
+
+### Files Updated
+
+**1. `tests/properties/purchasing-tracker.properties.ts`** — Extended with:
+- `EXPORT_BUTTON_XPATH` — refined from HTML snapshot (`//span[...btn-text...Export...]/ancestor::button`)
+- `EXPORT_DIALOG_OVERLAY_XPATH`, `EXPORT_DIALOG_TITLE_XPATH`, `EXPORT_PROGRESS_BAR_XPATH` — for export flow
+- `AG_SET_FILTER_SELECT_ALL_XPATH` — extracted as a reusable constant (was inline before)
+- `AG_DATE_FILTER_CONDITION_OPTIONS_XPATH` — for EC-08 "equals removed" assertion
+- `AG_NO_ROWS_OVERLAY_XPATH` — for zero-result detection
+- `ALL_CELLS_FOR_COL_XPATH_FN` — for cell content assertions (EC-03 Override check)
+
+**2. `tests/features/purchasing-tracker.feature`** — 40 scenarios covering:
+- **TC-01 through TC-23**: All filter table view + export combinations
+- **EC-03**: Override partial match assertion
+- **EC-04**: Multi-value filter selection
+- **EC-05**: Clear filter removes icon symbol
+- **EC-06**: Approval stays dropdown after re-navigation
+- **EC-08**: Date filter "equals" condition removed
+- Multi-column filter combination
+
+**3. `tests/steps/purchasing-tracker.steps.ts`** — New steps added:
+- `When I click the export button` — clicks the export button
+- `Then the export should complete successfully` — waits for dialog/download completion
+- `When I select multiple values {string} and {string} from the set filter` — EC-04
+- `When I press Escape to close the filter` — for EC-06
+- `When I navigate away and return to Purchasing Tracker` — for EC-06
+- `Then all visible {string} cells should contain {string}` — EC-03 Override assertion
+- `Then the date filter should not have an {string} option` — EC-08
+
+All steps reuse existing login/sidebar steps from `dashboard.steps.ts` and `sidebar-navigation.steps.ts`. XPaths marked with `// TODO: verify from htmlBody` where the HTML snapshot didn't have visibility of offscreen columns.
+```
+
+</details>
+
+
+## Step 6b — Implement Step Definitions
+**Time:** 11:50:58 PM
+
+- 6b prompt saved to `/Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/logs/13-Apr-26/11:45-PM/SM-754/6b_prompt.txt`
+- 6b implemented step files:
+  - steps/purchasing-tracker.steps.ts
+
+> **PASS** — Step definitions implemented for [SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)
+
+
+<details>
+<summary>6b implementation log (tail)</summary>
+
+```
+All unique step patterns from the feature are covered by either:
+- `purchasing-tracker.steps.ts` (the file I just rewrote)
+- `dashboard.steps.ts` — `I am logged in and on the dashboard`
+- `sidebar-navigation.steps.ts` — `I click the {string} sidebar menu item`
+
+Here's a summary of the changes made to `purchasing-tracker.steps.ts`:
+
+**Improvements:**
+1. **Typed `Page` import** — `closeFilterPopup` now uses `Page` from `@playwright/test` instead of `any`
+2. **Added `SIDEBAR_PURCHASING_XPATH` import** — the re-navigation step now uses the properties selector instead of a hardcoded XPath
+3. **Extracted `waitForGridUpdate` helper** — consistent grid-settle wait used across all filter steps instead of scattered `waitForTimeout` calls
+4. **Removed module-level `unfilteredRowCount`** — the `table should return to unfiltered state` assertion no longer relies on fragile cross-scenario mutable state; it simply checks rows exist
+5. **Robust popup close** — `closeFilterPopup` and `I clear the active filter` now use `waitFor({ state: 'hidden' })` instead of blind timeouts
+6. **Division column check** — handles both cases: menu button not in DOM (`count === 0`) or present but hidden (`not.toBeVisible()`)
+7. **Filter icon assertion** — same dual-check pattern for robustness
+8. **Date filter condition mapping** — explicit `conditionMap` record for clear Gherkin-to-ag-Grid value translation
+9. **XPath injection safety** — `select a known approver` escapes single quotes in option text before building dynamic XPath
+10. **Fail-fast on empty filters** — `select a known approver` and `select the first available` throw clear errors if no valid options found
+11. **Cell assertion** — `all visible cells should contain` now asserts `count > 0` first to catch false-positive empty grids
+```
+
+</details>
+
+
+## Step 7 — Execute Test Plan
+**Time:** 11:54:03 PM
+
+- Ticket: **[SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)**
+- Test plan loaded from `/Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/logs/13-Apr-26/11:45-PM/SM-754/5_plan.md`
+- Screenshots dir: `/Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/logs/13-Apr-26/11:45-PM/SM-754/test-results`
+- Execution log: `/Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/logs/13-Apr-26/11:45-PM/SM-754/7_execution_log.txt`
+- Results file: `/Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/logs/13-Apr-26/11:45-PM/SM-754/7_results.txt`
+
+> **PASS** — Test execution complete for [SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)
+
+
+## Step 8 — Determine Final Result
+**Time:** 12:21:51 AM
+
+- Ticket: **[SM-754](https://powerslicesoftware.atlassian.net/browse/SM-754)**

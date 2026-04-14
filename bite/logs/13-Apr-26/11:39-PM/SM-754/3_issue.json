@@ -3048,7 +3048,7 @@
       "percent": 100
     },
     "customfield_10044": null,
-    "customfield_10000": "{repository={count=8, dataType=repository}, json={\"cachedValue\":{\"errors\":[],\"summary\":{\"repository\":{\"overall\":{\"count\":8,\"lastUpdated\":\"2025-09-26T03:58:05.000+0800\",\"dataType\":\"repository\"},\"byInstanceType\":{\"GitLab\":{\"count\":8,\"name\":\"GitLab\"}}}}},\"isStale\":true}}",
+    "customfield_10000": "{repository={count=8, dataType=repository}, json={\"cachedValue\":{\"errors\":[],\"summary\":{\"repository\":{\"overall\":{\"count\":8,\"lastUpdated\":\"2025-09-26T03:58:05.000+0800\",\"dataType\":\"repository\"},\"byInstanceType\":{\"oAuth-gitlab-jira-connect-gitlab.com\":{\"count\":8,\"name\":\"GitLab\"},\"GitLab\":{\"count\":8,\"name\":\"GitLab\"}}}}},\"isStale\":true}}",
     "customfield_10045": null,
     "customfield_10001": null,
     "customfield_10046": null,

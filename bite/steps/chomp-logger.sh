@@ -16,8 +16,13 @@
 #       5_plan.md
 #       6_prompt.txt
 #       6_generation_log.txt
+#       6b_prompt.txt
+#       6b_implementation_log.txt
 #       7_execution_log.txt
 #       7_results.txt
+#       8_test_report.md
+#       8_prompt.txt
+#       8_report_log.txt
 #       test-results/
 
 BITE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

@@ -12,9 +12,9 @@ Automated QA test suite for **Site Manager** using Playwright with BDD (Cucumber
 The `bite/` folder contains a CLI-driven QA automation pipeline that uses Claude Code + Jira API to automatically test tickets.
 
 ```bash
-./bite/bite.sh 1-10              # Full run: find ticket → test → post results
-./bite/bite.sh 1-6 SM-754       # Run steps 1-6 on a specific ticket
-./bite/chomp.sh summary          # View journey log summary
+./bite.sh 1-10              # Full run: find ticket → test → post results
+./bite.sh 1-6 SM-754        # Run steps 1-6 on a specific ticket
+./bite/chomp.sh summary     # View journey log summary
 ```
 
 See [bite/QA_AUTOMATION_SETUP_GUIDE.md](bite/QA_AUTOMATION_SETUP_GUIDE.md) for setup instructions.

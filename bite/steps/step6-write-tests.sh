@@ -64,16 +64,15 @@ $(cat "$TESTS_DIR/steps/login.steps.ts")
 $(cat "$TESTS_DIR/properties/login-username.properties.ts")
 "
 
-# Collect ticket context from previous steps
-TICKET_CONTEXT=""
-[ -f "$TICKET_DIR/3_issue.json" ] && TICKET_CONTEXT="$TICKET_CONTEXT
---- Ticket Issue ---
-$(cat "$TICKET_DIR/3_issue.json")
-"
-[ -f "$TICKET_DIR/3_comments.json" ] && TICKET_CONTEXT="$TICKET_CONTEXT
---- Ticket Comments ---
-$(cat "$TICKET_DIR/3_comments.json")
-"
+# Build ticket context file references (NOT inlined — files are too large)
+# Claude will read these on demand via the Read tool
+TICKET_FILE_REFS=""
+[ -f "$TICKET_DIR/3_issue.json" ] && TICKET_FILE_REFS="$TICKET_FILE_REFS
+- Ticket issue: $TICKET_DIR/3_issue.json"
+[ -f "$TICKET_DIR/3_comments.json" ] && TICKET_FILE_REFS="$TICKET_FILE_REFS
+- Ticket comments: $TICKET_DIR/3_comments.json"
+[ -f "$TICKET_DIR/3_attachments.txt" ] && TICKET_FILE_REFS="$TICKET_FILE_REFS
+- Ticket attachments: $TICKET_DIR/3_attachments.txt"
 
 # List existing properties files for awareness
 EXISTING_PROPERTIES=$(ls "$TESTS_DIR/properties/" 2>/dev/null | tr '\n' ', ')
@@ -128,7 +127,10 @@ $(cat "$PLAN_FILE")
 
 ## TICKET DETAILS
 
-$TICKET_CONTEXT
+The ticket data files are large. Use the Read tool to read them if you need more context:
+$TICKET_FILE_REFS
+
+Focus on the test plan above — it already summarizes the ticket. Only read the raw ticket files if the test plan lacks detail for a specific test case.
 
 ## IMPORTANT RULES
 
@@ -153,35 +155,183 @@ claude -p \
     < "$PROMPT_FILE" \
     > "$TICKET_DIR/6_generation_log.txt" 2>&1
 
-echo "Claude CLI finished."
+echo "Claude CLI finished (6a — code generation)."
 
-# --- Log what was generated ---
+# --- Detect generated files from 6a ---
 
-# Find any new/modified files in tests/
+GENERATED_FEATURES=""
+GENERATED_STEPS=""
+GENERATED_PROPERTIES=""
+
+for f in "$TESTS_DIR/features"/*; do
+    [ -f "$f" ] || continue
+    if find "$f" -mmin -5 2>/dev/null | grep -q .; then
+        GENERATED_FEATURES="$GENERATED_FEATURES $f"
+    fi
+done
+
+for f in "$TESTS_DIR/steps"/*; do
+    [ -f "$f" ] || continue
+    if find "$f" -mmin -5 2>/dev/null | grep -q .; then
+        GENERATED_STEPS="$GENERATED_STEPS $f"
+    fi
+done
+
+for f in "$TESTS_DIR/properties"/*; do
+    [ -f "$f" ] || continue
+    if find "$f" -mmin -5 2>/dev/null | grep -q .; then
+        GENERATED_PROPERTIES="$GENERATED_PROPERTIES $f"
+    fi
+done
+
+# Build combined list for logging
 GENERATED_FILES=""
-for dir in features steps properties; do
-    for f in "$TESTS_DIR/$dir"/*; do
-        [ -f "$f" ] || continue
-        # Check if modified in last 5 minutes
-        if find "$f" -mmin -5 2>/dev/null | grep -q .; then
-            GENERATED_FILES="$GENERATED_FILES
-  - $dir/$(basename "$f")"
-        fi
-    done
+for f in $GENERATED_FEATURES $GENERATED_STEPS $GENERATED_PROPERTIES; do
+    REL=$(echo "$f" | sed "s|$TESTS_DIR/||")
+    GENERATED_FILES="$GENERATED_FILES
+  - $REL"
 done
 
 if [ -n "$GENERATED_FILES" ]; then
-    chomp_info "Generated/modified files:$GENERATED_FILES"
+    chomp_info "6a generated/modified files:$GENERATED_FILES"
     chomp_result "PASS" "Test code generated for $(jira_link "$TICKET_KEY")"
 else
-    chomp_info "No test files detected (check generation log)"
+    chomp_info "No test files detected from 6a (check generation log)"
     chomp_result "WARN" "Claude ran but no test files were detected — check \`6_generation_log.txt\`"
 fi
 
-chomp_code "Generation log (tail)" "$(tail -50 "$TICKET_DIR/6_generation_log.txt")"
+chomp_code "6a generation log (tail)" "$(tail -50 "$TICKET_DIR/6_generation_log.txt")"
+
+# ===================================================================
+# Step 6b — Implement step definitions with real Playwright logic
+# ===================================================================
+# The first pass (6a) generates feature files, properties, and initial
+# step definitions. This second pass reads the generated feature file
+# and properties, then rewrites the step definitions with proper
+# Playwright interactions, assertions, and waits.
+# ===================================================================
+
+chomp_step "6b" "Implement Step Definitions"
+echo ""
+echo "=== Step 6b: Implement Step Definitions ==="
+
+if [ -z "$GENERATED_FEATURES" ] && [ -z "$GENERATED_STEPS" ]; then
+    chomp_result "SKIP" "No generated features/steps from 6a — skipping 6b"
+    echo "SKIP: No generated files to implement. Ending step 6."
+else
+    # Collect all generated file contents for the prompt
+    GENERATED_FEATURE_CONTENT=""
+    for f in $GENERATED_FEATURES; do
+        GENERATED_FEATURE_CONTENT="$GENERATED_FEATURE_CONTENT
+--- $(basename "$f") ---
+$(cat "$f")
+"
+    done
+
+    GENERATED_STEPS_CONTENT=""
+    for f in $GENERATED_STEPS; do
+        GENERATED_STEPS_CONTENT="$GENERATED_STEPS_CONTENT
+--- $(basename "$f") ---
+$(cat "$f")
+"
+    done
+
+    GENERATED_PROPS_CONTENT=""
+    for f in $GENERATED_PROPERTIES; do
+        GENERATED_PROPS_CONTENT="$GENERATED_PROPS_CONTENT
+--- $(basename "$f") ---
+$(cat "$f")
+"
+    done
+
+    IMPLEMENT_PROMPT_FILE="$TICKET_DIR/6b_prompt.txt"
+    cat > "$IMPLEMENT_PROMPT_FILE" << IMPLEMENT_EOF
+You are a senior test automation engineer. Step 6a has already generated feature files, properties files, and initial step definitions for Jira ticket $TICKET_KEY.
+
+Your job is to REVIEW and REWRITE the step definition files so that every step has proper, working Playwright logic. Do NOT change the feature files or properties files — only edit the step definition (.steps.ts) files.
+
+## WHAT TO DO
+
+1. Read each generated feature file to understand the Gherkin steps needed
+2. Read each generated properties file to know the available XPath selectors
+3. Read the existing step definition files generated in 6a
+4. Read the existing login.steps.ts and other existing step files for reference patterns
+5. REWRITE each step definition file with:
+   - Correct imports from the properties file (use exact export names)
+   - Proper Playwright actions: click, fill, selectOption, check, etc.
+   - Proper assertions: toBeVisible, toHaveText, toHaveURL, toContainText, etc.
+   - Deterministic waits: waitForURL, waitForLoadState('networkidle'), toBeVisible checks
+   - Correct use of XPath selectors: page.locator(\`xpath=\${SELECTOR}\`)
+   - Login reuse: do NOT redefine login steps — import/reuse from login.steps.ts
+   - Credentials from process.env.TEST_USERNAME / process.env.TEST_PASSWORD
+
+## REFERENCE: Existing login.steps.ts pattern
+
+$EXAMPLE_CONTEXT
+
+## GENERATED FEATURE FILES (do NOT modify these)
+
+$GENERATED_FEATURE_CONTENT
+
+## GENERATED PROPERTIES FILES (do NOT modify these)
+
+$GENERATED_PROPS_CONTENT
+
+## GENERATED STEP DEFINITIONS (REWRITE these)
+
+$GENERATED_STEPS_CONTENT
+
+## RULES
+
+$RULES_CONTEXT
+
+## IMPORTANT
+
+- ONLY edit files under tests/steps/ — do NOT touch features or properties
+- Every Given/When/Then in the feature file MUST have a matching step definition
+- Do NOT duplicate step definitions that already exist in login.steps.ts
+- Use the Edit tool to rewrite the step files in place
+- XPath ONLY — no CSS selectors
+- Use createBdd() from playwright-bdd
+- Keep it simple — real Playwright logic, no stubs, no TODOs, no placeholder comments
+- Test URL is ${BASE_URL}spa
+IMPLEMENT_EOF
+
+    chomp_info "6b prompt saved to \`$TICKET_DIR/6b_prompt.txt\`"
+    echo "Launching Claude CLI to implement step definitions..."
+
+    claude -p \
+        --allowedTools "Bash,Read,Write,Edit,Grep,Glob" \
+        -d "$PROJECT_DIR" \
+        < "$IMPLEMENT_PROMPT_FILE" \
+        > "$TICKET_DIR/6b_implementation_log.txt" 2>&1
+
+    echo "Claude CLI finished (6b — step implementation)."
+
+    # Detect files modified by 6b
+    IMPL_FILES=""
+    for f in "$TESTS_DIR/steps"/*; do
+        [ -f "$f" ] || continue
+        if find "$f" -mmin -2 2>/dev/null | grep -q .; then
+            IMPL_FILES="$IMPL_FILES
+  - steps/$(basename "$f")"
+        fi
+    done
+
+    if [ -n "$IMPL_FILES" ]; then
+        chomp_info "6b implemented step files:$IMPL_FILES"
+        chomp_result "PASS" "Step definitions implemented for $(jira_link "$TICKET_KEY")"
+    else
+        chomp_info "No step files modified by 6b (check implementation log)"
+        chomp_result "WARN" "6b ran but no step files were modified — check \`6b_implementation_log.txt\`"
+    fi
+
+    chomp_code "6b implementation log (tail)" "$(tail -50 "$TICKET_DIR/6b_implementation_log.txt")"
+fi
 
 echo ""
-echo "Generation log: $TICKET_DIR/6_generation_log.txt"
+echo "Generation log (6a): $TICKET_DIR/6_generation_log.txt"
+echo "Implementation log (6b): $TICKET_DIR/6b_implementation_log.txt"
 echo "Generated files:$GENERATED_FILES"
 echo ""
 echo "=== Step 6: DONE ==="

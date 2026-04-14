@@ -4,6 +4,37 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
+## 2026-04-14 — Bite: Timing Summary, Step 6b Implementation Pass, Structured Test Report
+
+### Bite Runner (`bite/bite.sh`)
+- Added per-step timing instrumentation using epoch seconds (bash 3 / macOS compatible)
+- `now_epoch()` / `format_duration()` helpers format durations as `Xh Ym Zs`
+- Each step prints its start time and elapsed duration inline after completion
+- `step_name()` function maps step numbers to human-readable names (e.g. "Write Tests")
+- Tabular timing summary printed at run end (and on failure) with columns: Step | Name | Start | End | Duration | Status
+- Total run duration shown in the footer
+
+### Step 6 — Write Tests (`bite/steps/step6-write-tests.sh`)
+- **Step 6a** (code generation): Changed ticket context from inlined JSON (too large) to file path references; Claude reads them on demand via the Read tool when the test plan lacks detail
+- **Step 6b** (Playwright implementation): New second pass that reads 6a-generated features, properties, and step stubs, then rewrites step definitions with proper Playwright logic — correct imports, locator patterns, assertions (`toBeVisible`, `toHaveURL`, `toContainText`), deterministic waits (`waitForURL`, `waitForLoadState`), and login step reuse
+- Journey log entries now prefixed `6a`/`6b` for clarity; 6b skips automatically if 6a produced no files
+
+### Step 8 — Determine Result (`bite/steps/step8-determine-result.sh`)
+- Renamed scope: now "Determine Final Result & Generate Test Report"
+- Loads `.env` for `BASE_URL` (used in report header)
+- Collects available screenshots from `test-results/` directory
+- Uses Claude CLI to generate `8_test_report.md` — a structured Markdown report with table: Test Name | Test Steps | Results per Step | Image Proof
+- Report prompt enforces per-step result numbering, relative screenshot paths, and "NOT TESTED" for unexecuted cases
+- Saves prompt to `8_prompt.txt` and generation log to `8_report_log.txt`
+
+### Chomp Logger (`bite/steps/chomp-logger.sh`)
+- Updated artifact list comment to include new step 6b files (`6b_prompt.txt`, `6b_implementation_log.txt`) and step 8 report files (`8_test_report.md`, `8_prompt.txt`, `8_report_log.txt`)
+
+### Housekeeping
+- Removed stale SM-754 run log artifacts from `bite/logs/13-Apr-26/` (three partial runs from 08:56, 08:59, 09:01)
+
+---
+
 ## 2026-04-13 — Bite: Automated QA Pipeline via Claude CLI
 
 ### Bite Pipeline (`bite/`)
