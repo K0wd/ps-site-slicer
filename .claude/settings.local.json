@@ -50,7 +50,8 @@
       "Bash(mv step7-determine-result.sh step8-determine-result.sh)",
       "Bash(mv step8-post-results.sh step9-post-results.sh)",
       "Bash(mv step9-transition-ticket.sh step10-transition-ticket.sh)",
-      "Bash(ls /Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/steps/step*.sh)"
+      "Bash(ls /Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/steps/step*.sh)",
+      "Bash(xargs -0 git update-index --skip-worktree --)"
     ]
   }
 }
