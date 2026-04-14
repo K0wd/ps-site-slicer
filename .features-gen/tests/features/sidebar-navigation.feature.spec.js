@@ -1,4 +1,4 @@
-// Generated from: tests\features\sidebar-navigation.feature
+// Generated from: tests/features/sidebar-navigation.feature
 import { test } from "playwright-bdd";
 
 test.describe('Sidebar Navigation', () => {
@@ -711,7 +711,7 @@ test.describe('Sidebar Navigation', () => {
 
 test.use({
   $test: [({}, use) => use(test), { scope: 'test', box: true }],
-  $uri: [({}, use) => use('tests\\features\\sidebar-navigation.feature'), { scope: 'test', box: true }],
+  $uri: [({}, use) => use('tests/features/sidebar-navigation.feature'), { scope: 'test', box: true }],
   $bddFileData: [({}, use) => use(bddFileData), { scope: "test", box: true }],
 });
 

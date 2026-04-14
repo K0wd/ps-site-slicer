@@ -14,10 +14,11 @@
 #       4_commits.txt
 #       4_changed_files.txt
 #       5_plan.md
-#       6_prompt.txt
-#       6_generation_log.txt
-#       6b_prompt.txt
-#       6b_implementation_log.txt
+#       6_gherkin_scratch/           — per-TC scratch files and logs
+#         TC-01_prompt.txt
+#         TC-01.gherkin
+#         TC-01.log
+#         ...
 #       7_execution_log.txt
 #       7_results.txt
 #       8_test_report.md

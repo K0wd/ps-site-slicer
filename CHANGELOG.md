@@ -4,6 +4,69 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
+## 2026-04-14 — Bite Pipeline Overhaul, Login Scenario Merge, Chromium-Only
+
+### Bite Runner (`bite.sh`)
+- Moved `bite/bite.sh` → `bite.sh` (project root) — run as `./bite.sh 1-11 SM-XXX`
+- `BITE_DIR` now resolved as `$PROJECT_DIR/bite` to support root-level invocation
+- Extended pipeline from 10 to **11 steps** with range validator updated to `1-11`
+- Added per-step timing instrumentation (epoch seconds, bash 3 / macOS compatible):
+  - Each step prints its start time and elapsed duration inline after completion
+  - Tabular timing summary at run end and on failure: Step | Name | Start | End | Duration | Status
+  - `now_epoch()` / `format_duration()` helpers (auto-scales: `42s`, `3m 12s`, `1h 5m 30s`)
+
+### Step 2 — Find Ticket (`bite/steps/step2-find-ticket.sh`)
+- Project filter changed from `project in (SM, 'SM-PWA')` → `project = SM` only
+- `--max-results 1` restored as hardcoded default
+
+### Step 6 — Write Gherkin Steps (`bite/steps/step6-write-gherkin-steps.sh`) *(renamed + rewritten)*
+- Renamed from `step6-write-tests.sh`
+- **Parallel per-TC execution**: extracts each `TC-XX` / `EC-XX` test case from `5_plan.md` and launches one focused `claude -p` call per test case in parallel (background `&`)
+- Each prompt is minimal: single test case content + existing step signatures (not full file content) → avoids 500 API errors from oversized prompts
+- Results stored in `6_gherkin_scratch/<TC-ID>.gherkin` scratch files per test case
+- Waits for all PIDs, tracks pass/fail per TC
+- **Compile pass**: merges all scenario blocks in strict chronological order (TC-01…TC-NN then EC-01…EC-NN) into `tests/features/<page>.feature`; appends to existing file if present, otherwise creates with `Feature:` header
+- Failed TCs get a `TODO` placeholder so chronological position is preserved
+- **`npx bddgen` runs automatically** at the end of the step to regenerate `.features-gen/` test files
+- Per-TC prompts include the canonical `login.feature` → `login.steps.ts` pattern as a reference example
+- IMPORTANT RULES: always read `tests/features/` and `tests/steps/` before writing new steps; reuse existing phrasings exactly
+
+### Step 7 — Write Automated Tests (`bite/steps/step7-write-automated-tests.sh`) *(new)*
+- New step between Gherkin generation (6) and test execution (8)
+- Reads generated feature + properties files, checks every Gherkin step has a matching step definition
+- Fixes missing imports, adds missing step definitions, verifies compilation via `npx bddgen`
+- Writes `7_automation_ready.txt` summary: step coverage (DEFINED / ADDED / MISSING), compile check, run check
+
+### Steps 8–11 — Renamed
+- `step7-execute-test-plan.sh` → `step8-execute-tests.sh` (results file: `8_results.txt`)
+- `step8-determine-result.sh` → `step9-determine-results.sh` (report: `9_test_report.md`)
+- `step9-post-results.sh` → `step10-post-results.sh`
+- `step10-transition-ticket.sh` → `step11-transition-ticket.sh`
+- All internal step numbers, chomp_step calls, echo strings, and file references updated
+
+### VS Code — Cucumber Extension Fix (`.vscode/settings.json`)
+- Added `cucumber.features` and `cucumber.glue` settings for the official `CucumberOpen.cucumber-official` extension
+- Fixes "Undefined step" squiggles that appeared on every step in feature files — the official extension uses different config keys from `cucumberautocomplete.*`
+
+### Playwright Config (`playwright.config.ts`)
+- Reduced browser projects from 5 (firefox, chromium, edge, webkit, edge-mobile) to **chromium only**
+- Removes dependency on `msedge` channel which is not installed on this machine
+
+### Login Feature (`tests/features/login.feature`)
+- Merged 3 separate scenarios into **1 combined scenario** to reduce test time
+- All 3 scenarios tagged `@smoke`
+- Comments added to separate UI branding checks from functional navigation steps
+
+### Login Steps (`tests/steps/login.steps.ts`)
+- **Soft assertions** (`expect.soft`) applied to all UI visibility checks (`I should see...`) — failures are recorded but do not abort the test, isolating visual regressions from functional failures
+- **Hard assertions** kept for navigation and functional steps (`I should be redirected`, `I should be on the dashboard`) — these abort immediately on failure
+- Sections labelled: Navigation | UI branding checks | Actions
+
+### npm Scripts (`package.json`)
+- `npm run test` now runs only `@smoke` tagged scenarios via `--grep @smoke`
+
+---
+
 ## 2026-04-14 — Bite: Timing Summary, Step 6b Implementation Pass, Structured Test Report
 
 ### Bite Runner (`bite/bite.sh`)

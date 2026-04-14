@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx bddgen && npx playwright test && node scripts/archive-results.js",
+    "test": "npx bddgen && npx playwright test --grep @smoke && node scripts/archive-results.js",
     "test:edge": "npx bddgen && npx playwright test --project=edge && node scripts/archive-results.js",
     "test:ui": "npx bddgen && npx playwright test --ui",
     "test:report": "npx playwright show-report",

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Step 7 — Execute the Test Plan (uses Claude CLI + Playwright)
-# Usage: ./step7-execute-test-plan.sh SM-1096
+# Step 8 — Execute Tests (runs the Playwright-BDD automated test suite)
+# Usage: ./step8-execute-tests.sh SM-1096
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -20,14 +20,14 @@ TICKET_KEY="${1:?Usage: $0 <TICKET_KEY>}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
 PLAN_FILE="$TICKET_DIR/5_plan.md"
-RESULTS_FILE="$TICKET_DIR/7_results.txt"
+RESULTS_FILE="$TICKET_DIR/8_results.txt"
 SCREENSHOTS_DIR="$TICKET_DIR/test-results"
 mkdir -p "$SCREENSHOTS_DIR"
 
-chomp_step "7" "Execute Test Plan"
+chomp_step "8" "Execute Tests"
 chomp_info "Ticket: **$(jira_link "$TICKET_KEY")**"
 
-echo "=== Step 7: Execute Test Plan for $TICKET_KEY ==="
+echo "=== Step 8: Execute Tests for $TICKET_KEY ==="
 
 if [ ! -f "$PLAN_FILE" ]; then
     chomp_result "FAIL" "Test plan not found at \`$PLAN_FILE\`. Run step 5 first."
@@ -80,15 +80,15 @@ EOF
 
 echo "$PROMPT" | claude -p \
     --allowedTools "Bash,Read,Write,Edit,Grep,Glob" \
-    -d "$PROJECT_DIR" > "$TICKET_DIR/7_execution_log.txt" 2>&1
+    -d "$PROJECT_DIR" > "$TICKET_DIR/8_execution_log.txt" 2>&1
 
-chomp_info "Execution log: \`$TICKET_DIR/7_execution_log.txt\`"
+chomp_info "Execution log: \`$TICKET_DIR/8_execution_log.txt\`"
 chomp_info "Results file: \`$RESULTS_FILE\`"
 chomp_result "PASS" "Test execution complete for $(jira_link "$TICKET_KEY")"
 
-echo "Execution log: $TICKET_DIR/7_execution_log.txt"
+echo "Execution log: $TICKET_DIR/8_execution_log.txt"
 echo "Results file:  $RESULTS_FILE"
 echo "Screenshots:   $SCREENSHOTS_DIR/"
 echo ""
-echo "=== Step 7: DONE ==="
+echo "=== Step 8: DONE ==="
 echo "Journey log: $CHOMP_LOG"

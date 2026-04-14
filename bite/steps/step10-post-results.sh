@@ -1,6 +1,6 @@
 #!/bin/bash
-# Step 9 — Post Results to Jira (upload screenshots + comment)
-# Usage: ./step9-post-results.sh SM-1096
+# Step 10 — Post Results to Jira (upload screenshots + comment)
+# Usage: ./step10-post-results.sh SM-1096
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -19,16 +19,16 @@ chomp_resume
 TICKET_KEY="${1:?Usage: $0 <TICKET_KEY>}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
-RESULTS_FILE="$TICKET_DIR/7_results.txt"
+RESULTS_FILE="$TICKET_DIR/8_results.txt"
 SCREENSHOTS_DIR="$TICKET_DIR/test-results"
 
-chomp_step "9" "Post Results to Jira"
+chomp_step "10" "Post Results to Jira"
 chomp_info "Ticket: **$(jira_link "$TICKET_KEY")**"
 
-echo "=== Step 9: Post Results to Jira for $TICKET_KEY ==="
+echo "=== Step 10: Post Results to Jira for $TICKET_KEY ==="
 
 if [ ! -f "$RESULTS_FILE" ]; then
-    chomp_result "FAIL" "Results file not found. Run steps 7-8 first."
+    chomp_result "FAIL" "Results file not found. Run steps 8-9 first."
     echo "ERROR: Results file not found at $RESULTS_FILE"
     exit 1
 fi
@@ -64,5 +64,5 @@ chomp_info "Results comment posted to Jira"
 chomp_result "PASS" "Results posted to $(jira_link "$TICKET_KEY")"
 
 echo ""
-echo "=== Step 9: DONE ==="
+echo "=== Step 10: DONE ==="
 echo "Journey log: $CHOMP_LOG"

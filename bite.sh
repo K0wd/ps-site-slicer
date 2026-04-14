@@ -5,8 +5,8 @@
 #   ./bite.sh 1-3                  # Run steps 1 through 3 (auto-find ticket)
 #   ./bite.sh 1-3 SM-754           # Run steps 1 through 3 on a specific ticket
 #   ./bite.sh 2 SM-754             # Run a single step
-#   ./bite.sh 5-10 SM-754          # Run steps 5 through 10
-#   ./bite.sh 1-10                 # Full run, auto-find ticket
+#   ./bite.sh 5-11 SM-754          # Run steps 5 through 11
+#   ./bite.sh 1-11                 # Full run, auto-find ticket
 #
 # Steps:
 #   1  Verify Jira auth
@@ -14,11 +14,12 @@
 #   3  Review ticket (issue, comments, attachments)
 #   4  Review code (commits, changed files)
 #   5  Draft test plan
-#   6  Write test code (feature + steps + properties)
-#   7  Execute test plan
-#   8  Determine final result
-#   9  Post results to Jira
-#  10  Transition ticket
+#   6  Write Gherkin steps (one Claude call per TC, parallel, compiled in order)
+#   7  Write automated tests (wire up step definitions, verify runnable)
+#   8  Execute tests (run Playwright-BDD suite)
+#   9  Determine results (generate .md report)
+#  10  Post results to Jira
+#  11  Transition ticket
 #
 # Each step passes its output (ticket key) to the next step automatically.
 # Timing data is collected per step and printed as a summary at the end.
@@ -74,8 +75,8 @@ else
     exit 1
 fi
 
-if [ "$START" -gt "$END" ] || [ "$START" -lt 1 ] || [ "$END" -gt 10 ]; then
-    echo "ERROR: Range must be 1-10 and start <= end. Got: $RANGE"
+if [ "$START" -gt "$END" ] || [ "$START" -lt 1 ] || [ "$END" -gt 11 ]; then
+    echo "ERROR: Range must be 1-11 and start <= end. Got: $RANGE"
     exit 1
 fi
 
@@ -87,11 +88,12 @@ step_script() {
         3)  echo "step3-review-ticket.sh" ;;
         4)  echo "step4-review-code.sh" ;;
         5)  echo "step5-draft-test-plan.sh" ;;
-        6)  echo "step6-write-tests.sh" ;;
-        7)  echo "step7-execute-test-plan.sh" ;;
-        8)  echo "step8-determine-result.sh" ;;
-        9)  echo "step9-post-results.sh" ;;
-        10) echo "step10-transition-ticket.sh" ;;
+        6)  echo "step6-write-gherkin-steps.sh" ;;
+        7)  echo "step7-write-automated-tests.sh" ;;
+        8)  echo "step8-execute-tests.sh" ;;
+        9)  echo "step9-determine-results.sh" ;;
+        10) echo "step10-post-results.sh" ;;
+        11) echo "step11-transition-ticket.sh" ;;
         *)  echo "" ;;
     esac
 }
@@ -103,18 +105,19 @@ step_name() {
         3)  echo "Review Ticket" ;;
         4)  echo "Review Code" ;;
         5)  echo "Draft Test Plan" ;;
-        6)  echo "Write Tests" ;;
-        7)  echo "Execute Test Plan" ;;
-        8)  echo "Determine Result" ;;
-        9)  echo "Post Results" ;;
-        10) echo "Transition Ticket" ;;
+        6)  echo "Write Gherkin Steps" ;;
+        7)  echo "Write Automated Tests" ;;
+        8)  echo "Execute Tests" ;;
+        9)  echo "Determine Results" ;;
+        10) echo "Post Results" ;;
+        11) echo "Transition Ticket" ;;
         *)  echo "Unknown" ;;
     esac
 }
 
 needs_ticket() {
     case "$1" in
-        3|4|5|6|7|8|9|10) return 0 ;;
+        3|4|5|6|7|8|9|10|11) return 0 ;;
         *) return 1 ;;
     esac
 }

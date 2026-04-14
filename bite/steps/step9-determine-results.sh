@@ -1,8 +1,8 @@
 #!/bin/bash
-# Step 8 — Determine Final Result & Generate Test Report
-# Reads step 7 results + test plan, generates a structured .md report with:
+# Step 9 — Determine Final Result & Generate Test Report
+# Reads step 8 results + test plan, generates a structured .md report with:
 #   Test Name | Test Steps | Results per Step | Image Proof
-# Usage: ./step8-determine-result.sh SM-1096
+# Usage: ./step9-determine-results.sh SM-1096
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -21,18 +21,18 @@ chomp_resume
 TICKET_KEY="${1:?Usage: $0 <TICKET_KEY>}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
-RESULTS_FILE="$TICKET_DIR/7_results.txt"
+RESULTS_FILE="$TICKET_DIR/8_results.txt"
 PLAN_FILE="$TICKET_DIR/5_plan.md"
 SCREENSHOTS_DIR="$TICKET_DIR/test-results"
-REPORT_FILE="$TICKET_DIR/8_test_report.md"
+REPORT_FILE="$TICKET_DIR/9_test_report.md"
 
-chomp_step "8" "Determine Final Result"
+chomp_step "9" "Determine Results"
 chomp_info "Ticket: **$(jira_link "$TICKET_KEY")**"
 
-echo "=== Step 8: Determine Final Result for $TICKET_KEY ==="
+echo "=== Step 9: Determine Results for $TICKET_KEY ==="
 
 if [ ! -f "$RESULTS_FILE" ]; then
-    chomp_result "FAIL" "Results file not found. Run step 7 first."
+    chomp_result "FAIL" "Results file not found. Run step 8 first."
     echo "ERROR: Results file not found at $RESULTS_FILE"
     exit 1
 fi
@@ -73,7 +73,7 @@ fi
 chomp_info "Generating test report: \`$REPORT_FILE\`"
 echo "Launching Claude CLI to generate test report..."
 
-REPORT_PROMPT_FILE="$TICKET_DIR/8_prompt.txt"
+REPORT_PROMPT_FILE="$TICKET_DIR/9_prompt.txt"
 cat > "$REPORT_PROMPT_FILE" << REPORT_EOF
 You are a QA report generator. Create a structured Markdown test report for Jira ticket $TICKET_KEY.
 
@@ -130,7 +130,7 @@ The report MUST follow this exact structure:
 ### Test Plan (from step 5)
 $PLAN_CONTENT
 
-### Execution Results (from step 7)
+### Execution Results (from step 8)
 $(cat "$RESULTS_FILE")
 
 ### Available Screenshots
@@ -154,7 +154,7 @@ claude -p \
     --allowedTools "Read,Write,Glob" \
     -d "$TICKET_DIR" \
     < "$REPORT_PROMPT_FILE" \
-    > "$TICKET_DIR/8_report_log.txt" 2>&1
+    > "$TICKET_DIR/9_report_log.txt" 2>&1
 
 echo "Claude CLI finished (report generation)."
 
@@ -162,18 +162,18 @@ echo "Claude CLI finished (report generation)."
 
 if [ -f "$REPORT_FILE" ]; then
     chomp_info "Test report generated: \`$REPORT_FILE\`"
-    chomp_result "$VERDICT" "Final result for $(jira_link "$TICKET_KEY") is **$VERDICT** — report at \`8_test_report.md\`"
+    chomp_result "$VERDICT" "Final result for $(jira_link "$TICKET_KEY") is **$VERDICT** — report at \`9_test_report.md\`"
 else
-    chomp_info "Report file was not created (check \`8_report_log.txt\`)"
+    chomp_info "Report file was not created (check \`9_report_log.txt\`)"
     chomp_result "$VERDICT" "Final result for $(jira_link "$TICKET_KEY") is **$VERDICT** (report generation failed)"
 fi
 
 echo ""
 echo "Verdict: $VERDICT"
 echo "Report:  $REPORT_FILE"
-echo "Log:     $TICKET_DIR/8_report_log.txt"
+echo "Log:     $TICKET_DIR/9_report_log.txt"
 echo ""
 cat "$RESULTS_FILE"
 echo ""
-echo "=== Step 8: DONE — Result: $VERDICT ==="
+echo "=== Step 9: DONE — Result: $VERDICT ==="
 echo "Journey log: $CHOMP_LOG"

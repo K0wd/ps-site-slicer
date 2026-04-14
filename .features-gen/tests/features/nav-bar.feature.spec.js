@@ -1,4 +1,4 @@
-// Generated from: tests\features\nav-bar.feature
+// Generated from: tests/features/nav-bar.feature
 import { test } from "playwright-bdd";
 
 test.describe('Nav Bar', () => {
@@ -76,7 +76,7 @@ test.describe('Nav Bar', () => {
 
 test.use({
   $test: [({}, use) => use(test), { scope: 'test', box: true }],
-  $uri: [({}, use) => use('tests\\features\\nav-bar.feature'), { scope: 'test', box: true }],
+  $uri: [({}, use) => use('tests/features/nav-bar.feature'), { scope: 'test', box: true }],
   $bddFileData: [({}, use) => use(bddFileData), { scope: "test", box: true }],
 });
 

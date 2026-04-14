@@ -35,6 +35,13 @@
   "cucumberautocomplete.syncfeatures": "tests/features/**/*.feature",
   "cucumberautocomplete.strictGherkinCompletion": true,
 
+  "cucumber.features": [
+    "tests/features/**/*.feature"
+  ],
+  "cucumber.glue": [
+    "tests/steps/**/*.steps.ts"
+  ],
+
   "git.autofetch": true,
   "git.confirmSync": false,
 

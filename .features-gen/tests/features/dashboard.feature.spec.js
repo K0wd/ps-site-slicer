@@ -1,4 +1,4 @@
-// Generated from: tests\features\dashboard.feature
+// Generated from: tests/features/dashboard.feature
 import { test } from "playwright-bdd";
 
 test.describe('Dashboard', () => {
@@ -162,7 +162,7 @@ test.describe('Dashboard', () => {
 
 test.use({
   $test: [({}, use) => use(test), { scope: 'test', box: true }],
-  $uri: [({}, use) => use('tests\\features\\dashboard.feature'), { scope: 'test', box: true }],
+  $uri: [({}, use) => use('tests/features/dashboard.feature'), { scope: 'test', box: true }],
   $bddFileData: [({}, use) => use(bddFileData), { scope: "test", box: true }],
 });
 

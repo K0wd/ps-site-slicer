@@ -1,8 +1,8 @@
 #!/bin/bash
-# Step 10 — Transition the Ticket based on result
+# Step 11 — Transition the Ticket based on result
 # Usage:
-#   ./step10-transition-ticket.sh SM-1096           # Auto-detect from results file
-#   ./step10-transition-ticket.sh SM-1096 PASS      # Explicit verdict
+#   ./step11-transition-ticket.sh SM-1096           # Auto-detect from results file
+#   ./step11-transition-ticket.sh SM-1096 PASS      # Explicit verdict
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -22,12 +22,12 @@ TICKET_KEY="${1:?Usage: $0 <TICKET_KEY> [PASS|FAIL|NOT TESTED]}"
 VERDICT="${2:-}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
-RESULTS_FILE="$TICKET_DIR/7_results.txt"
+RESULTS_FILE="$TICKET_DIR/8_results.txt"
 
-chomp_step "10" "Transition Ticket"
+chomp_step "11" "Transition Ticket"
 chomp_info "Ticket: **$(jira_link "$TICKET_KEY")**"
 
-echo "=== Step 10: Transition Ticket $TICKET_KEY ==="
+echo "=== Step 11: Transition Ticket $TICKET_KEY ==="
 
 # Auto-detect verdict from results file if not provided
 if [ -z "$VERDICT" ]; then
@@ -77,5 +77,5 @@ chomp_result "PASS" "$(jira_link "$TICKET_KEY") transitioned to **$TARGET**"
 chomp_separator
 
 echo ""
-echo "=== Step 10: DONE ==="
+echo "=== Step 11: DONE ==="
 echo "Journey log: $CHOMP_LOG"

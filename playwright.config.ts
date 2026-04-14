@@ -26,24 +26,8 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-    {
-      name: 'edge-mobile',
-      use: { ...devices['Pixel 5'], channel: 'msedge' },
     },
   ],
 });

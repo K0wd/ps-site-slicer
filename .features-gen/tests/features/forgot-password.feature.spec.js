@@ -1,4 +1,4 @@
-// Generated from: tests\features\forgot-password.feature
+// Generated from: tests/features/forgot-password.feature
 import { test } from "playwright-bdd";
 
 test.describe('Forgot Password', () => {
@@ -30,7 +30,7 @@ test.describe('Forgot Password', () => {
 
 test.use({
   $test: [({}, use) => use(test), { scope: 'test', box: true }],
-  $uri: [({}, use) => use('tests\\features\\forgot-password.feature'), { scope: 'test', box: true }],
+  $uri: [({}, use) => use('tests/features/forgot-password.feature'), { scope: 'test', box: true }],
   $bddFileData: [({}, use) => use(bddFileData), { scope: "test", box: true }],
 });
 
