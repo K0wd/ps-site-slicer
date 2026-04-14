@@ -19,7 +19,7 @@ chomp_resume
 TICKET_KEY="${1:?Usage: $0 <TICKET_KEY>}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
-RESULTS_FILE="$TICKET_DIR/8_results.txt"
+RESULTS_FILE="$TICKET_DIR/8_results.md"
 SCREENSHOTS_DIR="$TICKET_DIR/test-results"
 
 chomp_step "10" "Post Results to Jira"

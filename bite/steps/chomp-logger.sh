@@ -6,24 +6,28 @@
 #   bite/logs/<dd-MMM-yy>/<HH:MM-AM/PM>/
 #     <TICKET_KEY>/
 #       story.md
-#       1_auth.txt
+#       1_auth.md
 #       2_search.json
 #       3_issue.json
 #       3_comments.json
-#       3_attachments.txt
-#       4_commits.txt
-#       4_changed_files.txt
+#       3_attachments.md
+#       4_commits.md
+#       4_changed_files.md
 #       5_plan.md
-#       6_gherkin_scratch/           — per-TC scratch files and logs
-#         TC-01_prompt.txt
+#       6_gherkin_scratch/
+#         TC-01_section.md
+#         TC-01_prompt.md
 #         TC-01.gherkin
-#         TC-01.log
+#         TC-01_log.md
 #         ...
-#       7_execution_log.txt
-#       7_results.txt
-#       8_test_report.md
-#       8_prompt.txt
-#       8_report_log.txt
+#       7_prompt.md
+#       7_automation_log.md
+#       7_automation_ready.md
+#       8_execution_log.md
+#       8_results.md
+#       9_prompt.md
+#       9_report_log.md
+#       9_test_report.md
 #       test-results/
 
 BITE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

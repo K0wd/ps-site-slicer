@@ -22,7 +22,7 @@ TICKET_KEY="${1:?Usage: $0 <TICKET_KEY> [PASS|FAIL|NOT TESTED]}"
 VERDICT="${2:-}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
-RESULTS_FILE="$TICKET_DIR/8_results.txt"
+RESULTS_FILE="$TICKET_DIR/8_results.md"
 
 chomp_step "11" "Transition Ticket"
 chomp_info "Ticket: **$(jira_link "$TICKET_KEY")**"

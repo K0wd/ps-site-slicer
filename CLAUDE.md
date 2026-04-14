@@ -22,6 +22,11 @@ Before writing, reviewing, modifying, or planning any test-related code (feature
 - **Use Playwright error-context.md** page snapshots to fix broken XPaths (simpler than HTML parsing)
 - **Deterministic waits** — prefer `waitForURL`, `waitForLoadState`, visible checks over sleeps
 
+## Bite Pipeline Rules
+
+- **Never echo raw JSON to the terminal** — API responses go to log files only; terminal output is human-readable summaries
+- **KISS on step scripts** — each step does one clear job; no speculative features
+
 ## Read On Demand (When Relevant)
 
 ### ISTQB Certification References

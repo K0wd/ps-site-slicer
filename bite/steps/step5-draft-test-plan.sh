@@ -30,8 +30,8 @@ echo "=== Step 5: Draft Test Plan for $TICKET_KEY ==="
 CONTEXT=""
 [ -f "$TICKET_DIR/3_issue.json" ] && CONTEXT="$CONTEXT\n--- Issue Details ---\n$(cat "$TICKET_DIR/3_issue.json")"
 [ -f "$TICKET_DIR/3_comments.json" ] && CONTEXT="$CONTEXT\n--- Comments ---\n$(cat "$TICKET_DIR/3_comments.json")"
-[ -f "$TICKET_DIR/4_commits.txt" ] && CONTEXT="$CONTEXT\n--- Commits ---\n$(cat "$TICKET_DIR/4_commits.txt")"
-[ -f "$TICKET_DIR/4_changed_files.txt" ] && CONTEXT="$CONTEXT\n--- Changed Files ---\n$(cat "$TICKET_DIR/4_changed_files.txt")"
+[ -f "$TICKET_DIR/4_commits.md" ] && CONTEXT="$CONTEXT\n--- Commits ---\n$(cat "$TICKET_DIR/4_commits.md")"
+[ -f "$TICKET_DIR/4_changed_files.md" ] && CONTEXT="$CONTEXT\n--- Changed Files ---\n$(cat "$TICKET_DIR/4_changed_files.md")"
 
 chomp_info "Context gathered from previous step outputs"
 

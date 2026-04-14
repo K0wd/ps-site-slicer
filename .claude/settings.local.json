@@ -37,7 +37,7 @@
       "Bash(chmod +x /Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/steps/*.sh)",
       "Bash(./bite/steps/step1-verify-auth.sh)",
       "Bash(./bite/steps/step2-find-ticket.sh)",
-      "Bash(./bite/steps/step3-review-ticket.sh SM-754)",
+      "Bash(./bite/steps/step3-review-ticket-info.sh SM-754)",
       "Bash(chmod +x /Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/bite.sh /Users/kim/projects/github.com/fulcrum/ps-site-slicer/bite/chomp.sh)",
       "Bash(./bite/bite.sh 1-3)",
       "Bash(./bite/chomp.sh summary:*)",

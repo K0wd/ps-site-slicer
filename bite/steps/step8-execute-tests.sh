@@ -20,7 +20,7 @@ TICKET_KEY="${1:?Usage: $0 <TICKET_KEY>}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
 PLAN_FILE="$TICKET_DIR/5_plan.md"
-RESULTS_FILE="$TICKET_DIR/8_results.txt"
+RESULTS_FILE="$TICKET_DIR/8_results.md"
 SCREENSHOTS_DIR="$TICKET_DIR/test-results"
 mkdir -p "$SCREENSHOTS_DIR"
 
@@ -53,25 +53,32 @@ For each test case:
 3. Record the actual result (PASS/FAIL + brief note)
 
 After all tests, write the full results to: $RESULTS_FILE
-Use this format:
+Use this exact markdown format:
 
-Test Results for $TICKET_KEY
-============================
-Environment: ${BASE_URL}
-Tested by: Claude Code + Playwright
-Date: $(date +"%Y-%m-%d")
+# Test Results — $TICKET_KEY
 
-TEST CASES
-----------
-[PASS] <test case name> - <brief note>
-[FAIL] <test case name> - <brief note>
+| Field | Value |
+|-------|-------|
+| **Environment** | ${BASE_URL} |
+| **Tested by** | Claude Code + Playwright |
+| **Date** | $(date +"%Y-%m-%d") |
 
-SUMMARY
--------
+## Test Cases
+
+| Test Case | Result | Notes |
+|-----------|--------|-------|
+| \`<test case name>\` | ✅ PASS / ❌ FAIL / ⏭️ SKIP | <brief note> |
+
+## Summary
+
 <2-3 sentence summary of findings>
 
+## Verdict
+
+\`\`\`
 RESULT: PASS
-(or RESULT: FAIL or RESULT: NOT TESTED)
+\`\`\`
+(or RESULT: FAIL or RESULT: NOT TESTED — keep the RESULT: line machine-readable)
 
 --- Test Plan ---
 $(cat "$PLAN_FILE")
@@ -80,13 +87,13 @@ EOF
 
 echo "$PROMPT" | claude -p \
     --allowedTools "Bash,Read,Write,Edit,Grep,Glob" \
-    -d "$PROJECT_DIR" > "$TICKET_DIR/8_execution_log.txt" 2>&1
+    -d "$PROJECT_DIR" > "$TICKET_DIR/8_execution_log.md" 2>&1
 
-chomp_info "Execution log: \`$TICKET_DIR/8_execution_log.txt\`"
+chomp_info "Execution log: \`$TICKET_DIR/8_execution_log.md\`"
 chomp_info "Results file: \`$RESULTS_FILE\`"
 chomp_result "PASS" "Test execution complete for $(jira_link "$TICKET_KEY")"
 
-echo "Execution log: $TICKET_DIR/8_execution_log.txt"
+echo "Execution log: $TICKET_DIR/8_execution_log.md"
 echo "Results file:  $RESULTS_FILE"
 echo "Screenshots:   $SCREENSHOTS_DIR/"
 echo ""

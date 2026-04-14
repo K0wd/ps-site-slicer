@@ -116,8 +116,8 @@ declare -a TC_LIST=()
 for TC_ID in $TC_IDS; do
     TC_SECTION_FILE="$SCRATCH_DIR/${TC_ID}_section.md"
     TC_OUTPUT_FILE="$SCRATCH_DIR/${TC_ID}.gherkin"
-    TC_LOG_FILE="$SCRATCH_DIR/${TC_ID}.log"
-    TC_PROMPT_FILE="$SCRATCH_DIR/${TC_ID}_prompt.txt"
+    TC_LOG_FILE="$SCRATCH_DIR/${TC_ID}_log.md"
+    TC_PROMPT_FILE="$SCRATCH_DIR/${TC_ID}_prompt.md"
 
     extract_tc_section "$TC_ID" "$TC_SECTION_FILE"
 
@@ -243,7 +243,7 @@ for i in "${!PIDS[@]}"; do
             FAILED_TCS="$FAILED_TCS $TC_ID"
         fi
     else
-        echo "  [FAIL] $TC_ID — claude process failed (check $SCRATCH_DIR/${TC_ID}.log)"
+        echo "  [FAIL] $TC_ID — claude process failed (check $SCRATCH_DIR/${TC_ID}_log.md)"
         FAIL_COUNT=$((FAIL_COUNT + 1))
         FAILED_TCS="$FAILED_TCS $TC_ID"
     fi
@@ -304,7 +304,7 @@ $(cat "$TC_OUTPUT_FILE")
         # Placeholder for failed TCs so order is preserved
         COMPILED_SCENARIOS="$COMPILED_SCENARIOS
   @${TC_ID}
-  Scenario: ${TC_ID} — TODO (generation failed, check $SCRATCH_DIR/${TC_ID}.log)
+  Scenario: ${TC_ID} — TODO (generation failed, check $SCRATCH_DIR/${TC_ID}_log.md)
     Given TODO
 
 "

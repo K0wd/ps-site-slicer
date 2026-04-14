@@ -85,8 +85,8 @@ step_script() {
     case "$1" in
         1)  echo "step1-verify-auth.sh" ;;
         2)  echo "step2-find-ticket.sh" ;;
-        3)  echo "step3-review-ticket.sh" ;;
-        4)  echo "step4-review-code.sh" ;;
+        3)  echo "step3-review-ticket-info.sh" ;;
+        4)  echo "step4-review-ticket-code-change.sh" ;;
         5)  echo "step5-draft-test-plan.sh" ;;
         6)  echo "step6-write-gherkin-steps.sh" ;;
         7)  echo "step7-write-automated-tests.sh" ;;

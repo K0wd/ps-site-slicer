@@ -29,7 +29,17 @@ if [ $EXIT_CODE -ne 0 ]; then
 fi
 
 # Save auth output to run dir (no ticket dir yet)
-echo "$OUTPUT" > "$CHOMP_RUN_DIR/1_auth.txt"
+{
+    echo "# Jira Auth — Step 1"
+    echo ""
+    echo "**Date:** $(date +"%Y-%m-%d %H:%M:%S")"
+    echo ""
+    echo "## Response"
+    echo ""
+    echo '```'
+    echo "$OUTPUT"
+    echo '```'
+} > "$CHOMP_RUN_DIR/1_auth.md"
 
 echo "=== Step 1: DONE ==="
 echo "Run dir: $CHOMP_RUN_DIR"

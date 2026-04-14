@@ -21,7 +21,7 @@ chomp_resume
 TICKET_KEY="${1:?Usage: $0 <TICKET_KEY>}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
-RESULTS_FILE="$TICKET_DIR/8_results.txt"
+RESULTS_FILE="$TICKET_DIR/8_results.md"
 PLAN_FILE="$TICKET_DIR/5_plan.md"
 SCREENSHOTS_DIR="$TICKET_DIR/test-results"
 REPORT_FILE="$TICKET_DIR/9_test_report.md"
@@ -73,7 +73,7 @@ fi
 chomp_info "Generating test report: \`$REPORT_FILE\`"
 echo "Launching Claude CLI to generate test report..."
 
-REPORT_PROMPT_FILE="$TICKET_DIR/9_prompt.txt"
+REPORT_PROMPT_FILE="$TICKET_DIR/9_prompt.md"
 cat > "$REPORT_PROMPT_FILE" << REPORT_EOF
 You are a QA report generator. Create a structured Markdown test report for Jira ticket $TICKET_KEY.
 
@@ -154,7 +154,7 @@ claude -p \
     --allowedTools "Read,Write,Glob" \
     -d "$TICKET_DIR" \
     < "$REPORT_PROMPT_FILE" \
-    > "$TICKET_DIR/9_report_log.txt" 2>&1
+    > "$TICKET_DIR/9_report_log.md" 2>&1
 
 echo "Claude CLI finished (report generation)."
 
@@ -164,14 +164,14 @@ if [ -f "$REPORT_FILE" ]; then
     chomp_info "Test report generated: \`$REPORT_FILE\`"
     chomp_result "$VERDICT" "Final result for $(jira_link "$TICKET_KEY") is **$VERDICT** — report at \`9_test_report.md\`"
 else
-    chomp_info "Report file was not created (check \`9_report_log.txt\`)"
+    chomp_info "Report file was not created (check \`9_report_log.md\`)"
     chomp_result "$VERDICT" "Final result for $(jira_link "$TICKET_KEY") is **$VERDICT** (report generation failed)"
 fi
 
 echo ""
 echo "Verdict: $VERDICT"
 echo "Report:  $REPORT_FILE"
-echo "Log:     $TICKET_DIR/9_report_log.txt"
+echo "Log:     $TICKET_DIR/9_report_log.md"
 echo ""
 cat "$RESULTS_FILE"
 echo ""

@@ -4,6 +4,39 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
+## 2026-04-14 — Bite Pipeline Cleanup: Gitignore Logs, Markdown Log Files, Consolidate Steps
+
+### Bite Logs
+- Added `bite/logs/` to `.gitignore` — log artifacts are no longer tracked in git
+- Removed all previously tracked log files (4 SM-754 runs across 13-Apr and 14-Apr)
+
+### Log File Naming (`chomp-logger.sh`)
+- Renamed all log file extensions from `.txt` to `.md` for markdown consistency:
+  - `1_auth.txt` → `1_auth.md`, `3_attachments.txt` → `3_attachments.md`, `4_commits.txt` → `4_commits.md`, `4_changed_files.txt` → `4_changed_files.md`
+  - Gherkin scratch files: `TC-01_prompt.txt` → `TC-01_prompt.md`, `TC-01.log` → `TC-01_log.md`, added `TC-01_section.md`
+  - Execution/results: `7_execution_log.txt` → `8_execution_log.md`, `7_results.txt` → `8_results.md`
+  - Report: `8_test_report.md` → `9_test_report.md`, `8_prompt.txt` → `9_prompt.md`, `8_report_log.txt` → `9_report_log.md`
+  - New automation step files: `7_prompt.md`, `7_automation_log.md`, `7_automation_ready.md`
+
+### Step Script Changes
+- **step1-verify-auth.sh** — Auth output now written as structured markdown with date header and fenced code block
+- **step2-find-ticket.sh** — Removed raw JSON echo to terminal (JSON goes to log file only)
+- **step7-write-automated-tests.sh** — Refactored with updated log paths for the `.md` naming scheme
+- **step8-execute-tests.sh** — Updated result/log file references to `.md`
+- **step9-determine-results.sh** — Updated file references to `.md`
+- **step10-post-results.sh** — Results file path updated to `.md`
+- **step11-transition-ticket.sh** — Results file path updated to `.md`
+
+### Steps Removed
+- **step3-review-ticket.sh** — Deleted (functionality consolidated into renamed `step3-review-ticket-info.sh`)
+- **step4-review-code.sh** — Deleted (functionality consolidated into renamed `step4-review-ticket-code-change.sh`)
+- **bite.sh** — Updated step 3/4 references to new script names
+
+### Documentation
+- **CLAUDE.md** — Added "Bite Pipeline Rules" section: no raw JSON to terminal, KISS on step scripts
+
+---
+
 ## 2026-04-14 — Bite Pipeline Overhaul, Login Scenario Merge, Chromium-Only
 
 ### Bite Runner (`bite.sh`)

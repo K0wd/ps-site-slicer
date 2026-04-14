@@ -71,7 +71,7 @@ done
 
 # --- Build prompt ---
 
-PROMPT_FILE="$TICKET_DIR/7_prompt.txt"
+PROMPT_FILE="$TICKET_DIR/7_prompt.md"
 cat > "$PROMPT_FILE" << PROMPT_EOF
 You are a senior test automation engineer. Your task is to ensure the Playwright-BDD test suite for Jira ticket $TICKET_KEY is complete and runnable.
 
@@ -126,54 +126,66 @@ Read this file for the full list of test cases: $PLAN_FILE
 
 ## OUTPUT
 
-After all fixes, write a summary to: $TICKET_DIR/7_automation_ready.txt
+After all fixes, write a summary to: $TICKET_DIR/7_automation_ready.md
 
-Format:
-\`\`\`
-Automation Ready Summary — $TICKET_KEY
-=======================================
-Feature file: <path>
-Steps file: <path>
-Properties file: <path>
+Use this exact markdown format:
 
-Steps coverage:
-- <step text> → DEFINED / ADDED / MISSING
-...
+# Automation Ready — $TICKET_KEY
 
-Compile check: PASS / FAIL
-Run check: PASS / FAIL (note: individual test failures due to app state are OK)
+**Date:** $(date +"%Y-%m-%d")
 
-Notes:
+## Files
+
+| Type | Path |
+|------|------|
+| Feature | \`<path>\` |
+| Steps | \`<path>\` |
+| Properties | \`<path>\` |
+
+## Step Coverage
+
+| Step | Status |
+|------|--------|
+| \`<step text>\` | DEFINED / ADDED / MISSING |
+
+## Checks
+
+| Check | Result |
+|-------|--------|
+| Compile | PASS / FAIL |
+| Run | PASS / FAIL |
+
+## Notes
+
 <anything notable>
-\`\`\`
 PROMPT_EOF
 
-chomp_info "Prompt saved to \`$TICKET_DIR/7_prompt.txt\`"
+chomp_info "Prompt saved to \`$TICKET_DIR/7_prompt.md\`"
 echo "Launching Claude CLI to wire up automated tests..."
 
 claude -p \
     --allowedTools "Bash,Read,Write,Edit,Grep,Glob" \
     -d "$PROJECT_DIR" \
     < "$PROMPT_FILE" \
-    > "$TICKET_DIR/7_automation_log.txt" 2>&1
+    > "$TICKET_DIR/7_automation_log.md" 2>&1
 
 echo "Claude CLI finished."
 
 # --- Report outcome ---
 
-if [ -f "$TICKET_DIR/7_automation_ready.txt" ]; then
-    chomp_info "Automation summary: \`$TICKET_DIR/7_automation_ready.txt\`"
-    chomp_code "Automation ready summary" "$(cat "$TICKET_DIR/7_automation_ready.txt")"
+if [ -f "$TICKET_DIR/7_automation_ready.md" ]; then
+    chomp_info "Automation summary: \`$TICKET_DIR/7_automation_ready.md\`"
+    chomp_code "Automation ready summary" "$(cat "$TICKET_DIR/7_automation_ready.md")"
     chomp_result "PASS" "Automated tests wired up for $(jira_link "$TICKET_KEY")"
 else
-    chomp_info "No automation summary found (check \`7_automation_log.txt\`)"
-    chomp_result "WARN" "Step 7 ran but no summary was written — check \`7_automation_log.txt\`"
+    chomp_info "No automation summary found (check \`7_automation_log.md\`)"
+    chomp_result "WARN" "Step 7 ran but no summary was written — check \`7_automation_log.md\`"
 fi
 
-chomp_code "Automation log (tail)" "$(tail -50 "$TICKET_DIR/7_automation_log.txt")"
+chomp_code "Automation log (tail)" "$(tail -50 "$TICKET_DIR/7_automation_log.md")"
 
 echo ""
-echo "Automation log: $TICKET_DIR/7_automation_log.txt"
+echo "Automation log: $TICKET_DIR/7_automation_log.md"
 echo ""
 echo "=== Step 7: DONE ==="
 echo "Journey log: $CHOMP_LOG"

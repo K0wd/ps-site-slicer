@@ -52,7 +52,7 @@ chomp_ticket_dir "$FOUND_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
 
 # Retroactively log step 1 into story
-AUTH_FILE="$CHOMP_RUN_DIR/1_auth.txt"
+AUTH_FILE="$CHOMP_RUN_DIR/1_auth.md"
 if [ -f "$AUTH_FILE" ]; then
     chomp_step "1" "Verify Jira Auth"
     chomp_info "Email: $JIRA_EMAIL"
@@ -60,7 +60,7 @@ if [ -f "$AUTH_FILE" ]; then
     chomp_result "PASS" "Jira auth verified"
     chomp_code "Auth response" "$(cat "$AUTH_FILE")"
     # Move auth file into ticket dir
-    mv "$AUTH_FILE" "$TICKET_DIR/1_auth.txt"
+    mv "$AUTH_FILE" "$TICKET_DIR/1_auth.md"
 fi
 
 # Log step 2
@@ -79,7 +79,5 @@ chomp_code "Search result" "$RESULT"
 echo "$RESULT" > "$TICKET_DIR/2_search.json"
 
 echo "Found ticket: $FOUND_KEY"
-echo "$RESULT"
-echo ""
 echo "=== Step 2: DONE — Ticket: $FOUND_KEY ==="
 echo "Journey log: $CHOMP_LOG"
