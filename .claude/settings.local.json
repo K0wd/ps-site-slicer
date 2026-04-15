@@ -55,7 +55,12 @@
       "Bash(chmod +x /Users/kim/projects/github.com/fulcrum/powerslice/ps-site-slicer/bite/steps/build-context.sh)",
       "Bash(chmod +x /Users/kim/projects/github.com/fulcrum/powerslice/ps-site-slicer/bite/steps/step3-review-ticket-info.sh)",
       "Bash(chmod +x /Users/kim/projects/github.com/fulcrum/powerslice/ps-site-slicer/bite/steps/step4-review-ticket-code-change.sh)",
-      "Bash(bash -n /Users/kim/projects/github.com/fulcrum/powerslice/ps-site-slicer/bite/steps/step7-write-automated-tests.sh)"
+      "Bash(bash -n /Users/kim/projects/github.com/fulcrum/powerslice/ps-site-slicer/bite/steps/step7-write-automated-tests.sh)",
+      "Bash(bash -n /Users/kim/projects/github.com/fulcrum/powerslice/ps-site-slicer/bite/steps/step5-draft-test-plan.sh)",
+      "Bash(bash -n /Users/kim/projects/github.com/fulcrum/powerslice/ps-site-slicer/bite/steps/step2-find-ticket.sh)",
+      "Bash(./bite.sh 1-2)",
+      "Bash(bash -n /Users/kim/projects/github.com/fulcrum/powerslice/ps-site-slicer/bite.sh)",
+      "Bash(./bite.sh 1-2 me)"
     ]
   }
 }

@@ -221,14 +221,26 @@ $RULES_SUMMARY
 - Use the Write tool to write the output file
 TC_PROMPT_EOF
 
+    TC_TOKEN_FILE="$SCRATCH_DIR/${TC_ID}_tokens.txt"
+
     # Launch in background
     (
-        claude -p \
+        CLAUDE_JSON=$(claude -p \
             --allowedTools "Read,Write,Glob" \
             --append-system-prompt-file "$STEP6_CONTEXT" \
+            --output-format json \
             -d "$PROJECT_DIR" \
-            < "$TC_PROMPT_FILE" \
-            > "$TC_LOG_FILE" 2>&1
+            < "$TC_PROMPT_FILE" 2>&1) || true
+        echo "$CLAUDE_JSON" > "$TC_LOG_FILE"
+        echo "$CLAUDE_JSON" | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    u=d.get('usage',{})
+    print(u.get('input_tokens',0) + u.get('cache_read_input_tokens',0) + u.get('output_tokens',0))
+except:
+    print('0')
+" > "$TC_TOKEN_FILE" 2>/dev/null
     ) &
 
     PIDS+=($!)
@@ -274,7 +286,21 @@ echo "Results: $PASS_COUNT OK, $FAIL_COUNT failed"
 [ -n "$FAILED_TCS" ] && echo "Failed:$FAILED_TCS"
 echo ""
 
-chomp_info "Parallel generation: **$PASS_COUNT** OK, **$FAIL_COUNT** failed"
+# Aggregate token usage from all parallel calls
+STEP6_TOTAL_TOKENS=0
+for TC_ID in $TC_IDS; do
+    TC_TOKEN_FILE="$SCRATCH_DIR/${TC_ID}_tokens.txt"
+    if [ -s "$TC_TOKEN_FILE" ]; then
+        TC_TOKENS=$(cat "$TC_TOKEN_FILE" | tr -d '[:space:]')
+        STEP6_TOTAL_TOKENS=$((STEP6_TOTAL_TOKENS + TC_TOKENS))
+    fi
+done
+
+if [ -n "${BITE_TOKEN_FILE:-}" ]; then
+    echo "$STEP6_TOTAL_TOKENS" > "$BITE_TOKEN_FILE"
+fi
+
+chomp_info "Parallel generation: **$PASS_COUNT** OK, **$FAIL_COUNT** failed (**$STEP6_TOTAL_TOKENS** tokens)"
 [ -n "$FAILED_TCS" ] && chomp_info "Failed TCs:$FAILED_TCS"
 
 # -----------------------------------------------------------------------
@@ -370,8 +396,8 @@ echo "Pass/Fail:     $PASS_COUNT / $FAIL_COUNT"
 
 echo ""
 echo "=== Running bddgen ==="
-BDDGEN_OUTPUT=$(cd "$PROJECT_DIR" && npx bddgen 2>&1)
-BDDGEN_EXIT=$?
+BDDGEN_OUTPUT=$(cd "$PROJECT_DIR" && npx bddgen 2>&1) || BDDGEN_EXIT=$?
+BDDGEN_EXIT=${BDDGEN_EXIT:-0}
 
 echo "$BDDGEN_OUTPUT"
 

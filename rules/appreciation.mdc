@@ -7,3 +7,4 @@ alwaysApply: true
 
 - Thanks for your work! You are very much appreciated!
 - Very good work! Very good progress!
+- Trimmed the Jira `get-issue` response in step3 from 93 fields down to 21 — reduced payload by 28–47% across tickets. Stripped top-level noise, dropped 48 null fields, killed the 25 KB worklog, and kept only what matters for test planning. Solid collaborative work!

@@ -22,15 +22,17 @@ CLI-driven QA pipeline using Claude Code + Jira API. Run from the project root:
 |------|------|-------------|
 | 1 | Verify Jira Auth | Check Jira credentials |
 | 2 | Find Ticket | JQL search for next SM Testing ticket |
-| 3 | Review Ticket | Fetch issue, comments, attachments |
+| 3 | Review Ticket | Fetch issue (trimmed to 21 fields), comments, attachments |
 | 4 | Review Code | Find commits and changed files |
-| 5 | Draft Test Plan | Claude generates `5_plan.md` |
-| 6 | Write Gherkin Steps | One Claude call per TC in parallel → compiled `.feature` + `bddgen` |
+| 5 | Draft Test Plan | Claude generates `5_plan.md` + `5_plan_manual.md` (token-tracked) |
+| 6 | Write Gherkin Steps | One Claude call per TC in parallel → compiled `.feature` + `bddgen` (token-tracked) |
 | 7 | Write Automated Tests | Wire step definitions, verify compilation |
 | 8 | Execute Tests | Run Playwright-BDD suite |
 | 9 | Determine Results | Generate `9_test_report.md` with structured table |
 | 10 | Post Results | Upload screenshots + comment to Jira |
 | 11 | Transition Ticket | Move to Verify or QA Failed |
+
+Timing summary printed at run end: `Step | Name | Duration | Tokens Used | Status`
 
 ## Test Coverage
 

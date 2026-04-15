@@ -2,11 +2,17 @@
 # Bite — Sequential QA step runner
 #
 # Usage:
-#   ./bite.sh 1-3                  # Run steps 1 through 3 (auto-find ticket)
-#   ./bite.sh 1-3 SM-754           # Run steps 1 through 3 on a specific ticket
+#   ./bite.sh 1-3                  # Run steps 1-3, filter=all (default)
+#   ./bite.sh 1-3 SM-754           # Run steps 1-3 on a specific ticket
+#   ./bite.sh 1-6 me               # Run steps 1-6 for ALL tickets assigned to me
+#   ./bite.sh 1-6 all              # Run steps 1-6 for Testing + assigned to me
 #   ./bite.sh 2 SM-754             # Run a single step
-#   ./bite.sh 5-11 SM-754          # Run steps 5 through 11
-#   ./bite.sh 1-11                 # Full run, auto-find ticket
+#   ./bite.sh 5-11 SM-754          # Run steps 5-11 on a specific ticket
+#
+# Filters (second argument):
+#   me       — Only tickets assigned to Kim Bandeleon
+#   all      — Testing status OR assigned to Kim (default)
+#   SM-XXXX  — A specific ticket key
 #
 # Steps:
 #   1  Verify Jira auth
@@ -15,13 +21,13 @@
 #   4  Review code (commits, changed files)
 #   5  Draft test plan
 #   6  Write Gherkin steps (one Claude call per TC, parallel, compiled in order)
-#   7  Write automated tests (wire up step definitions, verify runnable)
+#   7  Write automated tests (per-step implementation + verify)
 #   8  Execute tests (run Playwright-BDD suite)
 #   9  Determine results (generate .md report)
 #  10  Post results to Jira
 #  11  Transition ticket
 #
-# Each step passes its output (ticket key) to the next step automatically.
+# With "me" or "all" filters, steps 3+ loop through each found ticket.
 # Timing data is collected per step and printed as a summary at the end.
 
 set -euo pipefail
@@ -54,14 +60,37 @@ format_duration() {
 # Arrays to store timing data (parallel indexed)
 TIMING_STEPS=()
 TIMING_NAMES=()
-TIMING_STARTS=()
-TIMING_ENDS=()
 TIMING_DURATIONS=()
 TIMING_STATUSES=()
+TIMING_TOKENS=()
+
+# --- Print timing summary ---
+
+print_timing_summary() {
+    local title="$1"
+    local run_total="$2"
+
+    echo ""
+    echo "  TIMING SUMMARY"
+    echo "  ─────────────────────────────────────────────────"
+    printf "  %-6s %-22s %-10s %-14s %s\n" "Step" "Name" "Duration" "Tokens Used" "Status"
+    echo "  ─────────────────────────────────────────────────"
+    for i in "${!TIMING_STEPS[@]}"; do
+        printf "  %-6s %-22s %-10s %-14s %s\n" \
+            "${TIMING_STEPS[$i]}" \
+            "${TIMING_NAMES[$i]}" \
+            "$(format_duration "${TIMING_DURATIONS[$i]}")" \
+            "${TIMING_TOKENS[$i]}" \
+            "${TIMING_STATUSES[$i]}"
+    done
+    echo "  ─────────────────────────────────────────────────"
+    printf "  %-6s %-22s %-10s\n" "" "TOTAL" "$(format_duration "$run_total")"
+    echo "=========================================="
+}
 
 # --- Parse arguments ---
-RANGE="${1:?Usage: ./bite.sh <step|range> [TICKET_KEY]  (e.g. ./bite.sh 1-3 SM-754)}"
-TICKET_KEY="${2:-}"
+RANGE="${1:?Usage: ./bite.sh <step|range> [me|all|SM-XXX]  (e.g. ./bite.sh 1-6 me)}"
+ARG2="${2:-}"
 
 # Parse range: "3" -> start=3 end=3, "1-3" -> start=1 end=3
 if [[ "$RANGE" =~ ^([0-9]+)-([0-9]+)$ ]]; then
@@ -80,7 +109,20 @@ if [ "$START" -gt "$END" ] || [ "$START" -lt 1 ] || [ "$END" -gt 11 ]; then
     exit 1
 fi
 
-# Map step numbers to scripts (bash 3 compatible)
+# Determine if ARG2 is a filter (me/all) or a ticket key
+FILTER=""
+TICKET_KEY=""
+case "$ARG2" in
+    me|all)   FILTER="$ARG2" ;;
+    SM-*|sm-*) TICKET_KEY="$ARG2" ;;
+    "")       FILTER="all" ;;
+    *)
+        echo "ERROR: Invalid argument '$ARG2'. Use 'me', 'all', or a ticket key (SM-XXX)."
+        exit 1
+        ;;
+esac
+
+# Map step numbers to scripts
 step_script() {
     case "$1" in
         1)  echo "step1-verify-auth.sh" ;;
@@ -122,19 +164,13 @@ needs_ticket() {
     esac
 }
 
-RUN_START_EPOCH=$(now_epoch)
-RUN_START_DISPLAY=$(date +'%d %b %Y, %I:%M:%S %p')
+# --- Run a single step, record timing, handle failure ---
 
-echo "=========================================="
-echo "  BITE — QA Automation Runner"
-echo "  Steps: $START → $END"
-[ -n "$TICKET_KEY" ] && echo "  Ticket: $TICKET_KEY"
-echo "  Started: $RUN_START_DISPLAY"
-echo "=========================================="
-echo ""
+run_step() {
+    local step="$1"
+    local args="${2:-}"
 
-step=$START
-while [ "$step" -le "$END" ]; do
+    local SCRIPT SCRIPT_PATH SNAME
     SCRIPT=$(step_script "$step")
     SCRIPT_PATH="$STEPS_DIR/$SCRIPT"
     SNAME=$(step_name "$step")
@@ -144,153 +180,191 @@ while [ "$step" -le "$END" ]; do
         exit 1
     fi
 
+    local STEP_START_EPOCH
     STEP_START_EPOCH=$(now_epoch)
-    STEP_START_DISPLAY=$(date +'%I:%M:%S %p')
 
     echo ""
     echo ">>> Running step $step: $SNAME ($SCRIPT)"
-    echo "    Started: $STEP_START_DISPLAY"
+    echo "    Started: $(date +'%I:%M:%S %p')"
     echo ""
 
-    # Build arguments
-    ARGS=""
+    local TOKEN_FILE
+    TOKEN_FILE=$(mktemp)
 
-    # Step 2 can take an optional ticket key
-    if [ "$step" -eq 2 ] && [ -n "$TICKET_KEY" ]; then
-        ARGS="$TICKET_KEY"
-    fi
-
-    # Steps 3+ require ticket key
-    if needs_ticket "$step"; then
-        if [ -z "$TICKET_KEY" ]; then
-            echo "ERROR: Step $step requires a ticket key."
-            echo "Either provide one (./bite.sh $RANGE SM-XXX) or start from step 1-2 to auto-find."
-            exit 1
-        fi
-        ARGS="$TICKET_KEY"
-    fi
-
-    # Run the step
-    STEP_STATUS="PASS"
-    if [ -n "$ARGS" ]; then
-        OUTPUT=$("$SCRIPT_PATH" "$ARGS" 2>&1) || {
-            EXIT_CODE=$?
-            STEP_END_EPOCH=$(now_epoch)
-            STEP_DURATION=$((STEP_END_EPOCH - STEP_START_EPOCH))
-
-            # Record failed step timing
-            TIMING_STEPS+=("$step")
-            TIMING_NAMES+=("$SNAME")
-            TIMING_STARTS+=("$STEP_START_DISPLAY")
-            TIMING_ENDS+=("$(date +'%I:%M:%S %p')")
-            TIMING_DURATIONS+=("$STEP_DURATION")
-            TIMING_STATUSES+=("FAIL")
-
-            echo "$OUTPUT"
-            echo ""
-            echo "    Finished: $(date +'%I:%M:%S %p')  Duration: $(format_duration "$STEP_DURATION")"
-            echo ""
-
-            # Print timing summary even on failure
-            RUN_END_EPOCH=$(now_epoch)
-            RUN_TOTAL=$((RUN_END_EPOCH - RUN_START_EPOCH))
-
-            echo "=========================================="
-            echo "  BITE STOPPED — Step $step failed (exit $EXIT_CODE)"
-            echo "=========================================="
-            echo ""
-            echo "  TIMING SUMMARY"
-            echo "  ─────────────────────────────────────────"
-            printf "  %-6s %-22s %-14s %-14s %-10s %s\n" "Step" "Name" "Start" "End" "Duration" "Status"
-            echo "  ─────────────────────────────────────────"
-            for i in "${!TIMING_STEPS[@]}"; do
-                printf "  %-6s %-22s %-14s %-14s %-10s %s\n" \
-                    "${TIMING_STEPS[$i]}" \
-                    "${TIMING_NAMES[$i]}" \
-                    "${TIMING_STARTS[$i]}" \
-                    "${TIMING_ENDS[$i]}" \
-                    "$(format_duration "${TIMING_DURATIONS[$i]}")" \
-                    "${TIMING_STATUSES[$i]}"
-            done
-            echo "  ─────────────────────────────────────────"
-            printf "  %-6s %-22s %-14s %-14s %-10s\n" "" "TOTAL" "$RUN_START_DISPLAY" "$(date +'%I:%M:%S %p')" "$(format_duration "$RUN_TOTAL")"
-            echo "=========================================="
-            exit $EXIT_CODE
-        }
+    local OUTPUT EXIT_CODE=0
+    if [ -n "$args" ]; then
+        BITE_TOKEN_FILE="$TOKEN_FILE" OUTPUT=$("$SCRIPT_PATH" "$args" 2>&1) || EXIT_CODE=$?
     else
-        OUTPUT=$("$SCRIPT_PATH" 2>&1) || {
-            EXIT_CODE=$?
-            STEP_END_EPOCH=$(now_epoch)
-            STEP_DURATION=$((STEP_END_EPOCH - STEP_START_EPOCH))
-
-            # Record failed step timing
-            TIMING_STEPS+=("$step")
-            TIMING_NAMES+=("$SNAME")
-            TIMING_STARTS+=("$STEP_START_DISPLAY")
-            TIMING_ENDS+=("$(date +'%I:%M:%S %p')")
-            TIMING_DURATIONS+=("$STEP_DURATION")
-            TIMING_STATUSES+=("FAIL")
-
-            echo "$OUTPUT"
-            echo ""
-            echo "    Finished: $(date +'%I:%M:%S %p')  Duration: $(format_duration "$STEP_DURATION")"
-            echo ""
-
-            # Print timing summary even on failure
-            RUN_END_EPOCH=$(now_epoch)
-            RUN_TOTAL=$((RUN_END_EPOCH - RUN_START_EPOCH))
-
-            echo "=========================================="
-            echo "  BITE STOPPED — Step $step failed (exit $EXIT_CODE)"
-            echo "=========================================="
-            echo ""
-            echo "  TIMING SUMMARY"
-            echo "  ─────────────────────────────────────────"
-            printf "  %-6s %-22s %-14s %-14s %-10s %s\n" "Step" "Name" "Start" "End" "Duration" "Status"
-            echo "  ─────────────────────────────────────────"
-            for i in "${!TIMING_STEPS[@]}"; do
-                printf "  %-6s %-22s %-14s %-14s %-10s %s\n" \
-                    "${TIMING_STEPS[$i]}" \
-                    "${TIMING_NAMES[$i]}" \
-                    "${TIMING_STARTS[$i]}" \
-                    "${TIMING_ENDS[$i]}" \
-                    "$(format_duration "${TIMING_DURATIONS[$i]}")" \
-                    "${TIMING_STATUSES[$i]}"
-            done
-            echo "  ─────────────────────────────────────────"
-            printf "  %-6s %-22s %-14s %-14s %-10s\n" "" "TOTAL" "$RUN_START_DISPLAY" "$(date +'%I:%M:%S %p')" "$(format_duration "$RUN_TOTAL")"
-            echo "=========================================="
-            exit $EXIT_CODE
-        }
+        BITE_TOKEN_FILE="$TOKEN_FILE" OUTPUT=$("$SCRIPT_PATH" 2>&1) || EXIT_CODE=$?
     fi
 
+    local STEP_END_EPOCH STEP_DURATION
     STEP_END_EPOCH=$(now_epoch)
     STEP_DURATION=$((STEP_END_EPOCH - STEP_START_EPOCH))
 
-    # Record successful step timing
-    TIMING_STEPS+=("$step")
-    TIMING_NAMES+=("$SNAME")
-    TIMING_STARTS+=("$STEP_START_DISPLAY")
-    TIMING_ENDS+=("$(date +'%I:%M:%S %p')")
-    TIMING_DURATIONS+=("$STEP_DURATION")
-    TIMING_STATUSES+=("OK")
+    # Read token count if the step reported it
+    local STEP_TOKENS="-"
+    if [ -s "$TOKEN_FILE" ]; then
+        STEP_TOKENS=$(cat "$TOKEN_FILE")
+    fi
+    rm -f "$TOKEN_FILE"
 
     echo "$OUTPUT"
     echo ""
     echo "    Finished: $(date +'%I:%M:%S %p')  Duration: $(format_duration "$STEP_DURATION")"
 
-    # After step 2, extract the ticket key from output for subsequent steps
-    if [ "$step" -eq 2 ] && [ -z "$TICKET_KEY" ]; then
-        FOUND=$(echo "$OUTPUT" | grep -oE 'Ticket: (SM(-[A-Z]+)?-[0-9]+)' | head -1 | sed 's/Ticket: //')
-        if [ -n "$FOUND" ]; then
-            TICKET_KEY="$FOUND"
-            echo ""
-            echo ">>> Auto-detected ticket: $TICKET_KEY (passing to next steps)"
-        fi
+    if [ "$EXIT_CODE" -ne 0 ]; then
+        TIMING_STEPS+=("$step")
+        TIMING_NAMES+=("$SNAME")
+        TIMING_DURATIONS+=("$STEP_DURATION")
+        TIMING_TOKENS+=("$STEP_TOKENS")
+        TIMING_STATUSES+=("FAIL")
+
+        local RUN_END_EPOCH RUN_TOTAL
+        RUN_END_EPOCH=$(now_epoch)
+        RUN_TOTAL=$((RUN_END_EPOCH - RUN_START_EPOCH))
+
+        echo ""
+        echo "=========================================="
+        echo "  BITE STOPPED — Step $step failed (exit $EXIT_CODE)"
+        echo "=========================================="
+        print_timing_summary "STOPPED" "$RUN_TOTAL"
+        exit $EXIT_CODE
     fi
 
+    TIMING_STEPS+=("$step")
+    TIMING_NAMES+=("$SNAME")
+    TIMING_DURATIONS+=("$STEP_DURATION")
+    TIMING_TOKENS+=("$STEP_TOKENS")
+    TIMING_STATUSES+=("OK")
+
+    # Return output for parsing
+    STEP_OUTPUT="$OUTPUT"
+}
+
+# ═══════════════════════════════════════════════════════
+# Main execution
+# ═══════════════════════════════════════════════════════
+
+RUN_START_EPOCH=$(now_epoch)
+RUN_START_DISPLAY=$(date +'%d %b %Y, %I:%M:%S %p')
+
+echo "=========================================="
+echo "  BITE — QA Automation Runner"
+echo "  Steps: $START → $END"
+[ -n "$TICKET_KEY" ] && echo "  Ticket: $TICKET_KEY"
+[ -n "$FILTER" ] && echo "  Filter: $FILTER"
+echo "  Started: $RUN_START_DISPLAY"
+echo "=========================================="
+
+STEP_OUTPUT=""
+ALL_TICKETS=""
+
+# --- Run steps 1-2 (single pass) ---
+
+step=$START
+while [ "$step" -le "$END" ] && [ "$step" -le 2 ]; do
+    case "$step" in
+        1)
+            run_step 1
+            ;;
+        2)
+            if [ -n "$TICKET_KEY" ]; then
+                run_step 2 "$TICKET_KEY"
+            else
+                run_step 2 "$FILTER"
+            fi
+
+            # Extract ticket list from step 2 output
+            TICKETS_LINE=$(echo "$STEP_OUTPUT" | grep '^TICKETS:' | head -1 | sed 's/TICKETS: //')
+            if [ -n "$TICKETS_LINE" ]; then
+                ALL_TICKETS="$TICKETS_LINE"
+            fi
+
+            # Extract selected ticket for single-ticket mode
+            if [ -z "$TICKET_KEY" ]; then
+                FOUND=$(echo "$STEP_OUTPUT" | grep -oE 'Selected ticket: (SM(-[A-Z]+)?-[0-9]+)' | head -1 | sed 's/Selected ticket: //')
+                if [ -n "$FOUND" ]; then
+                    TICKET_KEY="$FOUND"
+                    echo ""
+                    echo ">>> Auto-selected ticket: $TICKET_KEY"
+                fi
+            fi
+            ;;
+    esac
     step=$((step + 1))
 done
+
+# --- Run steps 3+ ---
+
+# If we haven't reached step 3 yet, nothing more to do
+if [ "$step" -gt "$END" ]; then
+    # Done — print summary
+    RUN_END_EPOCH=$(now_epoch)
+    RUN_TOTAL=$((RUN_END_EPOCH - RUN_START_EPOCH))
+    RUN_END_DISPLAY=$(date +'%d %b %Y, %I:%M:%S %p')
+
+    echo ""
+    echo "=========================================="
+    echo "  BITE COMPLETE — Steps $START-$END finished"
+    [ -n "$TICKET_KEY" ] && echo "  Ticket: $TICKET_KEY"
+    echo "  Finished: $RUN_END_DISPLAY"
+    echo "  Total duration: $(format_duration "$RUN_TOTAL")"
+    echo "=========================================="
+    print_timing_summary "COMPLETE" "$RUN_TOTAL"
+    exit 0
+fi
+
+# Determine which tickets to process for steps 3+
+if [ -n "$FILTER" ] && [ "$FILTER" != "all" ] || [ "$FILTER" = "all" ]; then
+    # In filter mode with multiple tickets — build ticket list
+    if [ -n "$ALL_TICKETS" ]; then
+        # Convert CSV to array
+        IFS=',' read -ra TICKET_LIST <<< "$ALL_TICKETS"
+    elif [ -n "$TICKET_KEY" ]; then
+        TICKET_LIST=("$TICKET_KEY")
+    else
+        echo "ERROR: No tickets found. Cannot continue to step $step."
+        exit 1
+    fi
+else
+    TICKET_LIST=("$TICKET_KEY")
+fi
+
+# For specific ticket key (SM-XXX), only process that one
+if [[ "$ARG2" =~ ^(SM|sm)- ]]; then
+    TICKET_LIST=("$TICKET_KEY")
+fi
+
+TICKET_TOTAL=${#TICKET_LIST[@]}
+
+echo ""
+echo "=========================================="
+echo "  Processing $TICKET_TOTAL ticket(s) for steps $step-$END"
+echo "=========================================="
+
+TICKET_INDEX=0
+for TK in "${TICKET_LIST[@]}"; do
+    TICKET_INDEX=$((TICKET_INDEX + 1))
+    TICKET_KEY="$TK"
+
+    echo ""
+    echo "╔══════════════════════════════════════════╗"
+    echo "  Ticket $TICKET_INDEX/$TICKET_TOTAL: $TICKET_KEY"
+    echo "╚══════════════════════════════════════════╝"
+
+    s=$step
+    while [ "$s" -le "$END" ]; do
+        if needs_ticket "$s"; then
+            run_step "$s" "$TICKET_KEY"
+        else
+            run_step "$s"
+        fi
+        s=$((s + 1))
+    done
+done
+
+# --- Final summary ---
 
 RUN_END_EPOCH=$(now_epoch)
 RUN_TOTAL=$((RUN_END_EPOCH - RUN_START_EPOCH))
@@ -299,24 +373,8 @@ RUN_END_DISPLAY=$(date +'%d %b %Y, %I:%M:%S %p')
 echo ""
 echo "=========================================="
 echo "  BITE COMPLETE — Steps $START-$END finished"
-[ -n "$TICKET_KEY" ] && echo "  Ticket: $TICKET_KEY"
+echo "  Tickets processed: $TICKET_TOTAL"
 echo "  Finished: $RUN_END_DISPLAY"
 echo "  Total duration: $(format_duration "$RUN_TOTAL")"
 echo "=========================================="
-echo ""
-echo "  TIMING SUMMARY"
-echo "  ─────────────────────────────────────────"
-printf "  %-6s %-22s %-14s %-14s %-10s %s\n" "Step" "Name" "Start" "End" "Duration" "Status"
-echo "  ─────────────────────────────────────────"
-for i in "${!TIMING_STEPS[@]}"; do
-    printf "  %-6s %-22s %-14s %-14s %-10s %s\n" \
-        "${TIMING_STEPS[$i]}" \
-        "${TIMING_NAMES[$i]}" \
-        "${TIMING_STARTS[$i]}" \
-        "${TIMING_ENDS[$i]}" \
-        "$(format_duration "${TIMING_DURATIONS[$i]}")" \
-        "${TIMING_STATUSES[$i]}"
-done
-echo "  ─────────────────────────────────────────"
-printf "  %-6s %-22s %-14s %-14s %-10s\n" "" "TOTAL" "$RUN_START_DISPLAY" "$(date +'%I:%M:%S %p')" "$(format_duration "$RUN_TOTAL")"
-echo "=========================================="
+print_timing_summary "COMPLETE" "$RUN_TOTAL"

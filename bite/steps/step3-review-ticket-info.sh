@@ -25,13 +25,26 @@ chomp_info "Ticket: **$(jira_link "$TICKET_KEY")**"
 
 echo "=== Step 3: Review Ticket $TICKET_KEY ==="
 
-# Issue details
+# Issue details (trimmed — only fields needed for test planning)
+ISSUE_FIELDS="summary,description,issuetype,status,priority,parent,assignee,reporter,labels,components,duedate,created,updated,attachment,environment,comment,fixVersions,versions,issuelinks,subtasks,customfield_10000"
+
 echo ""
 echo "--- Issue Details ---"
-ISSUE_OUTPUT=$(python3 "$BITE_DIR/jira_api.py" get-issue "$TICKET_KEY" 2>&1)
-echo "$ISSUE_OUTPUT" | tee "$TICKET_DIR/3_issue.json"
-chomp_info "Fetched issue details"
-chomp_code "Issue details" "$ISSUE_OUTPUT"
+ISSUE_RAW_FILE=$(mktemp)
+python3 "$BITE_DIR/jira_api.py" get-issue "$TICKET_KEY" --fields "$ISSUE_FIELDS" > "$ISSUE_RAW_FILE" 2>&1
+python3 -c "
+import json, sys
+with open(sys.argv[1]) as f:
+    data = json.load(f)
+trimmed = {'key': data.get('key'), 'fields': data.get('fields', {})}
+print(json.dumps(trimmed, indent=2))
+" "$ISSUE_RAW_FILE" > "$TICKET_DIR/3_issue.json"
+rm -f "$ISSUE_RAW_FILE"
+
+ISSUE_SIZE=$(wc -c < "$TICKET_DIR/3_issue.json" | tr -d ' ')
+ISSUE_FIELDS_COUNT=$(python3 -c "import json; print(len(json.load(open('$TICKET_DIR/3_issue.json')).get('fields',{})))")
+echo "Saved $TICKET_DIR/3_issue.json ($ISSUE_SIZE bytes, $ISSUE_FIELDS_COUNT fields)"
+chomp_info "Fetched issue details — trimmed to **$ISSUE_FIELDS_COUNT** fields (**$ISSUE_SIZE** bytes)"
 
 # Comments
 echo ""

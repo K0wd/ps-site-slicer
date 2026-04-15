@@ -4,6 +4,37 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
+## 2026-04-15 — Bite: Trimmed Jira Payload, Token Tracking, Step 6 Fix
+
+### Step 3 — Review Ticket (`bite/steps/step3-review-ticket-info.sh`)
+- Added `--fields` filter to `get-issue` API call — requests only 21 fields instead of all 93
+- Strips top-level Jira keys down to `key` + `fields` (drops `expand`, `id`, `self`)
+- Uses temp files instead of shell variables to avoid zsh encoding issues with unicode in Jira responses
+- Removed `chomp_code` for issue details to stop dumping full JSON into the journey log
+- Prints human-readable summary line (field count + byte size)
+- **Payload reduction:** 28–47% smaller depending on ticket (SM-1105: 114 KB → 80 KB, SM-864: 152 KB → 78 KB)
+- Kept fields: `summary`, `description`, `issuetype`, `status`, `priority`, `parent`, `assignee`, `reporter`, `labels`, `components`, `duedate`, `created`, `updated`, `attachment`, `environment`, `comment`, `fixVersions`, `versions`, `issuelinks`, `subtasks`, `customfield_10000`
+- Dropped: `worklog` (25 KB), 48 null fields, all time-tracking fields, votes, watches, progress counters
+
+### Step 5 — Draft Test Plan (`bite/steps/step5-draft-test-plan.sh`)
+- Both Claude CLI calls (`5_plan.md` and `5_plan_manual.md`) now use `--output-format json` to capture token usage
+- Token counts extracted and reported per call and as step total
+- Writes token total to `$BITE_TOKEN_FILE` for the orchestrator timing summary
+
+### Step 6 — Write Gherkin Steps (`bite/steps/step6-write-gherkin-steps.sh`)
+- **Fixed FAIL bug**: `npx bddgen` non-zero exit now handled with `|| BDDGEN_EXIT=$?` instead of bare assignment — prevents `set -e` from aborting the script before the exit code is captured
+- Parallel Claude CLI calls now use `--output-format json` for token tracking
+- Each background process writes token count to `6_gherkin_scratch/<TC-ID>_tokens.txt`
+- Token totals aggregated after all processes complete and reported to orchestrator
+
+### Bite Runner (`bite.sh`)
+- **Timing summary redesigned**: removed Start and End columns, added Tokens Used column
+- New columns: `Step | Name | Duration | Tokens Used | Status`
+- Token tracking infrastructure: each step receives `$BITE_TOKEN_FILE` env var; steps that call Claude write their token total to this file
+- Steps without Claude usage show `-` in the Tokens Used column
+
+---
+
 ## 2026-04-14 — Bite Pipeline Cleanup: Gitignore Logs, Markdown Log Files, Consolidate Steps
 
 ### Bite Logs
