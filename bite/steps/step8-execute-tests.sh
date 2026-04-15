@@ -1,5 +1,13 @@
 #!/bin/bash
 # Step 8 — Execute Tests (runs the Playwright-BDD automated test suite)
+#
+# Sends the test plan to `claude -p` with Bash/Read/Write/Edit/Grep/Glob tools.
+# Claude runs each test case via Playwright, captures screenshots to test-results/,
+# and writes 8_results.md with a PASS/FAIL/SKIP table + machine-readable RESULT: line.
+#
+# Inputs:  5_plan.md
+# Outputs: 8_execution_log.md, 8_results.md, test-results/*.png
+#
 # Usage: ./step8-execute-tests.sh SM-1096
 
 set -euo pipefail
@@ -12,6 +20,11 @@ set -a
 source "$PROJECT_DIR/.env"
 set +a
 
+# Load context builder for Claude CLI calls
+source "$SCRIPT_DIR/build-context.sh"
+BASE_CONTEXT=$(build_base_context)
+trap cleanup_context EXIT
+
 # Resume journey log
 source "$SCRIPT_DIR/chomp-logger.sh"
 chomp_resume
@@ -19,9 +32,11 @@ chomp_resume
 TICKET_KEY="${1:?Usage: $0 <TICKET_KEY>}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
+chomp_resume_test_run
+RUN_DIR="$CHOMP_TEST_RUN_DIR"
 PLAN_FILE="$TICKET_DIR/5_plan.md"
-RESULTS_FILE="$TICKET_DIR/8_results.md"
-SCREENSHOTS_DIR="$TICKET_DIR/test-results"
+RESULTS_FILE="$RUN_DIR/8_results.md"
+SCREENSHOTS_DIR="$RUN_DIR/7_tc_logs"
 mkdir -p "$SCREENSHOTS_DIR"
 
 chomp_step "8" "Execute Tests"
@@ -87,13 +102,14 @@ EOF
 
 echo "$PROMPT" | claude -p \
     --allowedTools "Bash,Read,Write,Edit,Grep,Glob" \
-    -d "$PROJECT_DIR" > "$TICKET_DIR/8_execution_log.md" 2>&1
+    --append-system-prompt-file "$BASE_CONTEXT" \
+    -d "$PROJECT_DIR" > "$RUN_DIR/8_execution_log.md" 2>&1
 
-chomp_info "Execution log: \`$TICKET_DIR/8_execution_log.md\`"
+chomp_info "Execution log: \`$RUN_DIR/8_execution_log.md\`"
 chomp_info "Results file: \`$RESULTS_FILE\`"
 chomp_result "PASS" "Test execution complete for $(jira_link "$TICKET_KEY")"
 
-echo "Execution log: $TICKET_DIR/8_execution_log.md"
+echo "Execution log: $RUN_DIR/8_execution_log.md"
 echo "Results file:  $RESULTS_FILE"
 echo "Screenshots:   $SCREENSHOTS_DIR/"
 echo ""

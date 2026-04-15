@@ -1,5 +1,13 @@
 #!/bin/bash
 # Step 11 — Transition the Ticket based on result
+#
+# Auto-detects verdict from 8_results.md (PASS/FAIL/NOT TESTED) or accepts an
+# explicit override. Transitions the Jira ticket: PASS → "Verify", FAIL/NOT TESTED → "QA Failed".
+# Shows available transitions first, then executes via jira_api.py transition.
+#
+# Inputs:  8_results.md (or explicit $2 verdict)
+# Outputs: Jira ticket status change
+#
 # Usage:
 #   ./step11-transition-ticket.sh SM-1096           # Auto-detect from results file
 #   ./step11-transition-ticket.sh SM-1096 PASS      # Explicit verdict
@@ -22,7 +30,9 @@ TICKET_KEY="${1:?Usage: $0 <TICKET_KEY> [PASS|FAIL|NOT TESTED]}"
 VERDICT="${2:-}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
-RESULTS_FILE="$TICKET_DIR/8_results.md"
+chomp_resume_test_run
+RUN_DIR="$CHOMP_TEST_RUN_DIR"
+RESULTS_FILE="$RUN_DIR/8_results.md"
 
 chomp_step "11" "Transition Ticket"
 chomp_info "Ticket: **$(jira_link "$TICKET_KEY")**"

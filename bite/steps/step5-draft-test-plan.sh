@@ -1,5 +1,9 @@
 #!/bin/bash
 # Step 5 — Draft the Test Plan (uses Claude CLI)
+# Gathers context from steps 3-4 (issue JSON, comments, commits, changed files),
+# pipes it into `claude -p` with a QA test analyst prompt to produce 5_plan.md.
+# The plan includes: summary, pre-conditions, step-by-step test cases (TC-XX/EC-XX),
+# edge cases, and a blank results section.
 # Usage: ./step5-draft-test-plan.sh SM-1096
 
 set -euo pipefail
@@ -11,6 +15,11 @@ PROJECT_DIR="$(dirname "$BITE_DIR")"
 set -a
 source "$PROJECT_DIR/.env"
 set +a
+
+# Load context builder for Claude CLI calls
+source "$SCRIPT_DIR/build-context.sh"
+BASE_CONTEXT=$(build_base_context)
+trap cleanup_context EXIT
 
 # Resume journey log
 source "$SCRIPT_DIR/chomp-logger.sh"
@@ -58,7 +67,7 @@ Write the test plan now. Output only the markdown content.
 EOF
 )
 
-echo "$PROMPT" | claude -p --output-format text > "$PLAN_FILE"
+echo "$PROMPT" | claude -p --output-format text --append-system-prompt-file "$BASE_CONTEXT" > "$PLAN_FILE"
 
 chomp_info "Test plan written to \`$PLAN_FILE\`"
 chomp_result "PASS" "Test plan drafted for $(jira_link "$TICKET_KEY")"

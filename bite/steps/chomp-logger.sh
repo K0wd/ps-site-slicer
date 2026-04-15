@@ -3,35 +3,33 @@
 # Source this file in each step script to get logging functions.
 #
 # Directory structure:
-#   bite/logs/<dd-MMM-yy>/<HH:MM-AM/PM>/
-#     <TICKET_KEY>/
-#       story.md
-#       1_auth.md
-#       2_search.json
-#       3_issue.json
-#       3_comments.json
-#       3_attachments.md
-#       4_commits.md
-#       4_changed_files.md
-#       5_plan.md
-#       6_gherkin_scratch/
-#         TC-01_section.md
-#         TC-01_prompt.md
-#         TC-01.gherkin
-#         TC-01_log.md
-#         ...
-#       7_prompt.md
-#       7_automation_log.md
-#       7_automation_ready.md
-#       8_execution_log.md
-#       8_results.md
-#       9_prompt.md
-#       9_report_log.md
-#       9_test_report.md
-#       test-results/
+#   bite/logs/<TICKET_KEY>/                 ← ticket-level (stable across runs)
+#     story.md
+#     1_auth.md
+#     2_search.json
+#     3_issue.json
+#     3_comments.json
+#     3_attachments.txt
+#     4_commits.txt
+#     4_changed_files.txt
+#     5_plan.md
+#     6_gherkin_scratch/
+#     test-runs/                            ← per-run (timestamped)
+#       <DDMMMYY_HHMMSS>/
+#         7_tc_logs/
+#           TC-1_steps.md
+#           TC-1_step_1_prompt.md
+#           ...
+#         7_automation_ready.md
+#         8_execution_log.md
+#         8_results.md
+#         9_prompt.md
+#         9_report_log.md
+#         9_test_report.md
 
 BITE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CHOMP_POINTER="$BITE_DIR/logs/.current_chomp"
+CHOMP_POINTER="$BITE_DIR/logs/.current_ticket"
+CHOMP_TEST_RUN_POINTER="$BITE_DIR/logs/.current_test_run"
 JIRA_BROWSE_URL="https://powerslicesoftware.atlassian.net/browse"
 
 # Helper: wrap a ticket key as a Jira link
@@ -40,40 +38,45 @@ jira_link() {
     echo "[$key]($JIRA_BROWSE_URL/$key)"
 }
 
-# Start a new journey (call from step 1 only)
-# The story.md is created once the ticket is known (in chomp_init_story)
+# Start a new journey (call from step 1 only).
+# Creates a staging area for pre-ticket outputs (1_auth.md).
 chomp_start() {
-    local date_dir timestamp run_dir
-    date_dir=$(date +"%d-%b-%y")
-    timestamp=$(date +"%I:%M-%p")
-    run_dir="$BITE_DIR/logs/$date_dir/$timestamp"
+    local staging="$BITE_DIR/logs/.staging"
+    mkdir -p "$staging"
 
-    mkdir -p "$run_dir"
+    # Clear pointers
+    echo "" > "$CHOMP_POINTER"
+    echo "" > "$CHOMP_TEST_RUN_POINTER"
 
-    # Save pointer so subsequent steps find this run
-    echo "$run_dir" > "$CHOMP_POINTER"
-    export CHOMP_RUN_DIR="$run_dir"
+    export CHOMP_RUN_DIR="$staging"
     export CHOMP_LOG=""
 }
 
-# Resume existing journey (call from steps 2+)
+# Resume existing journey (call from steps 2+).
+# Restores CHOMP_TICKET_DIR and CHOMP_LOG from the pointer.
 chomp_resume() {
     if [ -f "$CHOMP_POINTER" ]; then
-        export CHOMP_RUN_DIR="$(cat "$CHOMP_POINTER")"
-        export CHOMP_LOG=""
-    else
-        chomp_start
+        local ticket_key
+        ticket_key=$(cat "$CHOMP_POINTER" | tr -d '[:space:]')
+        if [ -n "$ticket_key" ]; then
+            export CHOMP_TICKET_DIR="$BITE_DIR/logs/$ticket_key"
+            export CHOMP_LOG="$CHOMP_TICKET_DIR/story.md"
+        fi
     fi
+
+    # Also set staging dir for step 2 (to find 1_auth.md)
+    export CHOMP_RUN_DIR="$BITE_DIR/logs/.staging"
 }
 
-# Initialize the ticket directory for this run and set CHOMP_LOG.
-# IMPORTANT: Do NOT call via $() — it must run in the current shell to export vars.
-# Usage: chomp_ticket_dir "SM-754"
-#        Then use $CHOMP_TICKET_DIR for the path.
+# Initialize the ticket directory and set CHOMP_LOG.
+# Usage: chomp_ticket_dir "SM-1105"
 chomp_ticket_dir() {
     local ticket_key="$1"
-    export CHOMP_TICKET_DIR="$CHOMP_RUN_DIR/$ticket_key"
+    export CHOMP_TICKET_DIR="$BITE_DIR/logs/$ticket_key"
     mkdir -p "$CHOMP_TICKET_DIR"
+
+    # Save ticket key as pointer for subsequent steps
+    echo "$ticket_key" > "$CHOMP_POINTER"
 
     # Point story log to ticket dir
     export CHOMP_LOG="$CHOMP_TICKET_DIR/story.md"
@@ -88,6 +91,33 @@ chomp_ticket_dir() {
 ---
 
 EOF
+    fi
+}
+
+# Create a new timestamped test-run directory (call from step 7).
+# Steps 8-11 resume this via chomp_resume_test_run.
+chomp_test_run() {
+    local timestamp
+    timestamp=$(date +"%d%b%y_%H%M%S")
+    export CHOMP_TEST_RUN_DIR="$CHOMP_TICKET_DIR/test-runs/$timestamp"
+    mkdir -p "$CHOMP_TEST_RUN_DIR"
+
+    # Save pointer so steps 8-11 find this run
+    echo "$CHOMP_TEST_RUN_DIR" > "$CHOMP_TEST_RUN_POINTER"
+}
+
+# Resume the current test-run directory (call from steps 8-11).
+chomp_resume_test_run() {
+    if [ -f "$CHOMP_TEST_RUN_POINTER" ]; then
+        export CHOMP_TEST_RUN_DIR="$(cat "$CHOMP_TEST_RUN_POINTER" | tr -d '[:space:]')"
+    else
+        echo "ERROR: No test-run pointer found. Run step 7 first."
+        exit 1
+    fi
+
+    if [ ! -d "$CHOMP_TEST_RUN_DIR" ]; then
+        echo "ERROR: Test-run dir not found: $CHOMP_TEST_RUN_DIR"
+        exit 1
     fi
 }
 

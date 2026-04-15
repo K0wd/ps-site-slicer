@@ -1,9 +1,15 @@
 #!/bin/bash
 # Step 6 — Write Gherkin Steps from the Test Plan
 #
-# For each test case in the plan, runs one focused Claude CLI call (in parallel)
-# to generate a Gherkin Scenario block. After all finish, compiles them into a
-# single .feature file in chronological order (TC-01 → TC-NN → EC-01 → EC-NN).
+# Parses TC-XX/EC-XX headings from 5_plan.md, then launches one `claude -p` call
+# per test case IN PARALLEL to generate individual .gherkin Scenario blocks.
+# Scratch files go to 6_gherkin_scratch/. After all PIDs finish, compiles them
+# in natural order (TC-01…TC-NN, EC-01…EC-NN) into tests/features/<page>.feature.
+# Appends to existing feature files; failed TCs get a TODO placeholder.
+# Runs `npx bddgen` at the end to regenerate .features-gen/.
+#
+# Inputs:  5_plan.md, existing features/steps/properties (for reuse awareness)
+# Outputs: tests/features/<page>.feature, 6_gherkin_scratch/*, bddgen regeneration
 #
 # Usage: ./step6-write-gherkin-steps.sh SM-1096
 
@@ -16,6 +22,11 @@ PROJECT_DIR="$(dirname "$BITE_DIR")"
 set -a
 source "$PROJECT_DIR/.env"
 set +a
+
+# Load context builder for Claude CLI calls
+source "$SCRIPT_DIR/build-context.sh"
+STEP6_CONTEXT=$(build_step6_context)
+trap cleanup_context EXIT
 
 # Resume journey log
 source "$SCRIPT_DIR/chomp-logger.sh"
@@ -137,7 +148,7 @@ Write ONLY the Scenario block (no Feature header, no imports, no code) to: $TC_O
 
 Format:
 \`\`\`
-  @${TC_ID}
+  @${TC_ID} @${TICKET_KEY}
   Scenario: <descriptive name from the test case>
     Given <precondition>
     When <action>
@@ -147,15 +158,14 @@ Format:
 
 ## CANONICAL PATTERN — follow this exactly
 
-This is how a feature file statement maps to a step definition. Every Gherkin line
-you write MUST have a corresponding step definition that already exists or follows
-this same shape.
+This is how a feature file is structured. Every Gherkin line you write MUST have
+a corresponding step definition that already exists or follows this same shape.
 
-### tests/features/login.feature (reference — do NOT modify)
+### Feature file structure (reference)
 \`\`\`gherkin
-Feature: Login
+Feature: <Ticket Key> — <description>
 
-  Scenario: Login with valid credentials
+  Background:
     Given I am on the login page
     When I enter my username
     And I click the next button
@@ -164,10 +174,19 @@ Feature: Login
     Then I should see the Safe Day's Alert modal
     When I dismiss the Safe Day's Alert
     Then I should be on the dashboard
+
+  @TC-01 @<Ticket-Key>
+  Scenario: <descriptive name>
+    When <first action after login>
+    Then <expected result>
 \`\`\`
 
+The Background block runs before EVERY scenario — it handles login and landing
+on the dashboard. Individual scenarios MUST NOT repeat any login steps.
+Each scenario starts from the dashboard and adds only the steps unique to that test case.
+
 ### tests/steps/login.steps.ts (the matching step definitions — do NOT modify)
-Each line above maps 1:1 to a step definition like:
+Each Background line maps 1:1 to a step definition like:
   Given('I am on the login page', async ({ page }) => { await page.goto('/'); ... })
   When('I enter my username', async ({ page }) => { await page.locator(\`xpath=\${USERNAME_INPUT_XPATH}\`).fill(...) })
   Then('I should be on the dashboard', async ({ page }) => { await expect(page).toHaveURL(...) })
@@ -193,12 +212,12 @@ $RULES_SUMMARY
 
 ## STRICT RULES
 
-- Output ONLY the Scenario block — no Feature header, no \`\`\` fences, no explanation
+- Output ONLY the Scenario block — no Feature header, no Background, no \`\`\` fences, no explanation
+- Do NOT include login steps — Background handles login; each scenario starts from the dashboard
 - Reuse existing Given/When/Then phrasings exactly when the semantics match
-- Follow the login.feature style: business-readable, no XPath, no code in Gherkin
-- Always start scenarios that need login with: Given I am on the login page
+- Business-readable Gherkin only — no XPath, no code in Gherkin
 - Indent with 2 spaces inside the Scenario block
-- Tag with @${TC_ID} above the Scenario line
+- Tag with @${TC_ID} @${TICKET_KEY} above the Scenario line (both tags on the same line)
 - Use the Write tool to write the output file
 TC_PROMPT_EOF
 
@@ -206,6 +225,7 @@ TC_PROMPT_EOF
     (
         claude -p \
             --allowedTools "Read,Write,Glob" \
+            --append-system-prompt-file "$STEP6_CONTEXT" \
             -d "$PROJECT_DIR" \
             < "$TC_PROMPT_FILE" \
             > "$TC_LOG_FILE" 2>&1
@@ -263,17 +283,7 @@ chomp_info "Parallel generation: **$PASS_COUNT** OK, **$FAIL_COUNT** failed"
 
 echo "=== Compiling Gherkin scenarios in order ==="
 
-# Determine output feature file name from ticket context or plan title
-PAGE_SLUG=$(echo "$FEATURE_DESCRIPTION" \
-    | tr '[:upper:]' '[:lower:]' \
-    | sed 's/[^a-z0-9 ]//g' \
-    | sed 's/  */ /g' \
-    | sed 's/ /-/g' \
-    | sed 's/-*test-plan.*$//' \
-    | sed 's/^-//;s/-$//' \
-    | cut -c1-40)
-
-FEATURE_FILE="$TESTS_DIR/features/${PAGE_SLUG}.feature"
+FEATURE_FILE="$TESTS_DIR/features/${TICKET_KEY}.feature"
 
 # Check if a feature file for this page already exists — append rather than overwrite
 EXISTING_CONTENT=""
@@ -303,7 +313,7 @@ $(cat "$TC_OUTPUT_FILE")
     else
         # Placeholder for failed TCs so order is preserved
         COMPILED_SCENARIOS="$COMPILED_SCENARIOS
-  @${TC_ID}
+  @${TC_ID} @${TICKET_KEY}
   Scenario: ${TC_ID} — TODO (generation failed, check $SCRATCH_DIR/${TC_ID}_log.md)
     Given TODO
 
@@ -313,11 +323,21 @@ done
 
 # Write the final feature file
 if [ -z "$EXISTING_CONTENT" ]; then
-    # New file — write full Feature header + all scenarios
+    # New file — write full Feature header + Background + all scenarios
     cat > "$FEATURE_FILE" << FEATURE_EOF
-Feature: $FEATURE_DESCRIPTION
+Feature: $TICKET_KEY — $FEATURE_DESCRIPTION
   Jira: $TICKET_KEY
   Generated by bite step 6 on $(date +"%Y-%m-%d")
+
+  Background:
+    Given I am on the login page
+    When I enter my username
+    And I click the next button
+    And I enter my password
+    And I click the "Let's go" button
+    Then I should see the Safe Day's Alert modal
+    When I dismiss the Safe Day's Alert
+    Then I should be on the dashboard
 
 $COMPILED_SCENARIOS
 FEATURE_EOF

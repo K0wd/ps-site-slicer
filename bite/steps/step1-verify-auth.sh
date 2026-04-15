@@ -1,5 +1,8 @@
 #!/bin/bash
 # Step 1 — Verify Jira Auth
+# Calls `jira_api.py test` to confirm Jira credentials work.
+# Starts a new journey log (chomp_start) and saves auth response to 1_auth.md.
+# Exits non-zero if auth fails — subsequent steps will not run.
 # Usage: ./step1-verify-auth.sh
 
 set -euo pipefail

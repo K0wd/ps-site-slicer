@@ -1,5 +1,13 @@
 #!/bin/bash
 # Step 10 — Post Results to Jira (upload screenshots + comment)
+#
+# Uploads all .png/.jpg screenshots from test-results/ as Jira attachments,
+# then posts 8_results.md as a Jira comment on the ticket.
+# Uses jira_api.py upload-attachment and add-comment.
+#
+# Inputs:  8_results.md, test-results/*.png
+# Outputs: Jira attachments + comment on the ticket
+#
 # Usage: ./step10-post-results.sh SM-1096
 
 set -euo pipefail
@@ -19,8 +27,10 @@ chomp_resume
 TICKET_KEY="${1:?Usage: $0 <TICKET_KEY>}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
-RESULTS_FILE="$TICKET_DIR/8_results.md"
-SCREENSHOTS_DIR="$TICKET_DIR/test-results"
+chomp_resume_test_run
+RUN_DIR="$CHOMP_TEST_RUN_DIR"
+RESULTS_FILE="$RUN_DIR/8_results.md"
+SCREENSHOTS_DIR="$RUN_DIR/7_tc_logs"
 
 chomp_step "10" "Post Results to Jira"
 chomp_info "Ticket: **$(jira_link "$TICKET_KEY")**"

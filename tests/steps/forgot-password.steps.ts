@@ -22,7 +22,11 @@ Given('I am on the forgot password page', async ({ page }) => {
 });
 
 Then('I should see the page title {string}', async ({ page }, title: string) => {
-  await expect(page.locator(`xpath=${PAGE_TITLE_XPATH}`)).toContainText(title);
+  // Works for both SPA pages (navbar-brand) and non-SPA pages (h1)
+  const pageTitleLocator = page.locator(
+    `xpath=//a[contains(@class,'navbar-brand') and contains(normalize-space(),'${title}')] | //h1[contains(.,'${title}')]`
+  );
+  await expect(pageTitleLocator.first()).toBeVisible({ timeout: 10000 });
 });
 
 Then('I should see the section title {string}', async ({ page }, title: string) => {

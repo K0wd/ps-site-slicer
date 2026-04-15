@@ -1,7 +1,15 @@
 #!/bin/bash
 # Step 9 — Determine Final Result & Generate Test Report
-# Reads step 8 results + test plan, generates a structured .md report with:
+#
+# Extracts the RESULT: PASS/FAIL/NOT TESTED verdict from 8_results.md,
+# collects available screenshots from test-results/, then uses `claude -p`
+# to generate 9_test_report.md — a structured table with:
 #   Test Name | Test Steps | Results per Step | Image Proof
+# Every test case from the plan must appear; unexecuted cases get "NOT TESTED".
+#
+# Inputs:  8_results.md, 5_plan.md, test-results/*.png
+# Outputs: 9_prompt.md, 9_report_log.md, 9_test_report.md
+#
 # Usage: ./step9-determine-results.sh SM-1096
 
 set -euo pipefail
@@ -14,6 +22,11 @@ set -a
 source "$PROJECT_DIR/.env"
 set +a
 
+# Load context builder for Claude CLI calls
+source "$SCRIPT_DIR/build-context.sh"
+BASE_CONTEXT=$(build_base_context)
+trap cleanup_context EXIT
+
 # Resume journey log
 source "$SCRIPT_DIR/chomp-logger.sh"
 chomp_resume
@@ -21,10 +34,12 @@ chomp_resume
 TICKET_KEY="${1:?Usage: $0 <TICKET_KEY>}"
 chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
-RESULTS_FILE="$TICKET_DIR/8_results.md"
+chomp_resume_test_run
+RUN_DIR="$CHOMP_TEST_RUN_DIR"
+RESULTS_FILE="$RUN_DIR/8_results.md"
 PLAN_FILE="$TICKET_DIR/5_plan.md"
-SCREENSHOTS_DIR="$TICKET_DIR/test-results"
-REPORT_FILE="$TICKET_DIR/9_test_report.md"
+SCREENSHOTS_DIR="$RUN_DIR/7_tc_logs"
+REPORT_FILE="$RUN_DIR/9_test_report.md"
 
 chomp_step "9" "Determine Results"
 chomp_info "Ticket: **$(jira_link "$TICKET_KEY")**"
@@ -73,7 +88,7 @@ fi
 chomp_info "Generating test report: \`$REPORT_FILE\`"
 echo "Launching Claude CLI to generate test report..."
 
-REPORT_PROMPT_FILE="$TICKET_DIR/9_prompt.md"
+REPORT_PROMPT_FILE="$RUN_DIR/9_prompt.md"
 cat > "$REPORT_PROMPT_FILE" << REPORT_EOF
 You are a QA report generator. Create a structured Markdown test report for Jira ticket $TICKET_KEY.
 
@@ -152,9 +167,10 @@ REPORT_EOF
 
 claude -p \
     --allowedTools "Read,Write,Glob" \
-    -d "$TICKET_DIR" \
+    --append-system-prompt-file "$BASE_CONTEXT" \
+    -d "$RUN_DIR" \
     < "$REPORT_PROMPT_FILE" \
-    > "$TICKET_DIR/9_report_log.md" 2>&1
+    > "$RUN_DIR/9_report_log.md" 2>&1
 
 echo "Claude CLI finished (report generation)."
 
@@ -171,7 +187,7 @@ fi
 echo ""
 echo "Verdict: $VERDICT"
 echo "Report:  $REPORT_FILE"
-echo "Log:     $TICKET_DIR/9_report_log.md"
+echo "Log:     $RUN_DIR/9_report_log.md"
 echo ""
 cat "$RESULTS_FILE"
 echo ""

@@ -1,5 +1,8 @@
 #!/bin/bash
 # Step 2 — Find the next Testing ticket (or validate a specific one)
+# JQL searches project=SM, status=Testing, no `no_ai_test` label, ordered by priority.
+# Creates the ticket dir under bite/logs/, moves 1_auth.md into it, saves 2_search.json.
+# Outputs the found ticket key for downstream steps.
 # Usage:
 #   ./step2-find-ticket.sh              # Find next eligible ticket
 #   ./step2-find-ticket.sh SM-1096      # Validate a specific ticket
