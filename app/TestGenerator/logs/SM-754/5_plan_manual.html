@@ -1,0 +1,46 @@
+<div>
+  <div style="background:#e3fcef;color:#006644;padding:8px 12px;border-left:4px solid #006644;font-weight:bold;margin-bottom:12px;">&#10003; PASSED in TEST</div>
+
+  <h4 style="margin:12px 0 4px 0;"><b>Testing on TEST</b></h4>
+  <ul>
+    <li><b>Verify</b> a text-based filter (ID, WO#, Description, or PO#) narrows the Purchasing Tracker table &mdash; should reduce the row count to only matching records and produce an export containing only those filtered rows.</li>
+    <li><b>Verify</b> the Request Date and Request By Date filters narrow the table to records within the selected date range &mdash; should export only rows whose date values satisfy the applied condition.</li>
+    <li><b>Verify</b> dropdown filters (Type, Status, Priority, Dept, Vendor, Requested Total, Needs My Approval) narrow the table correctly and the Division column has no filter option &mdash; should confirm each dropdown filter produces a filtered export and that Division displays values only.</li>
+    <li><b>Verify</b> the Approval column filter presents a checkbox dropdown (Approved, Pending Approval, Override, Rejected, Blank) and that selecting <code>Blank</code> returns only rows with a NULL or empty Approval value &mdash; should export only blank-Approval rows with no rows carrying an approval status.</li>
+    <li><b>Verify</b> the Approver(s) column filter <code>Blank</code> selection returns only rows with no approver assigned &mdash; should export successfully with the Approvers column empty for every row.</li>
+    <li><b>Verify</b> clearing a filter removes the column header filter indicator and fully restores the full record set &mdash; should leave no stale filter state affecting the table or subsequent operations.</li>
+    <li><b>Verify</b> export completes without freezing on a moderate filtered result set (50&ndash;500 rows) &mdash; should start downloading within 30 seconds and produce a file whose row count matches the filtered table count.</li>
+  </ul>
+
+  <h4 style="margin:16px 0 4px 0;"><b>Results on TEST</b></h4>
+  <ul>
+    <li>
+      <b>Verified</b> a text-based filter (ID, WO#, Description, or PO#) narrowed the Purchasing Tracker table &mdash; should reduce the row count to only matching records and produce an export containing only those filtered rows. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> the Request Date and Request By Date filters narrowed the table to records within the selected date range &mdash; should export only rows whose date values satisfy the applied condition. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> dropdown filters (Type, Status, Priority, Dept, Vendor, Requested Total, Needs My Approval) narrowed the table correctly and the Division column had no filter option &mdash; should confirm each dropdown filter produces a filtered export and that Division displays values only. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> the Approval column filter presented a checkbox dropdown (Approved, Pending Approval, Override, Rejected, Blank) and selecting <code>Blank</code> returned only rows with a NULL or empty Approval value &mdash; should export only blank-Approval rows with no rows carrying an approval status. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> the Approver(s) column filter <code>Blank</code> selection returned only rows with no approver assigned &mdash; should export successfully with the Approvers column empty for every row. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> clearing a filter removed the column header filter indicator and fully restored the full record set &mdash; should leave no stale filter state affecting the table or subsequent operations. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> export completed without freezing on a moderate filtered result set (50&ndash;500 rows) &mdash; should start downloading within 30 seconds and produce a file whose row count matches the filtered table count. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+  </ul>
+</div>

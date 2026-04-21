@@ -1,0 +1,221 @@
+{
+  "key": "SM-1030",
+  "fields": {
+    "summary": "Vendor Admin - Add Save View button with Select View drop down",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "\ud83d\udcdd User Story: Save and Select Custom Views in Vendor Admin"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "As A: Vendor Admin user"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "I Want To: Save my customized column layouts (including sorting, dragging, and pinning) and access them via a \"Select View\" drop-down at the top of the page"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "So That: I can quickly switch between different saved views and retain my preferred layout even after refreshing the screen."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Acceptance Criteria (ACs)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC1: A \"Select View\" button/drop-down is present at the top of the Vendor Admin page, mirroring the layout of the Purchasing Module buttons."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC2: Users can customize the column layout by sorting, dragging, or pinning columns."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC3: Users can save the current column layout as a named view."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC4: Saved views persist after a page refresh and are available in the \"Select View\" drop-down."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC5: Users can switch between saved views using the drop-down, and the grid updates to reflect the selected view."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Scenario Example"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Saving a Custom View"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Input: User sorts and pins columns, clicks \"Save View,\" enters the name \"My Custom Layout.\""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Output: \"My Custom Layout\" appears in the \"Select View\" drop-down; layout persists after refresh."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Switching Views"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Input: User selects \"Default View\" from the drop-down."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Output: Grid updates to the default column layout."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Original Description:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "In the new Vendor Admin, I want the button for Select View to be added to the top. Mirror the layout of the Purchasing Module buttons. When user sorts the columns by dragging or pinning them, they should be able to save that view and name it. When user refreshes the screen, it should stay how they have it saved. The saved view should be added to the Select View drop down in the top left where user can change views."
+            }
+          ]
+        }
+      ]
+    },
+    "issuetype": "Story",
+    "status": "On Stage",
+    "priority": "High",
+    "assignee": "Kim Bandeleon",
+    "reporter": "Kim Heinz",
+    "labels": [
+      "change_request"
+    ],
+    "environment": null,
+    "parent": {
+      "key": "SM-862",
+      "summary": "Vendor Admin- AG Grid Revamp"
+    },
+    "attachments": [
+      "image-20260217-152453.png",
+      "image-20260218-044357.png"
+    ]
+  }
+}

@@ -1,0 +1,510 @@
+{
+  "key": "SM-1077",
+  "fields": {
+    "summary": "PWA - Clock Simple Module",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "📝 User Story: Convert Clock Simple Module to SiteManager PWA"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "As A: SiteManager PWA user"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "I Want To: Use the Clock Simple module for timesheet entry and management within the SiteManager PWA (Next.js)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "So That: I can perform all timesheet-related actions (entry, period management, work order selection, etc.) in a web environment, consistent with the mobile app experience."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Acceptance Criteria (ACs)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC1: QA can log in to the PWA at "
+            },
+            {
+              "type": "text",
+              "text": "https://testserver.betacom.com/testpwa",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://testserver.betacom.com/testpwa"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": " using test server credentials."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC2: Selecting a date loads existing timesheet periods under \"Current Period(s)\" (read-only)."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC3: User can add, edit, and delete new periods for the selected date."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC4: Work Order search and selection, truck selection dropdown, and lunch duration selection are available."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC5: Tech Response, Comments, On-Call, Personal, Property, Damage, and Near Miss fields are present and functional."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC6: User can save and approve timesheets; saving updates the database correctly."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC7: Salary users are restricted from adding periods."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC8: Approved timesheets cannot be modified."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Scenario Example"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Input: User logs in, selects a date, adds a new period, selects a work order, enters lunch duration, fills out required fields, and saves the timesheet."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Expected Output: New period appears under the selected date, data is saved to the database, and all restrictions (salary user, approved timesheet) are enforced."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Original Description:"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Convert the Clock Simple module from the React Native mobile app to the SiteManager PWA (Next.js)."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "*"
+            },
+            {
+              "type": "text",
+              "text": "Parent Ticket:",
+              "marks": [
+                {
+                  "type": "strong"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "* "
+            },
+            {
+              "type": "inlineCard",
+              "attrs": {
+                "url": "https://powerslicesoftware.atlassian.net/browse/SM-950#icft=SM-950"
+              }
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "*"
+            },
+            {
+              "type": "text",
+              "text": "Repository:",
+              "marks": [
+                {
+                  "type": "strong"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "*  "
+            },
+            {
+              "type": "text",
+              "text": "https://gitlab.com/powerslice-software-development/sm-pwa",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://gitlab.com/powerslice-software-development/sm-pwa"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "*"
+            },
+            {
+              "type": "text",
+              "text": "Branch:",
+              "marks": [
+                {
+                  "type": "strong"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "* develop"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "*"
+            },
+            {
+              "type": "text",
+              "text": "Test URL:",
+              "marks": [
+                {
+                  "type": "strong"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "*  "
+            },
+            {
+              "type": "text",
+              "text": "https://testserver.betacom.com/testpwa",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://testserver.betacom.com/testpwa"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "*"
+            },
+            {
+              "type": "text",
+              "text": "Scope:",
+              "marks": [
+                {
+                  "type": "strong"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "*"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Timesheet entry with date selection"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Current Period(s) — read-only view of existing periods for selected date"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "New Period(s) — add, edit, delete periods"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Work Order search and selection"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Truck selection dropdown"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Lunch duration selection"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Tech Response, Comments, On-Call, Personal, Property, Damage, Near Miss fields"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Save & Approve Timesheet action"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Salary user restrictions"
+                    },
+                    {
+                      "type": "hardBreak"
+                    },
+                    {
+                      "type": "text",
+                      "text": "*"
+                    },
+                    {
+                      "type": "text",
+                      "text": "Status:",
+                      "marks": [
+                        {
+                          "type": "strong"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": "*"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Module is functionally complete and deployed to test server"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Successfully tested with real test server credentials and database"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Login uses same /users/loginapi/ endpoint as the React Native mobile app"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "issuetype": "Story",
+    "status": "Testing",
+    "priority": "High",
+    "assignee": "Kim Bandeleon",
+    "reporter": "Darl Anthony Pepito",
+    "labels": [],
+    "environment": "",
+    "parent": {
+      "key": "SM-950",
+      "summary": "PWA for SM Mobile"
+    },
+    "attachments": [
+      "ScreenRecording_04-08-2026 15-07-54_1.mp4",
+      "Screen Recording 2026-04-06 at 5.07.54 PM.mov",
+      "Screenshot 2026-04-08 at 2.52.34 PM.png",
+      "Screenshot 2026-04-08 at 3.06.19 PM.png",
+      "Screenshot 2026-04-08 at 3.19.12 PM.png",
+      "Screenshot 2026-04-08 at 3.25.46 PM.png",
+      "Screenshot 2026-04-08 at 3.25.59 PM.png",
+      "Screenshot 2026-04-08 at 3.31.03 PM.png",
+      "Screenshot 2026-04-09 at 12.33.50 PM.png",
+      "Screenshot 2026-04-09 at 12.34.55 PM.png"
+    ]
+  }
+}

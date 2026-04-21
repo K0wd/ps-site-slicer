@@ -1,0 +1,369 @@
+{
+  "key": "SM-1085",
+  "fields": {
+    "summary": "PWA - Expense Module",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "\ud83d\udcdd User Story: Expense Module Migration to SiteManager PWA"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "As A: SiteManager user"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "I Want To: Access and manage expenses through the SiteManager PWA (Next.js)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "So That: I can perform all expense-related tasks from any device without relying on the React Native mobile app."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Acceptance Criteria (ACs)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC1: Users can search expenses by specifying a date range."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC2: Users can view a list of expenses, each displayed as a card item."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC3: Users can view detailed information for each expense, including amount, category, and approval status."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC4: Users can create new expenses and edit existing ones using a form."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC5: Expense categories and types are dynamically loaded from metadata."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC6: Users can calculate mileage within the expense module."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Scenario Example"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Searching Expenses"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Input: User selects a date range (e.g., 2026-03-01 to 2026-03-15) and submits search."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Output: Expense list updates to show only expenses within the selected date range."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Creating an Expense"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Input: User fills out the create expense form (amount, category, type, mileage) and submits."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Output: New expense appears in the expense list with correct details and calculated mileage."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Original Description:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Convert the Expense module from the React Native mobile app to the SiteManager PWA (Next.js)."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Repository: "
+            },
+            {
+              "type": "text",
+              "text": "https://gitlab.com/powerslice-software-development/sm-pwa",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://gitlab.com/powerslice-software-development/sm-pwa"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Branch: develop"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Test URL: "
+            },
+            {
+              "type": "text",
+              "text": "https://testserver.betacom.com/testpwa",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://testserver.betacom.com/testpwa"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Scope:"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Search expenses by date range"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Expense list with card items"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Expense detail view (amount, category, approval status)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Create/edit expense form"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Expense categories and types from metadata"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Mileage calculation component"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "issuetype": "Story",
+    "status": "Testing",
+    "priority": "High",
+    "assignee": "Kim Bandeleon",
+    "reporter": "Darl Anthony Pepito",
+    "labels": [],
+    "environment": null,
+    "parent": {
+      "key": "SM-950",
+      "summary": "PWA for SM Mobile"
+    },
+    "attachments": [
+      "Screenshot 2026-04-08 at 3.57.03\u202fPM.png",
+      "Screenshot 2026-04-08 at 4.02.04\u202fPM.png",
+      "Screenshot 2026-04-09 at 12.13.39\u202fPM.png",
+      "Screenshot 2026-04-09 at 12.20.06\u202fPM.png"
+    ]
+  }
+}

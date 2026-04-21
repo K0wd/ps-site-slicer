@@ -1,0 +1,36 @@
+<div>
+  <div style="background:#e3fcef;color:#006644;padding:8px 12px;border-left:4px solid #006644;font-weight:bold;margin-bottom:12px;">&#10003; PASSED in TEST</div>
+
+  <h4 style="margin:12px 0 4px 0;"><b>Testing on TEST</b></h4>
+  <ul>
+    <li><b>Verify</b> full timesheet entry happy path &mdash; login as <code>Bandeleonk</code>, select a clean date within the current week, add a period with valid Time In/Out, WO, Truck, Lunch, and Tech Response, then Save &amp; Approve &mdash; should display a success message and the saved period should persist under Current Period(s) with all field values correct.</li>
+    <li><b>Verify</b> existing periods load in read-only mode for a date with known saved data &mdash; should show correct Time In, Time Out, WO, Truck, and lunch duration label and value with no editable inputs.</li>
+    <li><b>Verify</b> time picker opens on direct field click and accepts typed input, and the WO search modal auto-populates results without a secondary trigger and closes cleanly without duplicate or blank WO entries &mdash; should reflect selected WO in the period row after modal closes.</li>
+    <li><b>Verify</b> validation fires in the correct sequence: no periods &rarr; time missing &rarr; lunch missing &rarr; full data &mdash; should produce <code>"You need to add a period at least."</code>, then <code>"Period 1: Please select a valid time period."</code>, then <code>"Period 1: Please select a lunch option."</code>, and finally no errors when all fields are filled.</li>
+    <li><b>Verify</b> approved timesheet access control blocks <code>Bandeleonk</code> from adding or saving on an approved date, and salary user <code>hawseyl</code> is blocked with <code>"SALARY user can not add any periods."</code> and <code>"SALARY user can not submit any timesheet."</code> &mdash; should disable Add Period + and Save &amp; Approve buttons and show the appropriate error messages.</li>
+  </ul>
+
+  <h4 style="margin:16px 0 4px 0;"><b>Results on TEST</b></h4>
+  <ul>
+    <li>
+      <b>Verified</b> full timesheet entry happy path &mdash; logged in as <code>Bandeleonk</code>, selected a clean date within the current week, added a period with valid Time In/Out, WO, Truck, Lunch, and Tech Response, then saved and approved &mdash; success message displayed and the saved period persisted under Current Period(s) with all field values correct. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> existing periods loaded in read-only mode for a date with known saved data &mdash; correct Time In, Time Out, WO, Truck, and lunch duration label and value all visible; no editable inputs present. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> time picker opened on direct field click and accepted typed input; WO search modal auto-populated results without a secondary trigger and closed cleanly without duplicate or blank WO entries &mdash; selected WO reflected correctly in the period row after modal closed. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> validation fired in the correct sequence: no periods &rarr; time missing &rarr; lunch missing &rarr; full data &mdash; produced <code>"You need to add a period at least."</code>, then <code>"Period 1: Please select a valid time period."</code>, then <code>"Period 1: Please select a lunch option."</code>, and no errors when all fields were filled. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+    <li>
+      <b>Verified</b> approved timesheet access control blocked <code>Bandeleonk</code> from adding or saving on an approved date with Add Period + and Save &amp; Approve visibly disabled; salary user <code>hawseyl</code> blocked with <code>"SALARY user can not add any periods."</code> and <code>"SALARY user can not submit any timesheet."</code> as expected. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
+    </li>
+  </ul>
+</div>

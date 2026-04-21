@@ -1,0 +1,1275 @@
+[
+  {
+    "author": "Kim Heinz",
+    "body": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Testing on Test"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Issue: Add \u201cApply\u201d to all filters. Similar to all other AG Grid modules.",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#ff5630"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mediaSingle",
+          "attrs": {
+            "width": 315,
+            "widthType": "pixel",
+            "layout": "align-start"
+          },
+          "content": [
+            {
+              "type": "media",
+              "attrs": {
+                "type": "file",
+                "id": "58e1bbb8-4b51-4b6c-a85c-31a86317a9ed",
+                "alt": "Screenshot 2025-11-13 at 11.55.26\u202fAM.png",
+                "collection": "",
+                "height": 122,
+                "width": 317
+              }
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Issue:",
+              "marks": [
+                {
+                  "type": "textColor",
+                  "attrs": {
+                    "color": "#ff5630"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": " Change the filter to contains not equal."
+            }
+          ]
+        },
+        {
+          "type": "mediaSingle",
+          "attrs": {
+            "width": 288,
+            "widthType": "pixel",
+            "layout": "align-start"
+          },
+          "content": [
+            {
+              "type": "media",
+              "attrs": {
+                "type": "file",
+                "id": "873a8b12-7b82-4be5-9a36-ec2475b4b7c9",
+                "alt": "Screenshot 2025-11-13 at 12.07.48\u202fPM.png",
+                "collection": "",
+                "height": 204,
+                "width": 288
+              }
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Issue: ",
+              "marks": [
+                {
+                  "type": "textColor",
+                  "attrs": {
+                    "color": "#ff5630"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "Add filter searches to the top with a clear all option similar to all other AG Grids."
+            }
+          ]
+        },
+        {
+          "type": "mediaSingle",
+          "attrs": {
+            "width": 241,
+            "widthType": "pixel",
+            "layout": "align-start"
+          },
+          "content": [
+            {
+              "type": "media",
+              "attrs": {
+                "type": "file",
+                "id": "9f239535-4086-4223-96b1-ed112ca20867",
+                "alt": "Screenshot 2025-11-13 at 12.14.36\u202fPM.png",
+                "collection": "",
+                "height": 148,
+                "width": 241
+              }
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verify the filters work on the Vendor Admin."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verify user can rearrange columns."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verify user can pin columns."
+                    }
+                  ]
+                },
+                {
+                  "type": "bulletList",
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Note Carlos said the pinning was fine the way it was set up and that we do not need to add a pin to the main header row."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph"
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Results on Test"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verified the filters work on the Vendor Admin."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verified user can rearrange columns."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verified user can pin columns."
+                    }
+                  ]
+                },
+                {
+                  "type": "bulletList",
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Note Carlos said the pinning was fine the way it was set up and that we do not need to add a pin to the main header row."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "created": "2025-11-13T13:21:44.300-0500"
+  },
+  {
+    "author": "Darl Anthony Pepito",
+    "body": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Resolution - SM-864: Vendor Admin - Add AG Grid Filters and Sorting\n\nMR: https://gitlab.com/powerslice-software-development/sm-spa/-/merge_requests/18\nBranch: SM-864\n\nChanges:\n- Added multi-column sort support (Ctrl+click) for sorting by multiple columns\n- Added static visible column menu with Filter, General, and Columns tabs\n- Added Apply and Reset buttons to all filter dropdowns\n- Changed default text filter from equals to contains\n- Added auto-populated distinct values for all Set filter dropdowns via API\n- Added filter and sort state persistence via localStorage\n- Added Clear All Filters button in toolbar\n- Fixed floating filter row CSS overlap issue\n\nQA Testing Steps:\n1. Navigate to Vendor Admin grid\n2. Click any column header (e.g. Company Name) - verify it sorts A-Z, then Z-A on second click\n3. Hold Ctrl and click a second column header - verify multi-column sort works with numbered indicators\n4. Open a filter dropdown on any column - verify it shows Apply and Reset buttons\n5. Type in a text filter (e.g. Company Name) - verify it defaults to contains search\n6. Open a Set filter (e.g. Status, State) - verify distinct values are populated from the database\n7. Apply a filter and sort, then refresh the page (F5) - verify filter and sort persist\n8. Click Clear All Filters button - verify all filters and sort reset\n9. Hover over any column header - verify the hamburger menu icon is always visible\n10. Click the column menu - verify it shows Filter, General, and Columns tabs\n\nVersion: MR !18"
+            }
+          ]
+        }
+      ]
+    },
+    "created": "2026-02-10T11:21:19.511-0500"
+  },
+  {
+    "author": "Joshua Rempis",
+    "body": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "panel",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "PASSED in TEST"
+                }
+              ]
+            }
+          ],
+          "attrs": {
+            "panelType": "success"
+          }
+        },
+        {
+          "type": "heading",
+          "attrs": {
+            "level": 3
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "Retesting on TEST"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Issue: Add \u201cApply\u201d to all filters. Similar to all other AG Grid modules."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Issue: Change the filter to contains not equal."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Issue: Add filter searches to the top with a clear all option similar to all other AG Grids."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verify the filters work on the Vendor Admin."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "orderedList",
+          "attrs": {
+            "order": 1
+          },
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Navigate to Vendor Admin grid "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Click any column header (e.g. Company Name) - verify it sorts A-Z, then Z-A on second click "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Hold Ctrl and click a second column header - verify multi-column sort works with numbered indicators "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Open a filter dropdown on any column - verify it shows Apply and Reset buttons "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Type in a text filter (e.g. Company Name) - verify it defaults to contains search "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Open a Set filter (e.g. Status, State) - verify distinct values are populated from the database "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Apply a filter and sort, then refresh the page (F5) - verify filter and sort persist "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Click Clear All Filters button - verify all filters and sort reset "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Hover over any column header - verify the hamburger menu icon is always visible "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Click the column menu - verify it shows Filter, General, and Columns tabs"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verify user can rearrange columns."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verify user can pin columns."
+                    }
+                  ]
+                },
+                {
+                  "type": "bulletList",
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Note Carlos said the pinning was fine the way it was set up and that we do not need to add a pin to the main header row."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "attrs": {
+            "level": 3
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "Results on TEST"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Issue resolved: Add \u201cApply\u201d to all filters. Similar to all other AG Grid modules. "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Issue resolved: Change the filter to contains not equal. "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Issue resolved: Add filter searches to the top with a clear all option similar to all other AG Grids. "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verify the filters work on the Vendor Admin."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "orderedList",
+          "attrs": {
+            "order": 1
+          },
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Navigate to Vendor Admin grid  "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Click any column header (e.g. Company Name) - verify it sorts A-Z, then Z-A on second click "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Hold Ctrl and click a second column header - verify multi-column sort works with numbered indicators "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Open a filter dropdown on any column - verify it shows Apply and Reset buttons "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Type in a text filter (e.g. Company Name) - verify it defaults to contains search "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Open a Set filter (e.g. Status, State) - verify distinct values are populated from the database "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Apply a filter and sort, then refresh the page (F5) - verify filter and sort persist "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Click Clear All Filters button - verify all filters and sort reset "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Hover over any column header - verify the hamburger menu icon is always visible "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Click the column menu - verify it shows Filter, General, and Columns tabs"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verify user can rearrange columns. "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Verify user can pin columns. "
+                    },
+                    {
+                      "type": "text",
+                      "text": "PASSED",
+                      "marks": [
+                        {
+                          "type": "textColor",
+                          "attrs": {
+                            "color": "#36b37e"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " "
+                    }
+                  ]
+                },
+                {
+                  "type": "bulletList",
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "type": "text",
+                              "text": "Note Carlos said the pinning was fine the way it was set up and that we do not need to add a pin to the main header row."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "created": "2026-02-12T07:56:38.781-0500"
+  },
+  {
+    "author": "Darl Anthony Pepito",
+    "body": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Merged and Ready for Stage Testing\\!"
+            }
+          ]
+        }
+      ]
+    },
+    "created": "2026-03-26T15:21:53.868-0400"
+  },
+  {
+    "author": "Kim Bandeleon",
+    "body": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "codeBlock",
+          "attrs": {
+            "language": "diff",
+            "localId": "8a09062fd3b7"
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "Results on STAGE\n\nScenario 1 \u2013 Navigate to Vendor Admin Grid\n+ User can log in and reach the dashboard\n+ Vendor Admin AG Grid loads with vendor data via sidebar navigation\n+ Grid renders all columns with data, no CSS overlap on floating filter row, and no console errors\n\nScenario 2 \u2013 Single Column Sort Ascending\n+ Clicking Company Name header once sorts rows A-Z\n+ Ascending sort indicator arrow appears on column header\n+ All visible vendor names follow alphabetical A-Z order when scrolling\n\nScenario 3 \u2013 Single Column Sort Descending\n+ Clicking Company Name header a second time sorts rows Z-A\n+ Sort indicator changes to descending direction\n+ All visible vendor names follow reverse alphabetical Z-A order\n\nScenario 4 \u2013 Single Column Sort Clear\n+ Clicking Company Name header a third time removes the sort and returns to default order\n+ Sort indicator is no longer visible on the column header\n\n+ Scenario 5 \u2013 Multi-Column Sort\n+ Clicking State header sorts grid by State ascending\n+ Ctrl+clicking Company Name header adds a secondary sort within each State grouping\n+ Numbered sort indicators appear on both columns (State = 1, Company Name = 2)\n+ Company Names are in ascending order within each identical State value\n\nScenario 6 \u2013 Filter Dropdown Apply and Reset Buttons\n+ Filter dropdown opens on Company Name column with input field\n+ Apply and Reset buttons are visible at the bottom of the filter panel\n+ Typing a partial name without clicking Apply does not filter the grid\n+ Clicking Apply filters the grid to matching vendors only\n+ Clicking Reset clears the filter and restores the full dataset\n\nScenario 7 \u2013 Text Filter Defaults to Contains\n+ Default filter condition on Company Name is set to Contains, not Equals\n+ Typing a partial name (e.g. \"tech\") and clicking Apply returns all vendors whose Company Name contains the substring\n\nScenario 8 \u2013 Set Filter Distinct Values from Database\n+ Opening a Set-type column filter (e.g. Status or State) displays a checkbox list of distinct values\n+ Values are auto-populated from the database and not hardcoded\n+ Selecting one value and clicking Apply filters the grid to matching rows only\n+ Row count updates to reflect the filtered subset\n\n- Scenario 9 \u2013 Combining Multiple Filters with AND Logic\n- Filtering Status to Active shows only active vendors\n- Adding a second filter on State (e.g. California) further reduces the results\n- Combined row count is less than or equal to the Active-only count\n- Every displayed row matches both Status = Active AND State = California\n\nScenario 10 \u2013 Filter and Sort Persistence After Page Refresh\n+ Applying a State filter and Company Name sort, then refreshing the page with F5\n+ State filter is still active after reload\n+ Company Name ascending sort is still applied after reload\n\nScenario 11 \u2013 Clear All Filters Button\n+ Applying filters on two columns and a sort on one column\n+ Clicking Clear All Filters removes all filters and resets the sort\n+ Grid returns to the full dataset in default order\n+ No filter icons or highlights remain on any column headers\n\nScenario 12 \u2013 Column Menu Static Hamburger Icon\n+ Hamburger menu icon is always visible on column headers, not only on hover\n+ Icon is consistently present across at least three different columns\n\nScenario 13 \u2013 Column Menu Filter General and Columns Tabs\n+ Clicking the hamburger menu opens a column menu panel\n+ Menu contains a Filter tab with filter options\n+ Menu contains a General tab with column options (e.g. pin, autosize)\n+ Menu contains a Columns tab with visibility toggles for all columns\n+ All three tabs are present consistently across multiple columns\n\nScenario 14 \u2013 Column Rearranging via Drag and Drop\n+ Dragging a column header (e.g. State) to a new position shows a visual indicator\n+ Column repositions correctly on drop\n+ Data integrity is maintained with no row data misalignment after rearranging\n\nScenario 15 \u2013 Column Pinning\n+ Pinning Company Name to the left via the column menu General tab\n+ Pinned column stays fixed while scrolling horizontally\n+ Unpinning the column returns it to its normal scrollable position\n\nScenario 16 \u2013 Filter on Every Column\n+ Every column in the grid has a filter dropdown available\n+ Text columns show a text filter defaulting to Contains and set columns show a checkbox list\n+ Apply and Reset buttons are present on every column filter panel\n+ At least one filter per column type correctly reduces the dataset\n\nScenario 17 \u2013 Sort on Every Column\n+ Each column sorts ascending on first click and descending on second click\n+ Sort indicator arrows reflect the correct direction for each column\n\nScenario 18 \u2013 Filter with No Results\n+ Typing a non-matching string and clicking Apply shows zero rows with an empty state message\n+ Clicking Reset or Clear All Filters restores the full dataset\n\nScenario 19 \u2013 Special Characters in Filter\n+ Entering special characters (& ' \" < >) in the text filter does not cause JavaScript errors or broken UI\n+ Grid shows matching results or an empty state with no XSS or injection issues\n\nScenario 20 \u2013 Persistence Across Browser Sessions\n+ Applying a filter and sort, closing the browser tab, then reopening Vendor Admin restores the saved state from localStorage\n\nScenario 21 \u2013 Persistence Cleared by Clear All Filters\n+ Filter and sort persist after a page refresh\n+ Clicking Clear All Filters and then refreshing the page loads the grid with no filters or sorts applied\n\nScenario 22 \u2013 Multi-Column Sort with Three or More Columns\n+ Sorting by State, then Ctrl+clicking Status, then Ctrl+clicking Company Name\n+ Numbered indicators show 1, 2, and 3 on the respective columns\n+ Data is ordered correctly across all three sort levels\n\nScenario 23 \u2013 Filter Combined with Sort Respects Filtered Data\n+ Filtering State to Texas and sorting Company Name ascending shows only Texas vendors in A-Z order\n+ No non-Texas vendors appear in the sorted results\n\nScenario 24 \u2013 Large Dataset Performance\n+ Sorting the full unfiltered dataset completes without noticeable lag or UI freeze\n+ Applying a broad text filter (e.g. single letter \"a\") renders without significant delay\n\nScenario 25 \u2013 Column Visibility Toggle via Columns Tab\n+ Columns tab shows all available columns with checkboxes\n+ Unchecking a column hides it from the grid\n+ Re-checking the column makes it reappear with no data misalignment\n\nScenario 26 \u2013 Floating Filter Row No CSS Overlap\n+ Floating filter row is properly aligned with no overlap on header text or data rows\n+ Resizing the browser window does not cause the floating filter row to overlap\n\nScenario 27 \u2013 Regression: Core Grid Functionality\n+ Vendor data loads correctly without any filters applied\n+ Clicking a company name navigates to the Vendor Profile (SM-934)\n+ Grid export reflects the filtered dataset when filters are applied (SM-865)\n+ Add New Vendor button opens the new vendor form (SM-935)\n+ Inline editing functions correctly on editable cells (SM-863)\n+ No console errors on page load or during interactions"
+            }
+          ]
+        },
+        {
+          "type": "rule",
+          "attrs": {
+            "localId": "2582300eac1d"
+          }
+        },
+        {
+          "type": "heading",
+          "attrs": {
+            "level": 1,
+            "localId": "753beeac2953"
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "Errors"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Scenario 9 \u2013 Combining Multiple Filters with AND Logic"
+            }
+          ],
+          "attrs": {
+            "localId": "407f9251b2cc"
+          }
+        },
+        {
+          "type": "heading",
+          "attrs": {
+            "level": 1,
+            "localId": "3d7dc8d48752"
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "STAGE"
+            }
+          ]
+        },
+        {
+          "type": "mediaSingle",
+          "attrs": {
+            "width": 451,
+            "widthType": "pixel",
+            "localId": "473770180510",
+            "layout": "wrap-left"
+          },
+          "content": [
+            {
+              "type": "media",
+              "attrs": {
+                "type": "file",
+                "id": "b884ecd2-8e99-407f-a327-78e0fbeafed9",
+                "alt": "image-20260415-170748.png",
+                "collection": "",
+                "localId": "7ada6ece4c3b",
+                "height": 1351,
+                "width": 2097
+              }
+            }
+          ]
+        },
+        {
+          "type": "mediaSingle",
+          "attrs": {
+            "width": 452,
+            "widthType": "pixel",
+            "localId": "c7e3967ceb20",
+            "layout": "wrap-right"
+          },
+          "content": [
+            {
+              "type": "media",
+              "attrs": {
+                "type": "file",
+                "id": "ffdfc91b-7e27-4f7d-987f-f61dfb23ebc8",
+                "alt": "image-20260415-170804.png",
+                "collection": "",
+                "localId": "67568a69e552",
+                "height": 1351,
+                "width": 2097
+              }
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "attrs": {
+            "level": 1,
+            "localId": "c5785e63ed2d"
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "TEST"
+            }
+          ]
+        },
+        {
+          "type": "mediaSingle",
+          "attrs": {
+            "width": 456,
+            "widthType": "pixel",
+            "localId": "4724309539c5",
+            "layout": "align-start"
+          },
+          "content": [
+            {
+              "type": "media",
+              "attrs": {
+                "type": "file",
+                "id": "b07d9ade-1261-4c8a-ac6a-f7d15d65363b",
+                "alt": "image-20260416-000836.png",
+                "collection": "",
+                "localId": "75cb480f9c24",
+                "height": 1351,
+                "width": 2097
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "created": "2026-04-15T14:00:00.242-0400"
+  }
+]

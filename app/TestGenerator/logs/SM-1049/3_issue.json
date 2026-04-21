@@ -1,0 +1,219 @@
+{
+  "key": "SM-1049",
+  "fields": {
+    "summary": "Certificate Module - Set up a Oops page if user accesses the log in screen ",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "\ud83d\udcdd User Story: Display Oops Page When Accessing Certificate Module Login Screen"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "As A: User of the Certificate Manager module"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "I Want To: Be shown a clear \"Oops\" error page if I access the login screen directly or via an invalid/corrupted URL"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "So That: I am not confused by unexpected redirects and receive a clear message that the page or action is not available."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Acceptance Criteria (ACs)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC1: If a user navigates directly to the Certificate Manager login screen (e.g., by stripping the UID from the URL or using an invalid certificate link), the system must display a user-friendly \"Oops\" error page."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC2: The \"Oops\" page must clearly state that the requested page or action is unavailable or invalid."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC3: The \"Oops\" page must provide a way for the user to navigate back to a safe location (e.g., dashboard or home page)."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC4: The system must not redirect users to a blank or broken page in these scenarios."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Scenario Example"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Input: User navigates to "
+            },
+            {
+              "type": "text",
+              "text": "https://sitemanager.betacom.com/app/webroot/cmdist/#/",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://sitemanager.betacom.com/app/webroot/cmdist/#/"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": " (with no valid certificate UID)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Expected Output: The user sees an \"Oops\" error page explaining the issue and offering navigation options."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Original Description:"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "if in the CERT manager, they get to the login screen, it automatically redirect them to an oops page. I was here ("
+            },
+            {
+              "type": "text",
+              "text": "https://sitemanager.betacom.com/app/webroot/cmdist/#/public-certificate/16812)",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://sitemanager.betacom.com/app/webroot/cmdist/#/public-certificate/16812)"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "("
+            },
+            {
+              "type": "text",
+              "text": "https://sitemanager.betacom.com/app/webroot/cmdist/#/public-certificate/16812",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://sitemanager.betacom.com/app/webroot/cmdist/#/public-certificate/16812"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "))  and then just sripped off the UID till I got something ("
+            },
+            {
+              "type": "text",
+              "text": "https://sitemanager.betacom.com/app/webroot/cmdist/#/)",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://sitemanager.betacom.com/app/webroot/cmdist/#/)"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "("
+            },
+            {
+              "type": "text",
+              "text": "https://sitemanager.betacom.com/app/webroot/cmdist/#/",
+              "marks": [
+                {
+                  "type": "link",
+                  "attrs": {
+                    "href": "https://sitemanager.betacom.com/app/webroot/cmdist/#/"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "))"
+            }
+          ]
+        }
+      ]
+    },
+    "issuetype": "Story",
+    "status": "Done",
+    "priority": "High",
+    "assignee": "",
+    "reporter": "Kim Heinz",
+    "labels": [
+      "defect_production"
+    ],
+    "environment": null,
+    "parent": {},
+    "attachments": [
+      "image-20260306-070054.png",
+      "image-20260306-070853.png",
+      "image-20260306-071046.png",
+      "image-20260310-063257.png",
+      "image-20260310-063329.png",
+      "image-20260310-063412.png",
+      "Screenshot 2026-03-02 at 4.32.05\u202fPM.png"
+    ]
+  }
+}

@@ -7,15 +7,15 @@ Automated QA test suite for **Site Manager** using Playwright with BDD (Cucumber
 - **macOS** — [README-MAC.md](README-MAC.md)
 - **Windows** — [README-WIN.md](README-WIN.md)
 
-## Bite — Automated QA Runner
+## TestGenerator — Automated QA Runner
 
 CLI-driven QA pipeline using Claude Code + Jira API. Run from the project root:
 
 ```bash
-./bite.sh 1-11 SM-754       # Full run on a specific ticket
-./bite.sh 1-6 SM-754        # Write Gherkin steps only
-./bite.sh 6-8 SM-754        # Write + implement + execute
-./bite/chomp.sh summary     # View journey log summary
+./app/TestGenerator/TestGenerator.sh 1-11 SM-754    # Full run on a specific ticket
+./app/TestGenerator/TestGenerator.sh 1-6 SM-754     # Write Gherkin steps only
+./app/TestGenerator/TestGenerator.sh 6-8 SM-754     # Write + implement + execute
+./app/TestGenerator/chomp.sh summary                # View journey log summary
 ```
 
 | Step | Name | Description |
@@ -24,7 +24,7 @@ CLI-driven QA pipeline using Claude Code + Jira API. Run from the project root:
 | 2 | Find Ticket | JQL search for next SM Testing ticket |
 | 3 | Review Ticket | Fetch issue (trimmed to 21 fields), comments, attachments |
 | 4 | Review Code | Find commits and changed files |
-| 5 | Draft Test Plan | Claude generates `5_plan.md` + `5_plan_manual.md` (token-tracked) |
+| 5 | Draft Test Plan | Claude generates `5_plan.md` + `5_plan_manual.html` (token-tracked) |
 | 6 | Write Gherkin Steps | One Claude call per TC in parallel → compiled `.feature` + `bddgen` (token-tracked) |
 | 7 | Write Automated Tests | Wire step definitions, verify compilation |
 | 8 | Execute Tests | Run Playwright-BDD suite |

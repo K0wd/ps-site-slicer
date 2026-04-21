@@ -1,0 +1,64 @@
+# TestGenerator UI — Frontend Conventions
+
+## No Framework, No Build Step
+
+The frontend is vanilla HTML + CSS + JS. This is intentional. Do not introduce React, Vue, Svelte, or any frontend framework. Do not add a bundler (webpack, vite, esbuild). The three files in `ui/` are served as-is by Express.
+
+## File Responsibilities
+
+- **`index.html`** — Structure only. No inline scripts, no inline styles beyond occasional `style=""` on one-off elements. All interactive elements need `id` attributes for `app.js` to bind to.
+- **`style.css`** — All styling. Uses CSS custom properties (`:root` vars) for theming. Dark theme (GitHub-inspired). No CSS-in-JS.
+- **`app.js`** — All behavior. Plain ES2020+ (no modules, no import/export — it's a `<script>` tag). State lives in a single `state` object. DOM manipulation is direct (no virtual DOM).
+
+## CSS Conventions
+
+- Color tokens in `:root` — never hardcode hex values in rules.
+- Status colors: `--accent` (blue/running), `--green` (pass), `--red` (fail), `--yellow` (warn/skip).
+- Font stacks: `--sans` for UI text, `--mono` for code, tickets, timestamps, durations.
+- Component sections in CSS marked with `/* ═══ SECTION ═══ */` comments.
+- Mobile breakpoints at 1100px (3-col grid) and 800px (2-col grid + stacked header).
+
+## JavaScript Patterns
+
+- **State:** Single `state` object at the top of `app.js`. Render functions read from state and rebuild DOM. No two-way binding.
+- **DOM access:** `$()` and `$$()` helpers for `querySelector`/`querySelectorAll`. Cache references at module top for elements that exist on page load.
+- **SSE:** One `EventSource` connection via `connectSSE()`. Each SSE event type has its own `source.addEventListener()`. Events update `state`, then call the relevant `render*()` function.
+- **API calls:** `fetch()` with `async/await`. POST bodies are JSON. Errors go to `appendLog()`.
+- **XSS prevention:** All user-visible text passes through `esc()` (creates a text node, reads innerHTML). Never use `innerHTML` with raw user/API data.
+- **No external JS dependencies.** No jQuery, no lodash, no charting libraries. If you need a chart, use SVG or CSS.
+
+## UI Layout
+
+```
+┌─────────────────────────────────────────────┐
+│  HEADER: logo | ticket input | filter |     │
+│          steps range | Run | Schedule        │
+├─────────────────────────────────────────────┤
+│  TICKET BAR (hidden until ticket selected)   │
+├─────────────────────────────────────────────┤
+│  PIPELINE GRID: 4-column grid of step cards  │
+│  Each card: step number, name, status dot,   │
+│  duration, per-step Run button, message      │
+├─────────────────────────────────────────────┤
+│  BOTTOM PANEL: tabs (Live Logs | Run History)│
+│  Live Logs: monospace SSE log stream         │
+│  Run History: list of past runs from DB      │
+└─────────────────────────────────────────────┘
+```
+
+## Adding New Features
+
+When adding UI features:
+1. Add HTML structure to `index.html` (semantic, minimal).
+2. Add styles to `style.css` under the appropriate section.
+3. Add behavior to `app.js` — bind events, update state, re-render.
+4. If it needs data, add the API endpoint in `server.ts` first, then consume it from `app.js`.
+5. If it needs real-time updates, add an SSE event type in the backend `emitSSE()` call, then handle it in `connectSSE()`.
+
+## Schedule Modal Pattern
+
+The schedule modal is the reference pattern for modals in this UI:
+- Overlay with `modal-overlay hidden` class toggle.
+- Close on X button click and backdrop click.
+- Form inside modal, save via POST, list existing items below.
+- SSE event (`schedule-updated`) triggers refresh when modal is open.

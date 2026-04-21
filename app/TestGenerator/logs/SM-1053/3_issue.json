@@ -1,0 +1,141 @@
+{
+  "key": "SM-1053",
+  "fields": {
+    "summary": "Vendor Admin - New Vendor Form Update Address Field Location",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "\ud83d\udcdd User Story: Update Address Field Location in Vendor Admin - New Vendor Form and Edit Form when using the pencil icon. "
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "As A: Vendor Admin user"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "I Want To: See the Address field in the New Vendor Form and Edit Form (when using the pencil icon) to be located in the Address section (not under Contacts), labeled \"Address\" (not \"Safety Address\")"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "So That: The form matches the spreadsheet labeling and field organization, reducing confusion and ensuring data consistency."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Acceptance Criteria (ACs)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC1: The Address field in the New Vendor Form and Edit Form(when using the pencil icon) must be moved from the Contacts section to the Address section."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC2: The Address field must be a required field."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC3: The field label must read \"Address\" (not \"Safety Address\"), matching the spreadsheet."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC4: The form layout and field naming must be consistent with the provided spreadsheet."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Scenario Example"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Input: User opens the New Vendor Form  or the Edit form (when using the pencil icon) in Vendor Admin."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Output: The Address dropdown appears in the Address section, labeled \"Address.\" The Contacts section does not contain an Address field."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Original Description:"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "In the Vendor Admin in the New Vendor Form and the edit form Update Address Field Location to the Address section instead of the Contacts. It should be labeled Address not Safety Address similar to how the spreadsheet labeled that field."
+            }
+          ]
+        }
+      ]
+    },
+    "issuetype": "Story",
+    "status": "On Stage",
+    "priority": "High",
+    "assignee": "Kim Bandeleon",
+    "reporter": "Kim Heinz",
+    "labels": [
+      "defect_internal"
+    ],
+    "environment": null,
+    "parent": {
+      "key": "SM-862",
+      "summary": "Vendor Admin- AG Grid Revamp"
+    },
+    "attachments": [
+      "image-20260304-061812.png",
+      "image-20260304-061907.png",
+      "image-20260304-062120.png",
+      "image-20260304-062555.png",
+      "image-20260304-062627.png",
+      "Screenshot 2026-03-03 at 12.45.20\u202fPM.png"
+    ]
+  }
+}

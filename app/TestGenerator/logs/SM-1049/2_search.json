@@ -1,0 +1,49 @@
+{
+  "returned": 1,
+  "issues": [
+    {
+      "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+      "id": "20013",
+      "self": "https://powerslicesoftware.atlassian.net/rest/api/3/issue/20013",
+      "key": "SM-1049",
+      "fields": {
+        "summary": "Certificate Module - Set up a Oops page if user accesses the log in screen ",
+        "reporter": {
+          "self": "https://powerslicesoftware.atlassian.net/rest/api/3/user?accountId=712020%3A5bcbe064-5225-4b1d-9b13-bb9899f103d3",
+          "accountId": "712020:5bcbe064-5225-4b1d-9b13-bb9899f103d3",
+          "avatarUrls": {
+            "48x48": "https://secure.gravatar.com/avatar/e804177b75d71af3d8cb0ceea596cc5c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKH-0.png",
+            "24x24": "https://secure.gravatar.com/avatar/e804177b75d71af3d8cb0ceea596cc5c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKH-0.png",
+            "16x16": "https://secure.gravatar.com/avatar/e804177b75d71af3d8cb0ceea596cc5c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKH-0.png",
+            "32x32": "https://secure.gravatar.com/avatar/e804177b75d71af3d8cb0ceea596cc5c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKH-0.png"
+          },
+          "displayName": "Kim Heinz",
+          "active": true,
+          "timeZone": "America/New_York",
+          "accountType": "atlassian"
+        },
+        "assignee": null,
+        "priority": {
+          "self": "https://powerslicesoftware.atlassian.net/rest/api/3/priority/2",
+          "iconUrl": "https://powerslicesoftware.atlassian.net/images/icons/priorities/high_new.svg",
+          "name": "High",
+          "id": "2"
+        },
+        "status": {
+          "self": "https://powerslicesoftware.atlassian.net/rest/api/3/status/10008",
+          "description": "",
+          "iconUrl": "https://powerslicesoftware.atlassian.net/",
+          "name": "Done",
+          "id": "10008",
+          "statusCategory": {
+            "self": "https://powerslicesoftware.atlassian.net/rest/api/3/statuscategory/3",
+            "id": 3,
+            "key": "done",
+            "colorName": "green",
+            "name": "Done"
+          }
+        }
+      }
+    }
+  ]
+}

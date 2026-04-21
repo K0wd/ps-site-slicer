@@ -1,0 +1,233 @@
+{
+  "key": "SM-1103",
+  "fields": {
+    "summary": "Project Tracker - Cascade Template Management Screen",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "📝 User Story: Project Cascade Template Management Screen"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "As A: User using the Project Tracker  "
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "I Want To: Access a management screen to create and configure project cascade templates, where each template contains multiple records with an associated number of days  "
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "So That: I can efficiently set up and manage standardized project workflows with specific timing for each step."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Acceptance Criteria (ACs)"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "AC1: The system provides a dedicated management screen for project cascade templates."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "AC2: Users can create a new project cascade template and assign a name to it."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "AC3: Each template allows users to add multiple records/steps, each with a configurable number of days."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "AC4: Users can view, edit, and delete existing templates and their records."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "AC5: The interface supports managing multiple project cascade templates."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Scenario Example"
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Input: User navigates to the cascade template management screen, creates a template named \"Site Launch,\" adds three steps (\"Design\" - 5 days, \"Procurement\" - 10 days, \"Installation\" - 7 days)."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Output: \"Site Launch\" template is saved with three steps, each displaying the correct number of days. User can edit or remove steps as needed."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Original Description:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "create a project cascade template management screen that lets them set up records with a number of days associated to each. Each project cascade template will have multiple values. and then there are multiple project cascade templates"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "*Note: Request came from Carlos in our on call meeting 4/1/26."
+            }
+          ]
+        }
+      ]
+    },
+    "issuetype": "Epic",
+    "status": "QA Verified",
+    "priority": "Highest",
+    "assignee": "Kim Bandeleon",
+    "reporter": "Kim Heinz",
+    "labels": [
+      "change_request"
+    ],
+    "environment": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Thanks for raising "
+            },
+            {
+              "type": "inlineCard",
+              "attrs": {
+                "url": "https://powerslicesoftware.atlassian.net/browse/SM-1103#icft=SM-1103"
+              }
+            },
+            {
+              "type": "text",
+              "text": "."
+            }
+          ]
+        }
+      ]
+    },
+    "parent": {},
+    "attachments": [
+      "Screenshot 2026-04-13 at 2.43.50 PM.png",
+      "Trickle Down Project Dates.xlsx"
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+# TestGenerator UI — Design System
+
+## Theme: GitHub Dark
+
+The UI follows GitHub's dark mode color palette. All colors use CSS custom properties.
+
+## Color Tokens
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--bg` | `#0d1117` | Page background, input backgrounds |
+| `--bg-card` | `#161b22` | Cards, header, panels |
+| `--bg-hover` | `#1c2129` | Hover states |
+| `--bg-elevated` | `#1c2129` | Elevated surfaces |
+| `--border` | `#30363d` | Default borders |
+| `--border-light` | `#484f58` | Hover borders |
+| `--text` | `#e6edf3` | Primary text |
+| `--text-2` | `#8b949e` | Secondary text |
+| `--text-3` | `#484f58` | Tertiary text, labels |
+| `--accent` | `#388bfd` | Links, active states, running status |
+| `--accent-dim` | `rgba(56,139,253,0.15)` | Accent backgrounds |
+| `--green` | `#3fb950` | Pass/success |
+| `--green-dim` | `rgba(63,185,80,0.15)` | Success backgrounds |
+| `--red` | `#f85149` | Fail/error |
+| `--red-dim` | `rgba(248,81,73,0.15)` | Error backgrounds |
+| `--yellow` | `#d29922` | Warn/skip |
+| `--yellow-dim` | `rgba(210,153,34,0.15)` | Warning backgrounds |
+
+## Status Color Mapping
+
+| Status | Dot Color | Label Color | Card Top Bar |
+|--------|-----------|-------------|-------------|
+| `idle` | `--text-3` | (hidden) | `--text-3` |
+| `running` | `--accent` + pulse | `--accent` | `--accent` |
+| `pass` | `--green` | `--green` | `--green` |
+| `fail` | `--red` | `--red` | `--red` |
+| `warn` | `--yellow` | `--yellow` | `--yellow` |
+| `skip` | `--yellow` | `--yellow` | `--yellow` |
+
+## Typography
+
+- **UI text:** `--sans` = `-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`
+- **Code/data:** `--mono` = `'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace`
+- Monospace is used for: ticket keys, timestamps, durations, step numbers, log output, cron boxes, number inputs.
+
+## Component Patterns
+
+### Cards (Step Cards)
+- Background: `--bg-card`, border: `--border`, radius: `8px`.
+- 2px colored top bar via `::before` pseudo-element (color matches status).
+- Hover: background shifts to `--bg-hover`, border to `--border-light`.
+
+### Buttons
+- **Primary** (`.btn-primary`): solid `--accent` background, white text, 6px radius.
+- **Secondary** (`.btn-schedule`, `.step-run-btn`): transparent with `--border` border, hover adds `--accent-dim` background.
+- **Minimal** (`.btn-clear`): no background, subtle border, small text.
+
+### Badges
+- Pill-shaped (`border-radius: 10px`), colored background + text using dim/full token pairs.
+- Examples: QA Pipeline badge (`--accent-dim` + `--accent`), ticket status (`--yellow-dim` + `--yellow`).
+
+### Log Output
+- Monospace, line-height 1.7 for readability.
+- Each line: timestamp (tertiary) + step tag (accent, bold) + message.
+- Level colors: `info` = default, `error` = red, `warn` = yellow, `debug` = tertiary.
+
+### Modals
+- Fixed overlay with `rgba(0,0,0,0.6)` + `backdrop-filter: blur(4px)`.
+- Centered card: `--bg-card` background, 12px radius, max 480px width.
+- Header with title + close button, separated by border.
+
+## Animation
+
+- Only one animation: `pulse` keyframe on `.status-dot.running` (opacity 1 → 0.3 → 1, 1.5s).
+- All other transitions: 0.15s for colors/borders, 0.2s for opacity/shadows.
+- No spring animations, no transforms, no layout shifts.
+
+## Responsive Breakpoints
+
+| Width | Grid Columns | Header |
+|-------|-------------|--------|
+| > 1100px | 4 columns | Single row |
+| 800–1100px | 3 columns | Single row |
+| < 800px | 2 columns | Stacked, controls wrap |

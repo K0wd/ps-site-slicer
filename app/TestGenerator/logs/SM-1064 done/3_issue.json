@@ -1,0 +1,141 @@
+{
+  "key": "SM-1064",
+  "fields": {
+    "summary": "Vendor Admin - Add Section for \"Upload/Replace Company Logo\"",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "📝 User Story: Add \"Upload/Replace Company Logo\" Section to Vendor Admin"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "As A: Vendor Admin user"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "I Want To: Upload or replace the company logo in the new Vendor Admin (both Edit and New forms)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "So That: I can manage and update the company branding directly within the admin interface, mirroring the functionality from the old Vendor Admin."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Acceptance Criteria (ACs)"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC1: A section labeled \"Upload/Replace Company Logo\" is present in both the Edit and New forms of the new Vendor Admin."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC2: Users can upload PNG files as the company logo using this section."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC3: The uploaded logo data is mirrored from the old Vendor Admin, ensuring consistency."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC4: The section must allow replacing an existing logo with a new PNG file."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "AC5: The feature is accessible and functions identically in both Edit and New forms."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Scenario Example"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Input: User navigates to the Edit Vendor form in the new Vendor Admin, selects \"Upload/Replace Company Logo,\" and uploads a new PNG file."
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "Output: The new logo replaces the previous one, and the change is reflected in the Vendor Admin interface, matching the behavior of the old Vendor Admin."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Original Description:"
+            },
+            {
+              "type": "hardBreak"
+            },
+            {
+              "type": "text",
+              "text": "In the Vendor Admin, add a Section for user to  \"Upload/Replace Company Logo\" from Old Vendor Admin to the New Vendor Admin to the Edit and New form as a section. Data should mirror from the Old Vendor Admin. User should be able to upload png files using this tool."
+            }
+          ]
+        }
+      ]
+    },
+    "issuetype": "Story",
+    "status": "On Stage",
+    "priority": "High",
+    "assignee": "Kim Bandeleon",
+    "reporter": "Kim Heinz",
+    "labels": [
+      "change_request"
+    ],
+    "environment": "",
+    "parent": {
+      "key": "SM-862",
+      "summary": "Vendor Admin- AG Grid Revamp"
+    },
+    "attachments": []
+  }
+}
