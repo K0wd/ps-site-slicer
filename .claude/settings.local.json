@@ -62,7 +62,21 @@
       "Bash(bash -n /Users/kim/projects/github.com/fulcrum/powerslice/ps-site-slicer/app/TestGenerator/TestGenerator.sh)",
       "Bash(./app/TestGenerator/TestGenerator.sh 1-2 me)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(f'Size: {len\\(json.dumps\\(d\\)\\)} bytes'\\); issues=d.get\\('issues',d if isinstance\\(d,list\\) else [d]\\); print\\(f'Issues: {len\\(issues\\)}'\\); i=issues[0] if issues else {}; print\\('Top keys:', list\\(i.keys\\(\\)\\)\\); f=i.get\\('fields',{}\\); print\\('Field keys:', list\\(f.keys\\(\\)\\)\\)\")",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(node -p process.arch)",
+      "Bash(node -e \"const os = require\\('os'\\); console.log\\('os.arch:', os.arch\\(\\), 'process.arch:', process.arch, 'platform:', process.platform\\)\")",
+      "Bash(arch -arm64 node -e \"const os = require\\('os'\\); console.log\\(os.arch\\(\\)\\)\")",
+      "Bash(rm -rf node_modules)",
+      "Bash(arch -arm64 npm install)",
+      "Bash(node -e \"require\\('esbuild'\\).version\")",
+      "Bash(node -e \"console.log\\(require\\('esbuild'\\).version\\)\")",
+      "Bash(arch -x86_64 npm install)",
+      "Bash(grep -oE \"\\(Given|When|Then\\)\\\\\\(['\\\\`].*['\\\\`]\")",
+      "Bash(grep -v \"server.ts\\\\|ExperimentalWarning\\\\|CommonJS\\\\|require\\(\\)\\\\|Use \\\\`node\")",
+      "Bash(grep -v \"^$\")",
+      "Read(//Users/kim/.claude-self/usage-data/**)"
     ]
-  }
+  },
+  "outputStyle": "default",
+  "prefersReducedMotion": true
 }

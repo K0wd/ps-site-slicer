@@ -1,125 +1,136 @@
 # Test Plan — SM-754: Purchasing Tracker Filters
 
+**Ticket:** SM-754 | **Status:** Testing | **Environment:** Test server
+**Last Fix (Darl, SVN r16662):** Approval column blank filter and Approver(s) blank filter now correctly handle NULL/empty/non-static values.
+
 ## Summary
 
-Verifies that all Purchasing Tracker filters correctly narrow the table view and that filtered exports reflect only the filtered data. The most recent fix (SVN r16662) addressed Blank filter behavior on the Approval and Approver(s) columns — these are the highest-risk areas for this test pass.
+Verifies that all Purchasing Tracker filters narrow the table view correctly and that the filtered result set is faithfully reflected in the CSV export. The most recent fix targets the Approval and Approver(s) blank filter edge cases; this plan confirms those fixes hold while ensuring no regressions across the full filter set.
 
 ## Pre-conditions
 
-- Logged in as `Bandeleonk` / `test1234` at `https://testserver.betacom.com/spa/auth/login`
-- Purchasing Tracker module is accessible and contains records across multiple statuses, types, approvers, departments, priorities, and vendors
-- Records exist with blank values in the Approval and Approver(s) columns
-- Division column has no filter option (intentionally removed — verify absence only)
+- Logged in as Bandeleonk at `https://testserver.betacom.com/spa`
+- Purchasing Tracker is accessible and contains records spanning multiple values for each filterable column (IDs, vendors, statuses, approvers, departments, priorities, WO#s, PO#s)
+- The test environment reflects the latest build (SVN r16662+)
 
 ---
 
 ## Scenarios
 
-### SC-01: Text and ID Filters Filter Table and Export Correctly
+### SC-01: Core Text and Numeric Filters — Table and Export
 
-**Objective:** Confirms that text-based filters (ID, WO#, Description, PO#) narrow the table and that the resulting export contains only filtered rows.
+**Objective:** Confirms that text-input and numeric filters (ID, WO#, Description, PO#, Requested Total) narrow the table to matching rows and that the export reflects the same filtered set.
 
-**Pre-conditions:** Multiple PO records exist with known IDs, WO numbers, descriptions, and PO numbers.
+**Pre-conditions:** Purchasing Tracker is open with unfiltered data showing multiple records.
 
 **Steps:**
-1. Navigate to Purchasing Tracker → **Expected:** Tracker loads showing all records with a count visible at the bottom.
-2. Apply the ID filter using a known PO ID → **Expected:** Table narrows to only rows matching that ID; row count decreases.
-3. Click Export → **Expected:** Export downloads; row count in the file matches the filtered table count and contains only the filtered ID.
-4. Clear the ID filter; apply the WO# filter using a known WO number → **Expected:** Table shows only rows linked to that WO number.
-5. Click Export → **Expected:** Export reflects only WO-filtered rows; WO column is populated in all exported rows.
-6. Clear; apply Description filter with a partial keyword → **Expected:** Table narrows to rows containing that keyword in the Description column.
-7. Clear; apply PO# filter using a known PO number → **Expected:** Only rows with that PO# are shown.
-8. Click Export → **Expected:** Exported file contains only rows with the filtered PO number; count matches.
+
+1. Apply the **ID** filter with a known POR ID value → **Expected:** Table refreshes showing only rows matching that ID; row count at bottom updates.
+2. Click **Export** with the ID filter active → **Expected:** Downloaded CSV contains only the matching rows; row count in CSV equals the table count.
+3. Clear the ID filter and apply the **WO#** filter with a known WO number → **Expected:** Only rows tied to that WO# display in the table.
+4. Click **Export** with the WO# filter active → **Expected:** CSV contains only those WO# rows; WO# column is present and populated in the file.
+5. Clear and apply the **Description** filter using a partial keyword → **Expected:** Table shows only rows whose Description field contains that keyword.
+6. Clear and apply the **PO#** filter with a known PO number → **Expected:** Table filters to matching PO records; export matches.
+7. Clear and apply the **Requested Total** filter using a numeric condition (e.g., greater than a specific amount) → **Expected:** Table shows only rows meeting that condition; export reflects the same subset without freezing.
 
 ---
 
-### SC-02: Date Filters Filter Table and Export Correctly
+### SC-02: Date Filters — Table and Export
 
-**Objective:** Confirms that Request Date and Request By Date filters work correctly with the updated date-handling logic (no longer defaulting to 00:00:00), and that exports honor the date filter.
+**Objective:** Confirms that Request Date and Request By Date filters work correctly after the date-type fix (removal of "equal" condition; date matching no longer defaults to 00:00:00).
 
-**Pre-conditions:** Records exist with known Request Date and Request By Date values spanning multiple months.
+**Pre-conditions:** Records exist with known Request Dates and Request By Dates spanning multiple calendar dates.
 
 **Steps:**
-1. Apply the Request Date filter using a known date range (e.g., "after" a specific date) → **Expected:** Table shows only records with Request Dates within the specified range; date column values in rows all satisfy the condition.
-2. Click Export → **Expected:** Exported file row count matches the filtered table; all rows in the file have Request Dates within the specified range.
-3. Clear; apply Request By Date filter using a specific future date → **Expected:** Table narrows to records with Request By Date matching the filter; no records outside that range appear.
-4. Click Export → **Expected:** Export file reflects only Request By Date-filtered records; count matches filtered table.
-5. Clear both date filters → **Expected:** Table returns to full unfiltered record set.
+
+1. Apply the **Request Date** filter using "after" or "before" a known date → **Expected:** Table shows only rows whose Request Date satisfies the condition; no records are missed due to time-component mismatch.
+2. Confirm the available filter operators for Request Date do **not** include "equal" → **Expected:** The "equal" operator is absent from the date filter options (removed by design).
+3. Click **Export** with the Request Date filter active → **Expected:** CSV downloads successfully and row count matches the filtered table.
+4. Clear and apply the **Request By Date** filter using a date range or "before" condition → **Expected:** Table narrows to matching rows correctly.
+5. Click **Export** with the Request By Date filter active → **Expected:** CSV row count matches the filtered table; date values in the export correspond to the filter criterion.
 
 ---
 
-### SC-03: Dropdown and Selection Filters Filter Table and Export Correctly
+### SC-03: Categorical and Dropdown Filters — Table and Export
 
-**Objective:** Confirms that Type, Status, Priority, Dept, Vendor, Requested Total, and Needs My Approval filters work and export correctly, and that Division has no filter option.
+**Objective:** Confirms that Type, Status, Priority, Vendor, and Dept dropdown/multi-select filters narrow the table and export correctly, and that clearing a Dept filter removes the filter indicator from the column header.
 
-**Pre-conditions:** Records exist covering multiple values for each filter. Needs My Approval has records with a "Yes" value.
+**Pre-conditions:** Multiple distinct values exist for Type, Status, Priority, Vendor, and Dept columns.
 
 **Steps:**
-1. Verify the Division column header has no filter icon or filter option → **Expected:** No filter is available for Division; the column displays values but cannot be filtered.
-2. Apply the Type filter; select one type value (e.g., "PO") → **Expected:** Table narrows to that type only.
-3. Click Export → **Expected:** All rows in the export match the selected type.
-4. Clear; apply the Status filter and select one status value → **Expected:** Table narrows; export matches the filtered status.
-5. Clear; apply the Priority filter; select "High" → **Expected:** Table shows only High priority rows; export count matches.
-6. Clear; apply the Dept filter; select a specific department → **Expected:** Table filters to that department; x-ing out the filter removes it and the filter icon disappears from the column header.
-7. Apply Vendor filter; select a known vendor → **Expected:** Only rows for that vendor appear; export matches.
-8. Apply Requested Total filter (e.g., greater than a known value) → **Expected:** Table filters correctly; export downloads without freezing and contains only matching rows.
-9. Apply Needs My Approval filter; select "Yes" → **Expected:** Table shows records requiring the logged-in user's approval; export completes successfully with matching rows. *(Note: filtering by "No" may be slow due to record volume — accept timeout as known behavior.)*
+
+1. Apply the **Type** filter by selecting a single type value from the dropdown → **Expected:** Table shows only rows of that type; row count updates.
+2. Click **Export** with the Type filter active → **Expected:** CSV downloads; all rows reflect the selected type; no freezing.
+3. Clear the Type filter and apply the **Status** filter with a single status value → **Expected:** Table narrows to matching status rows; export row count matches.
+4. Clear and apply the **Priority** filter (e.g., select "H") → **Expected:** Table shows only rows with that priority; export matches.
+5. Clear and apply the **Vendor** filter by typing a partial vendor name → **Expected:** Table filters to matching vendors; export contains only those vendors.
+6. Clear and apply the **Dept** filter by selecting one department → **Expected:** Table shows only rows for that department.
+7. Click the **X** to clear the Dept filter → **Expected:** Table resets to unfiltered state; the filter indicator icon is removed from the Dept column header (regression check for previous bug).
+8. Click **Export** after re-applying the Dept filter → **Expected:** CSV matches the filtered department rows.
 
 ---
 
-### SC-04: Approval and Approver(s) Filters — Including Blank Values
+### SC-04: Approval Column Filter — Dropdown Options, Blank, and Export
 
-**Objective:** Confirms the recently fixed Approval and Approver(s) column filters work correctly, including Blank selection, dropdown options, and export output. This is the highest-risk scenario given repeated failures and the most recent code change.
+**Objective:** Confirms the Approval column presents a dropdown (not a free-text field), all option values filter correctly, the Blank option returns records with NULL/empty/"Approval Not Needed" values, and each filtered view exports without failure.
 
-**Pre-conditions:** Records exist with Approval values of Approved, Pending Approval, Override, Rejected, and NULL/blank. Records exist with named approvers and with no approvers.
+**Pre-conditions:** Purchasing Tracker contains records with Approval values of Approved, Pending Approval, Override, Rejected, and at least some blank/null approval entries.
 
 **Steps:**
-1. Open the Approval column filter → **Expected:** A dropdown appears with checkable options (Approved, Pending Approval, Override, Rejected, Blank) — not a free-text search field.
-2. Select "Approved" → **Expected:** Table shows only rows with Approved status; count is non-zero.
-3. Click Export → **Expected:** Export downloads; all rows in the file show Approved in the Approval column.
-4. Clear; select "Override" in the Approval filter → **Expected:** Table shows rows matching "Override Provided by..." values via partial match.
-5. Clear; select "Blank" in the Approval filter → **Expected:** Table shows only rows where Approval is NULL or empty; rows with any approval status do not appear.
-6. Click Export → **Expected:** Export downloads and contains only blank-Approval rows.
-7. Clear; open the Approver(s) column filter; select a specific approver name → **Expected:** Table shows rows where that person is a designated approver OR has taken an approval action; count is non-zero.
-8. Click Export → **Expected:** Export contains the approver name in the Approvers column for all rows; name is not missing from the export.
-9. Clear; select "Blank" in the Approver(s) filter → **Expected:** Table shows only rows with no approvers assigned (no designated approver and no approval history); rows with approvers do not appear.
-10. Click Export → **Expected:** Export downloads successfully; Approvers column is empty for all rows.
+
+1. Click the filter icon on the **Approval** column → **Expected:** A dropdown with selectable options appears (Approved / Pending Approval / Override / Rejected / Blank); a free-text search field is NOT shown.
+2. Select **Approved** from the dropdown → **Expected:** Table shows only approved rows; row count is non-zero.
+3. Click **Export** → **Expected:** CSV downloads; all rows in the file have an "Approved" Approval value.
+4. Clear and select **Pending Approval** → **Expected:** Table narrows to pending rows; export matches.
+5. Clear and select **Override** → **Expected:** Table shows rows where Approval contains "Override Provided by…" using partial match; export matches.
+6. Clear and select **Rejected** → **Expected:** Table shows only rejected rows; export matches.
+7. Clear and select **Blank** → **Expected:** Table shows only rows where the Approval field is NULL, empty, or "Approval Not Needed" — this is the core fix being verified; no previously-passing approved rows appear.
+8. Click **Export** with Blank selected → **Expected:** CSV downloads with only blank-approval rows; no infinite loading spinner.
 
 ---
 
-### SC-05: Filter Clearing and State Reset
+### SC-05: Approver(s) Column Filter — Specific Name, Blank, and Export
 
-**Objective:** Confirms that clearing filters fully resets the table state and removes filter indicators from column headers, preventing stale filter state from affecting subsequent operations.
+**Objective:** Confirms the Approver(s) filter finds records from both designated approvers and approval action history, the Blank option returns only POs with no approvers, and the approver name appears in the export.
 
-**Pre-conditions:** Tracker loaded with full record set visible.
+**Pre-conditions:** Some PO records have named approvers; some records have no approvers at all.
 
 **Steps:**
-1. Apply the Dept filter with a specific department; confirm table narrows and filter icon appears in the Dept column header → **Expected:** Table shows only that department; header shows filter indicator.
-2. Click the "x" to clear the Dept filter → **Expected:** Table returns to full record set; filter icon is removed from the Dept column header. *(This was a previously broken behavior — verify it stays fixed.)*
-3. Apply two filters simultaneously (e.g., Status = "Approved" AND Priority = "High") → **Expected:** Table shows only rows matching both conditions; both column headers show filter indicators.
-4. Clear one filter; verify only that column's indicator is removed and the remaining filter still applies → **Expected:** Table still reflects the remaining active filter; other column header is clean.
-5. Clear all filters → **Expected:** Full record set restored; no filter indicators remain on any column header.
+
+1. Apply the **Approver(s)** filter by typing a known approver's name → **Expected:** Table shows rows where that person appears as either a designated approver or in the approval history; row count is accurate.
+2. Click **Export** with the approver name filter active → **Expected:** CSV downloads; the Approver(s) column in the file is populated with the filtered approver's name (regression check — previously approvers were missing from export).
+3. Clear the Approver(s) filter and select **Blank** → **Expected:** Table shows only records with no approvers in either designated approvers or approval history — this is the second core fix being verified; records with named approvers do NOT appear.
+4. Confirm the row count of the Blank result is plausible (greater than 0 if blank records exist, or 0 with a clear empty-state message) → **Expected:** No infinite spinner; the result resolves.
+5. Click **Export** with Blank selected → **Expected:** CSV downloads; Approver(s) column is empty for all exported rows.
 
 ---
 
 ## Edge Cases
 
-### EC-01: Blank Filter Behavior Across Multiple Column Types
+### EC-01: Division Column Has No Filter
 
-**Objective:** Confirms Blank filter works on columns other than Approval/Approver(s) and returns only genuinely empty rows.
+**Objective:** Confirms the Division column no longer exposes a filter option (removed by design due to one-to-many DB relationship).
 
 **Steps:**
-1. Apply Blank filter on the WO# column (if Blank option is available) → **Expected:** Only rows with no WO# association are returned; rows with WO numbers do not appear.
-2. Apply Blank filter on the Vendor column → **Expected:** Only rows with no vendor assigned are returned.
-3. Verify that Priority Blank filter works (previously worked even when others did not) → **Expected:** Rows with no priority value returned; count is consistent with visually blank priority cells in the table.
+1. Scroll to the **Division** column in the Purchasing Tracker → **Expected:** No filter icon or dropdown is present on the Division column header; the column is display-only.
 
 ---
 
-### EC-02: Export Does Not Freeze on Large Filtered Sets
+### EC-02: Needs My Approval Filter — Yes Resolves; No Is a Known Performance Limitation
 
-**Objective:** Confirms export completes without hanging for moderate-sized filtered result sets, guarding against the repeated export-freeze regressions seen across multiple fix iterations.
+**Objective:** Confirms "Yes" filter works and that filtering by "No" (23,000+ records) is understood as a server performance limitation, not a code defect.
 
 **Steps:**
-1. Apply a filter that returns a moderate result set (50–500 rows, e.g., a common status value) → **Expected:** Table loads the filtered results promptly.
-2. Click Export → **Expected:** Export begins processing; a download starts within a reasonable time (under 30 seconds); the browser does not freeze or show an infinite loading state.
-3. Open the downloaded file → **Expected:** Row count in the file matches the row count shown in the filtered table.
+1. Apply the **Needs My Approval** filter and select **Yes** → **Expected:** Table loads and shows only records requiring the logged-in user's approval; result resolves without freezing.
+2. Click **Export** with "Yes" active → **Expected:** CSV downloads successfully with matching rows.
+3. Apply the **Needs My Approval** filter and select **No** → **Expected:** Query runs; note that due to the large record volume (~23,000 rows) the request may time out on the test server — this is an accepted server capacity limitation, not a bug.
+
+---
+
+### EC-03: Multi-Value Filter Selects Multiple Items Simultaneously
+
+**Objective:** Confirms the multi-value filter fix (Viktor's last fix) allows selecting multiple values and returns records matching any selected value.
+
+**Steps:**
+1. On the **Status** filter, select two status values simultaneously (e.g., Approved + Pending) → **Expected:** Table shows rows matching either status, not just one; both values appear active in the filter chip.
+2. On the **Priority** filter, select two or more priority values → **Expected:** All selected priorities appear in the table; export reflects the combined filter.

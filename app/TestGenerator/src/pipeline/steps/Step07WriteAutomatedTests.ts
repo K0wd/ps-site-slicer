@@ -17,7 +17,16 @@ export class Step07WriteAutomatedTests extends Step {
     ctx.logger.logStep(7, 'Write Automated Tests');
 
     if (!existsSync(featureFile)) {
-      return { status: 'fail', message: `Feature file not found. Run step 6 first.`, artifacts: [] };
+      if (ctx.runPrerequisite) {
+        this.log('Feature file not found — auto-running step 6...');
+        const prereq = await ctx.runPrerequisite(6);
+        if (prereq.status === 'fail') {
+          return { status: 'fail', message: `Prerequisite step 6 failed: ${prereq.message}`, artifacts: [] };
+        }
+      }
+      if (!existsSync(featureFile)) {
+        return { status: 'fail', message: `Feature file not found. Run step 6 first.`, artifacts: [] };
+      }
     }
 
     // Create timestamped test-run dir
@@ -47,8 +56,10 @@ export class Step07WriteAutomatedTests extends Step {
     let passCount = 0;
     let failCount = 0;
     const summaryRows: string[] = [];
+    const useParallel = ctx.options?.parallel ?? false;
+    this.log(`Processing ${tagPairs.length} test cases (${useParallel ? 'parallel' : 'sequential'})...`);
 
-    for (const tcId of tagPairs) {
+    const processTc = async (tcId: string) => {
       this.log(`━━━ ${tcId} ━━━`);
 
       const scenario = this.extractScenario(featureContent, tcId, ticketKey);
@@ -151,11 +162,7 @@ Feature file: ${featureFile}
 
       if (this.isBlocker(testResult.output)) {
         this.log(`  [${tcId}] BLOCKER — build error in test`, 'error');
-        return {
-          status: 'fail',
-          message: `BLOCKER on ${tcId} playwright test`,
-          artifacts: [{ name: '7_tc_logs', path: tcLogsDir, type: 'md' }],
-        };
+        return { passed: false, blocker: true };
       }
 
       const passed = testResult.output.includes('passed') && !testResult.output.includes('failed');
@@ -168,6 +175,27 @@ Feature file: ${featureFile}
       }
 
       summaryRows.push(`| ${tcId} | ${passed ? 'PASS' : 'FAIL'} | ${totalSteps} | ${existingCount} | ${addedCount} | ${passed ? 'PASS' : 'FAIL'} |`);
+      return { passed, blocker: false };
+    };
+
+    if (useParallel) {
+      const results = await Promise.allSettled(tagPairs.map(processTc));
+      for (const r of results) {
+        if (r.status === 'fulfilled') {
+          if (r.value.blocker) {
+            return { status: 'fail' as const, message: 'BLOCKER in parallel mode', artifacts: [{ name: '7_tc_logs', path: tcLogsDir, type: 'md' as const }] };
+          }
+        } else {
+          failCount++;
+        }
+      }
+    } else {
+      for (const tcId of tagPairs) {
+        const result = await processTc(tcId);
+        if (result.blocker) {
+          return { status: 'fail' as const, message: `BLOCKER on ${tcId}`, artifacts: [{ name: '7_tc_logs', path: tcLogsDir, type: 'md' as const }] };
+        }
+      }
     }
 
     // Write summary report

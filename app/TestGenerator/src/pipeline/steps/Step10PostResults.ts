@@ -13,12 +13,23 @@ export class Step10PostResults extends Step {
 
     ctx.logger.logStep(10, 'Post Results to Jira');
 
-    const runDir = this.findLatestTestRunDir(ticketDir);
+    let runDir = this.findLatestTestRunDir(ticketDir);
+    if (!runDir && ctx.runPrerequisite) {
+      this.log('No test-run directory — auto-running step 7...');
+      const p = await ctx.runPrerequisite(7);
+      if (p.status === 'fail') return { status: 'fail', message: `Prerequisite step 7 failed: ${p.message}`, artifacts: [] };
+      runDir = this.findLatestTestRunDir(ticketDir);
+    }
     if (!runDir) {
       return { status: 'fail', message: 'No test-run directory found. Run step 7 first.', artifacts: [] };
     }
 
     const resultsFile = resolve(runDir, '8_results.md');
+    if (!existsSync(resultsFile) && ctx.runPrerequisite) {
+      this.log('Results file not found — auto-running step 9...');
+      const p = await ctx.runPrerequisite(9);
+      if (p.status === 'fail') return { status: 'fail', message: `Prerequisite step 9 failed: ${p.message}`, artifacts: [] };
+    }
     if (!existsSync(resultsFile)) {
       return { status: 'fail', message: 'Results file not found. Run steps 8-9 first.', artifacts: [] };
     }

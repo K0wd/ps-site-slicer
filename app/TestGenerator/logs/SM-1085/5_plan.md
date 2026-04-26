@@ -1,154 +1,158 @@
-# Test Plan: SM-1085 — PWA Expense Module
+# Test Plan — SM-1085: PWA Expense Module
 
-**Ticket:** SM-1085 | **Priority:** High | **Status:** Testing | **Parent:** SM-950 (PWA for SM Mobile)
+**Ticket:** SM-1085 | **Status:** Testing | **Priority:** High
+**Test URL:** https://testserver.betacom.com/testpwa
+**Credentials:** Bandeleonk / test1234
+
+---
 
 ## Summary
 
-Verify that the Expense module migrated from the React Native mobile app to the SiteManager PWA (Next.js) allows users to search, view, create, edit, and manage expenses — including mileage calculation — with categories and types dynamically loaded from backend metadata. This is a re-test following two rounds of QA fixes (directory listing on refresh, reimbursable checkbox, attachment display, metadata loading).
+Verifies that the Expense module has been successfully migrated from the React Native mobile app to the SiteManager PWA (Next.js). Coverage focuses on the full expense lifecycle — navigation, search/list, detail view, create/edit form, and mileage calculation — plus regression of the attachment display issues fixed in QA rounds 1 and 2.
 
-## Pre-conditions (shared)
+---
 
-- Browser: MS Edge or Chrome
-- Test URL: https://testserver.betacom.com/testpwa
-- User is logged in as **Bandeleonk / test1234**
-- At least one existing expense exists in the system for the test user within the last year
-- At least one existing expense has a file attachment
-- At least one existing expense is a mileage-type expense
+## Pre-conditions
+
+- Logged in to the PWA at https://testserver.betacom.com/testpwa as Bandeleonk / test1234
+- At least one existing expense record exists in the system for the current user
+- At least one existing expense has an attachment (image) linked to it
+- At least one existing expense is of the Mileage type
 
 ---
 
 ## Scenarios
 
-### SC-01: Navigation, Search, and Expense List Display (AC1, AC2)
+---
 
-**Objective:** Verify the Expense module is accessible from the sidebar, loads with correct defaults, supports date range search, and renders expense cards sorted correctly.
-**Pre-conditions:** User is on the PWA home screen after login.
+### SC-01: Navigation and Default List Load
+
+**Objective:** Proves the Expenses module is accessible from the sidebar and loads correctly with default date filtering applied.
+
+**Pre-conditions:** Logged in; on the PWA home screen.
 
 **Steps:**
-1. Open the sidebar/hamburger menu → **Expected:** "Expenses" link is visible in the navigation menu
-2. Tap "Expenses" → **Expected:** Browser navigates to `/expense`; expense list page loads with a date range picker and expense cards
-3. Check the default date range values → **Expected:** Start date is 1 year ago from today; end date is today's date
-4. Verify expense cards are rendered → **Expected:** Each card displays date, amount, expense type, and approval status; cards are sorted by date descending (newest first)
-5. Modify the start date to narrow the range (e.g., last 30 days) and tap "Search" → **Expected:** List updates to show only expenses within the new date range; card count changes accordingly
-6. Tap the refresh icon in the PWA header → **Expected:** Page reloads expense data without showing a directory listing or error page; expense list re-renders correctly
-7. Perform a hard browser refresh (F5 / Cmd+R) on the `/expense` route → **Expected:** Expense list page loads normally (no Apache directory listing — regression from round 1 fix)
+1. Open the sidebar menu → **Expected:** Sidebar opens; "Expenses" link is visible in the navigation list.
+2. Confirm the sidebar order of navigation items → **Expected:** Expenses appears in the correct position matching the legacy React Native app order.
+3. Tap "Expenses" → **Expected:** Page navigates to `/expense`; a list of expense cards is displayed.
+4. Inspect the Start Date and End Date filter fields without changing them → **Expected:** Start date defaults to approximately one year prior to today; End date defaults to today.
+5. Confirm card list is sorted → **Expected:** Cards are ordered newest-first by expense date.
+6. Confirm each card shows minimal summary data → **Expected:** Each card displays at minimum: date, amount, expense type, and approval status badge.
 
 ---
 
-### SC-02: Create Standard Expense with Form Dynamics (AC4, AC5)
+### SC-02: Date Range Search and Refresh
 
-**Objective:** Verify a user can create a new non-mileage expense using the form, with expense types, payment types, default amounts, conditional reason fields, WO# search, and file attachment all functioning correctly.
-**Pre-conditions:** User is on the expense list page (`/expense`).
+**Objective:** Proves the search filter correctly updates the expense list when a custom date range is applied, and that page refresh does not break the route.
+
+**Pre-conditions:** On the `/expense` list page with the default date range loaded.
 
 **Steps:**
-1. Tap the red "+" FAB button → **Expected:** "New Expense" form opens at `/expense/edit`
-2. Verify the Expense Type dropdown → **Expected:** Dropdown is populated with expense types loaded from the server (not empty or hardcoded)
-3. Select an expense type that has a default amount in metadata → **Expected:** Amount field auto-populates with the default value and becomes read-only
-4. Verify the Payment Type dropdown → **Expected:** Dropdown is populated with payment types loaded from the server
-5. Select a type/payment combination that requires a reason (per `comments_required` metadata) → **Expected:** Reason dropdown appears with a warning indicator; reasons list is populated from metadata
-6. Toggle the "Scheduled" switch on the WO# field → **Expected:** Field switches from a text input (manual entry mode) to a dropdown of scheduled work orders, and back again on re-toggle
-7. In manual WO mode, type a partial WO number → **Expected:** Autocomplete suggestions appear after a brief debounce (~500ms); selecting a suggestion populates the field with a validation indicator (valid/invalid)
-8. Toggle the "Reimbursable to me" checkbox on and off → **Expected:** Checkbox responds to each click reliably (regression from round 1 fix)
-9. Attach an image file → **Expected:** Image preview thumbnail appears in the form
-10. Fill all remaining required fields (date, comment if required) and tap "Save" → **Expected:** Success toast appears; user is redirected back to the expense list; the newly created expense appears at the top of the list with correct details
+1. Change the Start Date to a narrow recent range (e.g., first day of current month) and change the End Date to today → **Expected:** Date picker accepts both values without error.
+2. Tap the Search button → **Expected:** The expense list refreshes; only expenses falling within the selected range are shown.
+3. Change the date range to a period known to have no expenses (e.g., a single day in the past with no records) and tap Search → **Expected:** The list shows an empty state message; no cards are displayed; no crash occurs.
+4. Tap the refresh icon in the PWA header → **Expected:** The expense list reloads within the current date range; the page remains on the expense list (not an Apache directory listing or 404).
+5. Directly navigate to `/expense/` with a trailing slash (browser address bar) → **Expected:** The expense list page loads correctly; no directory listing is shown.
 
 ---
 
-### SC-03: View Expense Detail and Edit Existing Expense (AC3, AC4)
+### SC-03: Expense Detail View
 
-**Objective:** Verify the expense detail view displays all fields correctly (including attachments) and that editing an existing expense pre-populates the form and persists changes.
-**Pre-conditions:** User is on the expense list page with at least one expense that has an attachment.
+**Objective:** Proves all expense fields render correctly in the read-only detail view, including attachment display and back navigation.
+
+**Pre-conditions:** At least one expense with an attachment exists in the list.
 
 **Steps:**
-1. Tap an expense card that has an attachment → **Expected:** Detail page loads at `/expense/detail` showing all read-only fields: WO#, Date Entered, Amount, Approved status, Type, Payment Type, Reimbursable, Comment
-2. Verify the attachment section → **Expected:** Attachment link/thumbnail is visible and clickable
-3. Tap the attachment link → **Expected:** Image modal opens displaying the receipt/attachment image clearly (not a dark overlay or broken image — regression from round 2 fix)
-4. Close the modal → **Expected:** Modal dismisses; detail view is unchanged
-5. Tap the back arrow → **Expected:** Returns to the expense list page with scroll position preserved
-6. Tap the same expense card again, then tap the red edit FAB → **Expected:** "Edit Expense" form opens at `/expense/edit/[id]` with all fields pre-populated with the current expense data (date, type, payment type, amount, WO#, reimbursable, comment)
-7. Verify the existing attachment preview → **Expected:** Current attachment image is displayed inline in the edit form (not a broken image icon — regression from round 2 fix)
-8. Change the comment field to a new value and tap "Save" → **Expected:** Success toast appears; user is redirected to the list; re-opening the expense detail shows the updated comment
+1. Tap any expense card from the list → **Expected:** Navigates to `/expense/detail`; the detail page loads without error.
+2. Verify all standard fields are visible → **Expected:** WO#, Date Entered, Amount, Approval Status, Type, Payment Type, Reimbursable flag, and Comment are all displayed.
+3. Verify date formatting → **Expected:** "Date Entered" displays a readable formatted date with no console deprecation warnings (moment.js fix verified).
+4. Tap the card for an expense that has an attachment → **Expected:** An attachment link or thumbnail is visible on the detail page.
+5. Tap the attachment link → **Expected:** An image modal opens; the attachment image is visible and not obscured by a dark overlay; if the image cannot load, a fallback message "Unable to load attachment" is displayed.
+6. Close the modal and tap the back arrow → **Expected:** Navigates back to the expense list; the list retains its previous state.
 
 ---
 
-### SC-04: Mileage Expense Creation and Calculation (AC6)
+### SC-04: Create New Expense with Dynamic Metadata
 
-**Objective:** Verify that selecting the mileage expense type reveals the mileage calculator, auto-calculates amount from miles and rate, provides office suggestions, and saves correctly.
-**Pre-conditions:** User is on the expense list page.
+**Objective:** Proves the create form loads dynamic metadata correctly, applies conditional field logic, and saves a new expense that appears in the list.
+
+**Pre-conditions:** On the `/expense` list page. Metadata endpoint (`/timesheets/expensemeta`) is reachable.
 
 **Steps:**
-1. Tap the red "+" FAB to open the new expense form → **Expected:** Form loads with all dropdowns populated
-2. Select the "Mileage" expense type from the Type dropdown → **Expected:** Mileage calculator section appears with From, To, and Miles fields; the standard Amount field becomes auto-calculated (read-only)
-3. Tap into the "From" location input → **Expected:** Office suggestions dropdown appears with predefined office locations from metadata
-4. Select an office from the suggestions for the "From" field → **Expected:** From field is populated with the selected office name
-5. Enter a destination in the "To" field and enter a miles value (e.g., 50) → **Expected:** Amount field auto-calculates as `miles x mileage_rate` (e.g., 50 x $0.67 = $33.50); amount updates in real-time as miles value changes
-6. Fill remaining required fields (date, payment type) and tap "Save" → **Expected:** Success toast; redirect to expense list; new mileage expense appears with the calculated amount
-7. Tap the new mileage expense to view detail → **Expected:** Detail page shows From, To, Miles fields in addition to standard fields; amount matches the calculated value
+1. Tap the red + FAB button → **Expected:** Navigates to `/expense/edit`; the "New Expense" form loads immediately without a stuck "Loading metadata..." spinner.
+2. Inspect the Expense Type dropdown → **Expected:** Dropdown is populated with options loaded from the server (not empty; not hardcoded).
+3. Inspect the Payment Type dropdown → **Expected:** Dropdown is populated with payment type options from the server.
+4. Select an expense type that has a configured default amount in metadata → **Expected:** The Amount field auto-populates with the default value and becomes read-only.
+5. Select an expense type or payment type that is in the `comments_required` metadata list → **Expected:** A Reason dropdown appears; a visual warning indicator is shown prompting the user to select a reason.
+6. Toggle the Reimbursable to Me checkbox on and off → **Expected:** Checkbox checks and unchecks reliably on each click (native HTML checkbox behavior confirmed).
+7. Toggle the "Scheduled" switch on the WO# field → **Expected:** WO# input switches from a manual text entry with autocomplete to a scheduled WO dropdown, and back again on second toggle.
+8. Fill all required fields (date, type, payment type, amount) and tap Save → **Expected:** A success toast notification appears; the page redirects to the expense list.
+9. Confirm the new expense is visible in the list → **Expected:** The newly created expense card appears at the top of the list (newest first), showing correct date, amount, and type.
 
 ---
 
-### SC-05: View Mileage Expense Detail Fields (AC3, AC6)
+### SC-05: Edit Existing Expense and Attachment Preview
 
-**Objective:** Verify that mileage-specific fields (From, To, Miles) are displayed on the detail view for mileage expenses, and hidden for non-mileage expenses.
-**Pre-conditions:** System has both a mileage expense and a non-mileage expense for the test user.
+**Objective:** Proves that an existing expense opens pre-populated in edit mode, changes save correctly, and the existing attachment renders as an inline preview rather than a broken image.
+
+**Pre-conditions:** At least one expense with an attachment exists. On the `/expense` list page.
 
 **Steps:**
-1. Navigate to the expense list and tap a mileage-type expense → **Expected:** Detail page shows From, To, Miles fields with their saved values, in addition to all standard expense fields
-2. Tap back to return to the list → **Expected:** Returns to expense list
-3. Tap a non-mileage expense → **Expected:** Detail page shows standard fields only; From, To, Miles fields are NOT displayed
+1. Tap an expense card to open the detail view → **Expected:** Detail page loads with all fields shown.
+2. Tap the red edit FAB button → **Expected:** Navigates to `/expense/edit/[id]`; the form opens with all fields pre-populated from the existing expense data.
+3. Verify attachment display in edit form → **Expected:** The existing attachment is shown as an inline image preview directly in the form (not a broken image icon; not just a clickable link); the image resolves via `/downloads/mv2` endpoint.
+4. Modify one field (e.g., change the Comment text) → **Expected:** The field accepts input.
+5. Tap Save → **Expected:** Success toast appears; the page redirects to the detail view or list; the modified field reflects the updated value.
+
+---
+
+### SC-06: Mileage Expense Creation and Auto-Calculation
+
+**Objective:** Proves the mileage calculator component appears conditionally, auto-calculates the amount from miles × rate, and saves correctly.
+
+**Pre-conditions:** On the `/expense/edit` (new expense) form. Metadata is loaded.
+
+**Steps:**
+1. Open the Expense Type dropdown and select the Mileage type (the type matching `metadata.mileage_item`) → **Expected:** The standard amount field is hidden or disabled; the MileageCalculator sub-form appears with From, To, and Miles fields.
+2. Click into the From location input → **Expected:** A dropdown of office suggestions from metadata appears as quick-select options.
+3. Select an office from the suggestions as the From location → **Expected:** The From field populates with the selected office name.
+4. Enter a destination in the To location field → **Expected:** Field accepts free text input; office suggestions are also available.
+5. Enter a numeric miles value (e.g., 25) → **Expected:** The Amount field auto-calculates to `miles × mileage_rate` (e.g., if rate is $0.67, Amount shows $16.75); calculation updates in real time.
+6. Fill remaining required fields (date, payment type) and tap Save → **Expected:** Success toast appears; expense saves successfully.
+7. Locate the new mileage expense in the list → **Expected:** Card shows the correct calculated amount and mileage type label.
 
 ---
 
 ## Edge Cases
 
-### EC-01: Form Validation — Required Fields and Constraints
+---
 
-**Objective:** Verify the form enforces required field validation and date constraints.
-**Pre-conditions:** User is on the new expense form.
+### EC-01: Form Validation Blocks Save on Missing Required Fields
 
-**Steps:**
-1. Without filling any fields, tap "Save" → **Expected:** Validation errors appear for all required fields; form does NOT submit; no API call is made
-2. Enter a date in the future (beyond today) → **Expected:** Date picker restricts selection to today or earlier; future dates are not selectable
-3. Select a type/payment combination that requires a comment, leave the comment empty, and tap "Save" → **Expected:** Validation error indicates comment is required for this combination; form does NOT submit
-
-### EC-02: Metadata Loading Failure Recovery
-
-**Objective:** Verify the expense form recovers gracefully when metadata is not cached in sessionStorage.
-**Pre-conditions:** User is logged in.
+**Objective:** Confirms the form cannot be submitted with required fields empty.
 
 **Steps:**
-1. Clear browser sessionStorage (DevTools → Application → Session Storage → Clear) → **Expected:** No immediate error
-2. Navigate to the new expense form via the "+" FAB → **Expected:** Form loads successfully with all dropdowns populated (fetches metadata from API as fallback); does NOT show "Loading metadata..." indefinitely (regression from round 1 fix)
-
-### EC-03: Empty Search Results
-
-**Objective:** Verify the expense list handles a date range with no matching expenses gracefully.
-**Pre-conditions:** User is on the expense list page.
-
-**Steps:**
-1. Set the date range to a very old period where no expenses exist (e.g., 2020-01-01 to 2020-01-31) and tap "Search" → **Expected:** List area shows an empty state message (e.g., "No expenses found") instead of a blank screen or error
+1. Navigate to `/expense/edit` (new expense) and immediately tap Save without filling any fields → **Expected:** Save is blocked; validation errors are displayed identifying which required fields are missing; no API call is made; the user remains on the form.
+2. Fill only the Expense Type and tap Save → **Expected:** Remaining required fields (date, amount) still surface validation errors; form does not submit.
 
 ---
 
-## AC Traceability
+### EC-02: Mileage Type Requires Miles — Amount Cannot Be Zero
 
-| AC | Covered By |
-|----|-----------|
-| AC1: Search by date range | SC-01 (steps 3-6), EC-03 |
-| AC2: Expense card list | SC-01 (step 4) |
-| AC3: Expense detail view | SC-03 (steps 1-4), SC-05 |
-| AC4: Create/edit expenses | SC-02, SC-03 (steps 6-8), EC-01 |
-| AC5: Dynamic metadata loading | SC-02 (steps 2-5), EC-02 |
-| AC6: Mileage calculation | SC-04, SC-05 |
+**Objective:** Confirms the mileage form validates that miles > 0 before allowing save.
 
-## Regression Focus Areas
+**Steps:**
+1. Select the Mileage expense type → **Expected:** MileageCalculator appears.
+2. Leave the Miles field at 0 or empty and tap Save → **Expected:** Validation error appears on the Miles field; Amount remains $0.00; form does not submit.
+3. Enter a valid miles value → **Expected:** Amount calculates correctly; Save proceeds successfully.
 
-These items were fixed during QA rounds 1 and 2 and must be explicitly re-verified:
+---
 
-| Fix | Verify In |
-|-----|-----------|
-| Directory listing on page refresh | SC-01 step 7 |
-| Reimbursable checkbox responsiveness | SC-02 step 8 |
-| Metadata loading fallback (no sessionStorage) | EC-02 |
-| Attachment modal displays image (not dark overlay) | SC-03 step 3 |
-| Edit page shows existing attachment preview (not broken icon) | SC-03 step 7 |
+### EC-03: Page Refresh Stability Across All Expense Routes
+
+**Objective:** Confirms the .htaccess fix holds across all four expense routes after browser refresh.
+
+**Steps:**
+1. Navigate to `/expense` and press browser refresh → **Expected:** Expense list reloads; no directory listing.
+2. Navigate to an expense detail page and press browser refresh → **Expected:** Detail page reloads correctly.
+3. Navigate to `/expense/edit` and press browser refresh → **Expected:** Create form reloads correctly; metadata loads without getting stuck.

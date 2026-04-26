@@ -1,0 +1,26 @@
+---
+description: Keep headless runs in desktop layout and wait for dashboard cards to load
+globs: "**/*.ts"
+alwaysApply: false
+---
+
+# Headless Dashboard Readiness
+
+- In headless Playwright runs, use a fixed desktop viewport instead of relying on `viewport: null` so pages do not collapse into mobile/header variants.
+- When a test validates desktop dashboard widgets like notification bell, search, user menu, or summary cards, prefer desktop-stable locators and avoid selectors that only work in responsive/mobile layouts.
+- After navigating back to a dashboard page, wait for a stable dashboard-ready signal before asserting card values. Prefer visible summary-card headings or card values over immediate post-URL assertions.
+- If a card label/value locator is flaky, anchor it to the card container around the heading rather than a brittle direct sibling path.
+
+## Example Pattern
+
+```typescript
+const viewport = automationConfig.headless
+  ? { width: 1440, height: 900 }
+  : null;
+
+await page.waitForURL(/\/rbox\/inventory\/dashboard/, { timeout: navigationTimeout });
+await page.locator("xpath=//h6[normalize-space()='Sold Tickets Today']").first().waitFor({
+  state: "visible",
+  timeout: 60_000,
+});
+```

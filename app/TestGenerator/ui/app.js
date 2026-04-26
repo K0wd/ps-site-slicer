@@ -9,7 +9,10 @@ const STEPS = [
   { number: 8,  name: 'Execute Tests' },
   { number: 9,  name: 'Determine Results' },
   { number: 10, name: 'Post Results' },
-  { number: 11, name: 'Transition Ticket' },
+  { number: 11,  name: 'Transition Ticket' },
+  { number: 101, name: 'Check Steps' },
+  { number: 102, name: 'Run Tests' },
+  { number: 103, name: 'Heal Scenario' },
 ];
 
 const state = {
@@ -21,12 +24,14 @@ const state = {
   ticketAssignee: null,
   schedules: [],
   schedModalStep: null,
+  parallelMode: { 6: true, 7: false },
 };
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
-const grid = $('#pipeline-grid');
+const gridQuality = $('#pipeline-grid-quality');
+const gridEngineering = $('#pipeline-grid-engineering');
 const logOutput = $('#log-output');
 const runBtn = $('#run-btn');
 const ticketInput = $('#ticket-input');
@@ -40,17 +45,26 @@ const clearLogsBtn = $('#clear-logs-btn');
 // ═══ RENDER ═══
 
 function renderGrid() {
-  grid.innerHTML = '';
-  for (const step of state.steps) {
+  const qualitySteps = state.steps.filter(s => s.number <= 99);
+  const engineeringSteps = state.steps.filter(s => s.number >= 100);
+
+  renderGridSection(gridQuality, qualitySteps);
+  renderGridSection(gridEngineering, engineeringSteps);
+}
+
+function renderGridSection(container, steps) {
+  container.innerHTML = '';
+  for (const step of steps) {
     const statusClass = step.status !== 'idle' ? `status-${step.status}` : '';
     const stepSchedules = state.schedules.filter(s => s.step_start <= step.number && s.step_end >= step.number && s.enabled);
     const hasSchedule = stepSchedules.length > 0;
 
     const card = document.createElement('div');
     card.className = `step-card ${statusClass}`;
+    card.dataset.stepNumber = step.number;
     card.innerHTML = `
       <div class="step-header">
-        <span class="step-number">STEP ${String(step.number).padStart(2, '0')}</span>
+        <span class="step-number">${step.number >= 100 ? 'ENG' : 'STEP'} ${String(step.number).padStart(step.number >= 100 ? 3 : 2, '0')}</span>
         <div class="status-indicator">
           ${hasSchedule ? '<span class="sched-badge" title="Scheduled">&#128337;</span>' : ''}
           <span class="status-dot ${step.status}"></span>
@@ -61,6 +75,7 @@ function renderGrid() {
       <div class="step-footer">
         <span class="step-duration">${step.duration || ''}</span>
         <div class="step-actions">
+          ${(step.number === 6 || step.number === 7) ? `<button class="step-parallel-btn ${state.parallelMode[step.number] ? 'active' : ''}" data-step="${step.number}" title="${state.parallelMode[step.number] ? 'Parallel' : 'Sequential'}">${state.parallelMode[step.number] ? '&#8782;' : '&#8801;'}</button>` : ''}
           <button class="step-sched-btn" data-step="${step.number}" title="Schedule">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </button>
@@ -69,25 +84,35 @@ function renderGrid() {
       </div>
       ${step.message ? `<div class="step-message" title="${esc(step.message)}">${esc(step.message)}</div>` : ''}
     `;
-    grid.appendChild(card);
+    container.appendChild(card);
   }
 
-  grid.querySelectorAll('.step-run-btn').forEach(btn => {
+  container.querySelectorAll('.step-run-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       runStep(parseInt(btn.dataset.step));
     });
   });
 
-  grid.querySelectorAll('.step-sched-btn').forEach(btn => {
+  container.querySelectorAll('.step-sched-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       openScheduleModal(parseInt(btn.dataset.step));
     });
   });
 
-  grid.querySelectorAll('.step-card').forEach((card, idx) => {
-    card.addEventListener('click', () => loadStepLogs(state.steps[idx].number));
+  container.querySelectorAll('.step-parallel-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const stepNum = parseInt(btn.dataset.step);
+      state.parallelMode[stepNum] = !state.parallelMode[stepNum];
+      renderGrid();
+      appendLog({ timestamp: now(), stepNumber: stepNum, level: 'info', message: `Step ${stepNum}: ${state.parallelMode[stepNum] ? 'Parallel' : 'Sequential'} mode` });
+    });
+  });
+
+  container.querySelectorAll('.step-card').forEach(card => {
+    card.addEventListener('click', () => loadStepLogs(parseInt(card.dataset.stepNumber)));
   });
 }
 
@@ -240,7 +265,7 @@ async function loadStepLogs(stepNum) {
 
   // highlight selected card
   $$('.step-card').forEach(c => c.classList.remove('selected'));
-  $$('.step-card')[stepNum - 1]?.classList.add('selected');
+  $$(`.step-card[data-step-number="${stepNum}"]`).forEach(c => c.classList.add('selected'));
 
   try {
     const resp = await fetch(`/api/steps/${stepNum}/history`);
@@ -307,14 +332,75 @@ $$('.tab').forEach(tab => {
 
 clearLogsBtn.addEventListener('click', () => { logOutput.innerHTML = ''; });
 
+// ═══ PIPELINE TABS ═══
+
+$$('.pipeline-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    $$('.pipeline-tab').forEach(t => t.classList.remove('active'));
+    $$('.pipeline-tab-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    const panel = $(`#ptab-${tab.dataset.ptab}`);
+    if (panel) panel.classList.add('active');
+  });
+});
+
+// ═══ CLAUDE STATUS & INSIGHTS ═══
+
+$('#claude-status-btn').addEventListener('click', async () => {
+  appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: 'Checking Claude status...' });
+  try {
+    const resp = await fetch('/api/claude/status');
+    const data = await resp.json();
+    if (data.status === 'ok') {
+      appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: `Claude CLI: ${data.version}` });
+    } else {
+      appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: `Claude CLI: ${data.message}` });
+    }
+  } catch (e) {
+    appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: `Status check failed: ${e.message}` });
+  }
+});
+
+$('#claude-insights-btn').addEventListener('click', async () => {
+  appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: 'Generating insights (running claude /insights)...' });
+  try {
+    const resp = await fetch('/api/claude/insights/generate', { method: 'POST' });
+    const data = await resp.json();
+    if (data.error) {
+      appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: `Insights error: ${data.error}` });
+    } else {
+      appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: data.message || 'Insights generated' });
+      checkInsights();
+    }
+  } catch (e) {
+    appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: `Insights failed: ${e.message}` });
+  }
+});
+
+async function checkInsights() {
+  try {
+    const resp = await fetch('/api/claude/insights');
+    const data = await resp.json();
+    const link = $('#claude-insights-link');
+    if (data.available) {
+      link.classList.remove('hidden');
+      const date = new Date(data.updatedAt);
+      link.title = `Insights report — updated ${date.toLocaleString()}`;
+    } else {
+      link.classList.add('hidden');
+    }
+  } catch {}
+}
+
 // ═══ API ═══
 
 async function runStep(stepNum) {
   const ticketKey = ticketInput.value.trim().toUpperCase() || undefined;
+  const parallel = state.parallelMode[stepNum] ?? undefined;
   try {
     await fetch(`/api/run/step/${stepNum}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ticketKey }),
+      body: JSON.stringify({ ticketKey, parallel }),
     });
   } catch (e) { appendLog({ timestamp: now(), level: 'error', message: `Failed: ${e.message}` }); }
 }
@@ -490,6 +576,130 @@ async function loadSchedules() {
   } catch { schedList.innerHTML = '<div class="sched-empty">Failed to load</div>'; }
 }
 
+// ═══ TICKET CREATOR ═══
+
+const tcType = $('#tc-type');
+const tcComponent = $('#tc-component');
+const tcTitle = $('#tc-title');
+const tcDesc = $('#tc-desc');
+const tcAddBtn = $('#tc-add-btn');
+const tcCreateBtn = $('#tc-create-btn');
+const tcQueue = $('#tc-queue');
+
+const ticketQueue = [];
+
+tcAddBtn.addEventListener('click', () => {
+  const title = tcTitle.value.trim();
+  if (!title) { tcTitle.focus(); return; }
+
+  ticketQueue.push({
+    type: tcType.value,
+    component: tcComponent.value.trim(),
+    title,
+    description: tcDesc.value.trim(),
+    status: 'pending',
+  });
+
+  tcTitle.value = '';
+  tcDesc.value = '';
+  tcComponent.value = '';
+  renderQueue();
+});
+
+tcCreateBtn.addEventListener('click', async () => {
+  const pending = ticketQueue.filter(t => t.status === 'pending');
+  if (pending.length === 0) return;
+
+  tcCreateBtn.disabled = true;
+
+  for (const ticket of pending) {
+    ticket.status = 'processing';
+    renderQueue();
+
+    const brief = [
+      `[${ticket.type}]`,
+      ticket.component ? `Component: ${ticket.component}.` : '',
+      ticket.title,
+      ticket.description ? `— ${ticket.description}` : '',
+    ].filter(Boolean).join(' ');
+
+    try {
+      const resp = await fetch('/api/bug-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brief }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Failed');
+
+      ticket.status = 'done';
+      ticket.filename = data.filename;
+      appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: `Ticket drafted: ${data.filename}` });
+    } catch (err) {
+      ticket.status = 'error';
+      ticket.error = err.message;
+      appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: `Draft failed: ${err.message}` });
+    }
+    renderQueue();
+  }
+
+  tcCreateBtn.disabled = false;
+});
+
+function renderQueue() {
+  if (ticketQueue.length === 0) {
+    tcQueue.innerHTML = '<div class="empty-state">Add tickets using the form on the left.<br>Click "+ Add" to queue, then "Create" to process all.</div>';
+    return;
+  }
+  tcQueue.innerHTML = '';
+  ticketQueue.forEach((t, i) => {
+    const statusLabel = t.status === 'pending' ? 'Pending' : t.status === 'processing' ? 'Processing...' : t.status === 'done' ? t.filename || 'Done' : `Error: ${t.error || ''}`;
+    const item = document.createElement('div');
+    item.className = 'tc-queue-item';
+    item.innerHTML = `
+      <span class="qi-type ${t.type}">${t.type}</span>
+      <div class="qi-info">
+        <div class="qi-title">${esc(t.title)}</div>
+        ${t.component ? `<div class="qi-meta">${esc(t.component)}</div>` : ''}
+        <div class="qi-status ${t.status}">${esc(statusLabel)}</div>
+      </div>
+      ${t.status === 'pending' ? `<button class="qi-remove" data-idx="${i}">&times;</button>` : ''}
+    `;
+    tcQueue.appendChild(item);
+  });
+
+  tcQueue.querySelectorAll('.qi-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      ticketQueue.splice(parseInt(btn.dataset.idx), 1);
+      renderQueue();
+    });
+  });
+}
+
+// ═══ RESIZE HANDLE ═══
+
+const resizeHandle = $('#resize-handle');
+const bottomPanel = $('#bottom-panel');
+
+resizeHandle.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  resizeHandle.classList.add('dragging');
+  const startY = e.clientY;
+  const startH = bottomPanel.offsetHeight;
+
+  function onMove(e) {
+    const newH = Math.max(100, Math.min(window.innerHeight * 0.8, startH + (startY - e.clientY)));
+    bottomPanel.style.height = newH + 'px';
+  }
+  function onUp() {
+    resizeHandle.classList.remove('dragging');
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+});
+
 // ═══ SSE ═══
 
 function connectSSE() {
@@ -534,8 +744,9 @@ function connectSSE() {
   source.addEventListener('run-complete', (e) => {
     const data = JSON.parse(e.data);
     state.running = false; renderGrid();
+    const msg = data.message ? ` — ${data.message}` : '';
     appendLog({ timestamp: now(), stepNumber: '-', level: data.status === 'completed' ? 'info' : 'error',
-      message: `Pipeline ${data.status}${data.durationMs ? ` (${formatDuration(data.durationMs)})` : ''}` });
+      message: `Pipeline ${data.status}${data.durationMs ? ` (${formatDuration(data.durationMs)})` : ''}${msg}` });
     loadHistory();
   });
 
@@ -576,6 +787,23 @@ async function init() {
 
   connectSSE();
   loadHistory();
+  loadTicketList();
+  checkInsights();
+}
+
+async function loadTicketList() {
+  try {
+    const resp = await fetch('/api/tickets');
+    const tickets = await resp.json();
+    const datalist = $('#ticket-list');
+    datalist.innerHTML = '';
+    for (const t of tickets) {
+      const opt = document.createElement('option');
+      opt.value = t.ticketKey;
+      opt.label = `${t.ticketKey}${t.hasPlan ? ' (has plan)' : ''}`;
+      datalist.appendChild(opt);
+    }
+  } catch { /* ok */ }
 }
 
 init();

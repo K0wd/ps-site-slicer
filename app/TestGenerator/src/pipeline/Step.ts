@@ -24,6 +24,8 @@ export interface StepContext {
   db: Database;
   logger: StoryLogger;
   emitSSE: (event: string, data: unknown) => void;
+  options?: { parallel?: boolean };
+  runPrerequisite?: (stepNumber: number) => Promise<StepOutput>;
 }
 
 export interface StepOutput {

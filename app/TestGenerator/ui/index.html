@@ -23,7 +23,8 @@
     <div class="header-controls">
       <div class="input-group">
         <label for="ticket-input">Ticket</label>
-        <input type="text" id="ticket-input" placeholder="SM-XXXX" spellcheck="false" autocomplete="off">
+        <input type="text" id="ticket-input" placeholder="SM-XXXX" spellcheck="false" autocomplete="off" list="ticket-list">
+        <datalist id="ticket-list"></datalist>
       </div>
       <div class="input-group">
         <label for="filter-select">Filter</label>
@@ -47,7 +48,8 @@
     </div>
   </header>
 
-  <main>
+  <div class="split-layout">
+  <main class="main-panel">
     <!-- Ticket Info Bar -->
     <section id="ticket-bar" class="ticket-bar hidden">
       <div class="ticket-info">
@@ -60,11 +62,29 @@
       </div>
     </section>
 
-    <!-- Pipeline Grid -->
-    <section id="pipeline-grid" class="pipeline-grid"></section>
+    <!-- Pipeline Tabs -->
+    <section class="pipeline-section">
+      <div class="pipeline-tabs" id="pipeline-tabs">
+        <button class="pipeline-tab active" data-ptab="quality">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Quality
+        </button>
+        <button class="pipeline-tab" data-ptab="engineering">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Engineering
+        </button>
+      </div>
+      <div id="ptab-quality" class="pipeline-tab-panel active">
+        <div id="pipeline-grid-quality" class="pipeline-grid"></div>
+      </div>
+      <div id="ptab-engineering" class="pipeline-tab-panel">
+        <div id="pipeline-grid-engineering" class="pipeline-grid"></div>
+      </div>
+    </section>
 
     <!-- Bottom Panel -->
-    <section class="bottom-panel">
+    <section class="bottom-panel" id="bottom-panel">
+      <div class="resize-handle" id="resize-handle"></div>
       <div class="panel-header">
         <div class="panel-tabs">
           <button class="tab active" data-tab="logs">
@@ -75,12 +95,21 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
             Step Logs
           </button>
+          <button class="tab" data-tab="ticket-creator">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            Ticket Creator
+          </button>
           <button class="tab" data-tab="history">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             Run History
           </button>
         </div>
-        <button class="btn-clear" id="clear-logs-btn" title="Clear logs">Clear</button>
+        <div class="panel-actions">
+          <a class="insights-link hidden" id="claude-insights-link" href="/api/claude/insights/report" target="_blank">Insights Available!</a>
+          <button class="btn-clear" id="claude-status-btn" title="Claude Status">Status</button>
+          <button class="btn-clear" id="claude-insights-btn" title="Generate Insights">Insights</button>
+          <button class="btn-clear" id="clear-logs-btn" title="Clear logs">Clear</button>
+        </div>
       </div>
       <div id="tab-logs" class="tab-content active">
         <div id="log-output" class="log-output"></div>
@@ -89,12 +118,43 @@
         <div id="step-logs-header" class="step-logs-header"></div>
         <div id="step-logs-output" class="log-output"></div>
       </div>
+      <div id="tab-ticket-creator" class="tab-content">
+        <div class="tc-split">
+          <div class="tc-form-side">
+            <div class="tc-section-label">New Ticket</div>
+            <div class="tc-form">
+              <div class="tc-row">
+                <select id="tc-type">
+                  <option value="Bug">Bug</option>
+                  <option value="Task">Task</option>
+                  <option value="Story">Story</option>
+                  <option value="Epic">Epic</option>
+                </select>
+                <input type="text" id="tc-component" placeholder="Component" spellcheck="false">
+              </div>
+              <input type="text" id="tc-title" placeholder="Title" spellcheck="false">
+              <textarea id="tc-desc" rows="4" placeholder="Description" spellcheck="false"></textarea>
+              <div class="tc-actions">
+                <button id="tc-add-btn" class="btn-schedule">+ Add</button>
+                <button id="tc-create-btn" class="btn-primary" style="flex:1;justify-content:center">Create</button>
+              </div>
+            </div>
+          </div>
+          <div class="tc-queue-side">
+            <div class="tc-section-label">Queue</div>
+            <div id="tc-queue" class="tc-queue">
+              <div class="empty-state">Add tickets using the form on the left.<br>Click "+ Add" to queue, then "Create" to process all.</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div id="tab-history" class="tab-content">
         <div id="history-list" class="history-list"></div>
         <div id="run-detail" class="run-detail hidden"></div>
       </div>
     </section>
   </main>
+  </div>
 
   <!-- Schedule Modal -->
   <div id="schedule-modal" class="modal-overlay hidden">

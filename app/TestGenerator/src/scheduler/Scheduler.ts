@@ -53,7 +53,7 @@ export class Scheduler {
       if (!sched.enabled) continue;
 
       const nextRun = sched.next_run_at ? new Date(sched.next_run_at) : null;
-      if (!nextRun || now >= nextRun) {
+      if (nextRun && now >= nextRun) {
         if (!this.pipeline.isRunning) {
           this.fire(sched);
         }

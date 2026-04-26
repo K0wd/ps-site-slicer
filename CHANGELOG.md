@@ -4,6 +4,138 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
+## 2026-04-26 — Engineering Pipeline, Prerequisite Auto-Run, UI Overhaul
+
+### Engineering Steps (NEW — Steps 101–103)
+- **Eng 101 — Check Steps**: runs `npx bddgen`, parses missing step definitions, writes structured `.test` files to `tests/testrun/` grouped by scenario
+- **Eng 102 — Run Tests**: runs Playwright with `--project=edge`, parses test failures, writes `.test` files with error output and Gherkin context
+- **Eng 103 — Heal Scenario**: auto-chains 101→102, picks the first `.test` file, calls Claude with streaming to analyze and fix the failure, verifies the fix with a targeted test run, removes the `.test` file on success
+- Engineering steps do not require a Jira ticket — registered in `StepRegistry` at numbers 101–103
+- Pipeline handles step numbers ≥100 as "tool steps" that skip ticket discovery
+
+### Prerequisite Auto-Running
+- Steps 6–11 now auto-run prerequisite steps when required inputs are missing
+- `StepContext` gained `runPrerequisite(stepNumber)` callback — runs a prerequisite step inline with full SSE status updates
+- Step 6 auto-runs step 5 if `5_plan.md` is missing; step 7 auto-runs step 6; step 8 auto-runs steps 5 and 7; steps 9–11 auto-run step 7/8/9 as needed
+- Each prerequisite emits its own `step-status` SSE events so the UI reflects the chain in real time
+
+### Parallel/Sequential Toggle
+- Steps 6 and 7 now accept a `parallel` option via `ctx.options`
+- UI shows a toggle button on step 6 and 7 cards — parallel (default for step 6) or sequential (default for step 7)
+- Step 6: Claude calls per test case run in parallel or sequentially based on the toggle
+- Step 7: test case processing runs in parallel or sequentially based on the toggle
+
+### UI — Pipeline Tabs
+- Pipeline grid split into two tabs: **Quality** (steps 1–11) and **Engineering** (steps 101–103)
+- Tab switching with dedicated icons (checkmark for Quality, wrench for Engineering)
+- Step cards now use `data-step-number` attribute for reliable selection instead of index-based lookup
+
+### UI — Ticket Creator Tab
+- New bottom panel tab for creating Jira tickets via Claude
+- Form: type selector (Bug/Task/Story/Epic), component input, title, description
+- Queue system: add multiple tickets, then batch-create via `POST /api/bug-draft`
+- Uses BugCreator rules and HTML template for field-accurate Jira drafts
+- Queue items show status (pending → processing → done/error) with color-coded type badges
+
+### UI — Ticket Autocomplete
+- Ticket input now has a `<datalist>` populated from `GET /api/tickets`
+- API scans `TestGenerator/logs/` directories for known ticket keys with plan/feature status
+
+### UI — Claude Status & Insights
+- **Status button**: checks Claude CLI version via `GET /api/claude/status`
+- **Insights button**: triggers `claude -p "/insights"` via `POST /api/claude/insights/generate`
+- **Insights link**: appears when report exists, links to `GET /api/claude/insights/report`
+
+### UI — Resizable Bottom Panel
+- Added drag handle between main content and bottom panel
+- Mouse drag resizes panel height (clamped between 100px and 80vh)
+- Bottom panel now uses `flex-shrink: 0` with explicit height instead of `min-height`
+
+### Server API Additions
+- `GET /api/tickets` — returns ticket directories from logs with plan/feature metadata
+- `POST /api/bug-draft` — Claude drafts a Jira ticket from a brief, saves HTML to `data/bug-drafts/`
+- `GET /api/bug-drafts` — lists saved drafts
+- `GET /api/bug-drafts/:filename` — serves a draft HTML file
+- `GET /api/claude/status` — returns Claude CLI version
+- `POST /api/claude/insights/generate` — runs insights generation
+- `GET /api/claude/insights` — checks if insights report exists
+- `GET /api/claude/insights/report` — serves the insights HTML report
+
+### Pipeline & SSE Improvements
+- `run-complete` SSE event now includes the step's `message` field
+- `executeStep` emits `step-status` with `fail` status when a ticket-required step has no ticket key
+- `runSingleStep` accepts `options` parameter (passed through to step context)
+
+### Scheduler Fix
+- Fixed `Scheduler.tick()` condition: `!nextRun || now >= nextRun` → `nextRun && now >= nextRun`
+- Previously, schedules with `null` next_run_at would fire on every 30s tick
+
+### Startup
+- Sets `claude config set reasoning_effort low` on server startup
+- `npm run dev` shortcut added to root `package.json`
+
+### Rules
+- **automation.mdc** — added "Gherkin Writing Rule" (reuse existing step text first) and "Step Implementation Rule" (one step at a time, prove-then-record loop)
+- **effective-rules-summary.mdc** — added condensed versions of both rules
+
+### Log Cleanup
+- Deleted completed ticket log directories: SM-1030, SM-1032, SM-1049, SM-1053, SM-1064, SM-1077, SM-1103, SM-864, SM-934, SM-939
+- Deleted staging and state files (`.current_chomp`, `.current_test_run`, `.current_ticket`)
+- Updated SM-754 and SM-1085 logs with latest pipeline outputs
+
+### Gitignore
+- Added `.DS_Store`, `html/`, `.features-gen/`, `test-archives/`, `tests/testrun/`, `logs/`, `app/TestGenerator/data/`, `app/TestGenerator/logs/`, `app/BugCreator/logs/`
+- Fixed paths from `TestGenerator/logs/` to `app/TestGenerator/logs/`
+- Removed tracked `.DS_Store` files from git index
+
+### FLOWCHART.md
+- Comprehensive rewrite with full architecture documentation
+
+---
+
+## 2026-04-21 — TestGenerator UI: Bug Creator, Scheduler Frequency, Run History, Step Logs
+
+### Ticket Creator (NEW — integrated from BugCreator app)
+- Bottom panel split-screen: left = Live Logs / Step Logs / Run History, right = Ticket Creator
+- Always visible alongside logs — enter a brief, Claude drafts a Jira-ready HTML ticket
+- Uses company rules (`jira-ticket-creation.md`) + HTML template for field-accurate Jira drafts
+- Preview renders in iframe, past drafts listed below
+- Drafts saved to `data/bug-drafts/` as HTML files
+- API: `POST /api/bug-draft`, `GET /api/bug-drafts`, `GET /api/bug-drafts/:filename`
+
+### Schedule Modal Redesign
+- Removed Steps range fields (auto-set from the step card clicked)
+- Added frequency pill selector: 1h, 2h, 4h, 6h, 8h, 12h, Daily
+- Time preview dynamically updates based on frequency mode
+- Backend: added `interval_hours` column to schedules table with auto-migration
+- Scheduler `computeNextRun` handles interval-based schedules (not just daily)
+
+### Run History + Step Logs
+- History rows now show **step result circles** (green/red/yellow) per step
+- Clicking a history row opens **drill-down view** with step-by-step results, logs, errors
+- New **Step Logs** tab — click any step card to see its full execution history
+- Selected card gets blue highlight border and retains last pass/fail/warn status
+- `/api/status` merges last run's step results so cards persist across server restarts
+
+### Step Status Improvements
+- "No eligible tickets found" changed from fail (red) to warn (yellow)
+- Pipeline no longer marks "no tickets to process" as failed — completes gracefully
+- `run-started` no longer resets all step statuses to idle — each step retains last result
+
+### Scheduler Bug Fix
+- Fixed snake_case vs camelCase mismatch in Scheduler.ts — `better-sqlite3` returns `next_run_at` but code read `nextRunAt` (always undefined), causing every enabled schedule to fire on every 30s tick
+
+### Run Button Fix
+- Main Run button is never disabled — server rejects with 409 if pipeline is busy
+- `runSingleStep` now emits `run-started` SSE event for UI consistency
+
+### UI Polish
+- Filter defaults to "My Tickets"
+- Favicon: red "O" from PowerSlice logo as SVG
+- Warn status styled yellow throughout (detail view, history, step logs)
+
+---
+
 ## 2026-04-15 — Bite: Trimmed Jira Payload, Token Tracking, Step 6 Fix
 
 ### Step 3 — Review Ticket (`bite/steps/step3-review-ticket-info.sh`)

@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import { Config } from './config/Config.js';
 import { Database } from './data/Database.js';
 import { StoryLogger } from './logger/StoryLogger.js';
@@ -10,6 +11,8 @@ import { Pipeline } from './pipeline/Pipeline.js';
 import { Scheduler } from './scheduler/Scheduler.js';
 import { createServer } from './server.js';
 import type { Response } from 'express';
+
+try { execSync('claude config set reasoning_effort low', { timeout: 5000 }); } catch {}
 
 const config = new Config();
 const db = new Database(config.dataDir);
@@ -34,7 +37,7 @@ function emitSSE(event: string, data: unknown): void {
 
 const pipeline = new Pipeline(db, config, logger, services, emitSSE);
 const scheduler = new Scheduler(db, pipeline, emitSSE);
-const { app } = createServer(config, db, pipeline, sseClients, () => scheduler.computeAllNextRuns());
+const { app } = createServer(config, db, pipeline, sseClients, () => scheduler.computeAllNextRuns(), services.claude);
 
 app.listen(config.port, () => {
   console.log(`TestGenerator running at http://localhost:${config.port}`);

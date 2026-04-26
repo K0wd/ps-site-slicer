@@ -14,12 +14,22 @@ export class Step08ExecuteTests extends Step {
 
     ctx.logger.logStep(8, 'Execute Tests');
 
+    if (!existsSync(planFile) && ctx.runPrerequisite) {
+      this.log('Test plan not found — auto-running step 5...');
+      const p = await ctx.runPrerequisite(5);
+      if (p.status === 'fail') return { status: 'fail', message: `Prerequisite step 5 failed: ${p.message}`, artifacts: [] };
+    }
     if (!existsSync(planFile)) {
       return { status: 'fail', message: 'Test plan not found. Run step 5 first.', artifacts: [] };
     }
 
-    // Find latest test-run dir
-    const runDir = this.findLatestTestRunDir(ticketDir);
+    let runDir = this.findLatestTestRunDir(ticketDir);
+    if (!runDir && ctx.runPrerequisite) {
+      this.log('No test-run directory — auto-running step 7...');
+      const p = await ctx.runPrerequisite(7);
+      if (p.status === 'fail') return { status: 'fail', message: `Prerequisite step 7 failed: ${p.message}`, artifacts: [] };
+      runDir = this.findLatestTestRunDir(ticketDir);
+    }
     if (!runDir) {
       return { status: 'fail', message: 'No test-run directory found. Run step 7 first.', artifacts: [] };
     }

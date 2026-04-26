@@ -1,7 +1,34 @@
+# Dependencies
 node_modules/
-test-results/
-playwright-report/
+
+# Environment
 .env
 .env.local
-TestGenerator/logs/
-TestCreator/logs/
+
+# Playwright
+test-results/
+playwright-report/
+test-archives/
+.features-gen/
+
+# macOS
+.DS_Store
+
+# HTML snapshots
+html/
+
+# TestGenerator
+app/TestGenerator/logs/
+app/TestGenerator/data/*.db
+app/TestGenerator/data/*.db-shm
+app/TestGenerator/data/*.db-wal
+app/TestGenerator/data/bug-drafts/
+
+# BugCreator
+app/BugCreator/logs/
+
+# Engineering test-run scratch
+tests/testrun/
+
+# Root logs
+logs/

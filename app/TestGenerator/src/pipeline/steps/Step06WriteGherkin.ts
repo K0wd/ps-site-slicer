@@ -19,7 +19,16 @@ export class Step06WriteGherkin extends Step {
     ctx.logger.logInfo(`Ticket: **${ticketKey}**`);
 
     if (!existsSync(planFile)) {
-      return { status: 'fail', message: 'Test plan not found. Run step 5 first.', artifacts: [] };
+      if (ctx.runPrerequisite) {
+        this.log('Test plan not found — auto-running step 5...');
+        const prereq = await ctx.runPrerequisite(5);
+        if (prereq.status === 'fail') {
+          return { status: 'fail', message: `Prerequisite step 5 failed: ${prereq.message}`, artifacts: [] };
+        }
+      }
+      if (!existsSync(planFile)) {
+        return { status: 'fail', message: 'Test plan not found. Run step 5 first.', artifacts: [] };
+      }
     }
 
     mkdirSync(scratchDir, { recursive: true });
@@ -62,11 +71,12 @@ export class Step06WriteGherkin extends Step {
       return match ? match[0].substring(0, 3000) : '';
     };
 
-    // --- Launch parallel Claude calls ---
-    this.log(`Launching ${tcIds.length} parallel Claude calls...`);
+    // --- Launch Claude calls (parallel or sequential) ---
+    const useParallel = ctx.options?.parallel ?? true;
+    this.log(`Launching ${tcIds.length} Claude calls (${useParallel ? 'parallel' : 'sequential'})...`);
     let totalTokens = 0;
 
-    const results = await Promise.allSettled(tcIds.map(async (tcId) => {
+    const callClaude = async (tcId: string) => {
       const section = extractSection(tcId);
       const outputFile = resolve(scratchDir, `${tcId}.gherkin`);
       const logFile = resolve(scratchDir, `${tcId}_log.md`);
@@ -126,7 +136,22 @@ ${rulesSummary}
       totalTokens += result.tokenUsage;
 
       return { tcId, outputFile, success: existsSync(outputFile) && readFileSync(outputFile, 'utf-8').trim().length > 0 };
-    }));
+    };
+
+    let results: PromiseSettledResult<{ tcId: string; outputFile: string; success: boolean }>[];
+    if (useParallel) {
+      results = await Promise.allSettled(tcIds.map(callClaude));
+    } else {
+      results = [];
+      for (const tcId of tcIds) {
+        try {
+          const val = await callClaude(tcId);
+          results.push({ status: 'fulfilled', value: val });
+        } catch (reason) {
+          results.push({ status: 'rejected', reason });
+        }
+      }
+    }
 
     // --- Tally results ---
     let passCount = 0;

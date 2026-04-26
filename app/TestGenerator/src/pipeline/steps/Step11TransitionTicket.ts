@@ -14,12 +14,23 @@ export class Step11TransitionTicket extends Step {
     ctx.logger.logStep(11, 'Transition Ticket');
 
     // Find verdict from results file
-    const runDir = this.findLatestTestRunDir(ticketDir);
+    let runDir = this.findLatestTestRunDir(ticketDir);
+    if (!runDir && ctx.runPrerequisite) {
+      this.log('No test-run directory — auto-running step 7...');
+      const p = await ctx.runPrerequisite(7);
+      if (p.status === 'fail') return { status: 'fail', message: `Prerequisite step 7 failed: ${p.message}`, artifacts: [] };
+      runDir = this.findLatestTestRunDir(ticketDir);
+    }
     if (!runDir) {
       return { status: 'fail', message: 'No test-run directory found', artifacts: [] };
     }
 
     const resultsFile = resolve(runDir, '8_results.md');
+    if (!existsSync(resultsFile) && ctx.runPrerequisite) {
+      this.log('Results file not found — auto-running step 9...');
+      const p = await ctx.runPrerequisite(9);
+      if (p.status === 'fail') return { status: 'fail', message: `Prerequisite step 9 failed: ${p.message}`, artifacts: [] };
+    }
     if (!existsSync(resultsFile)) {
       return { status: 'fail', message: 'Results file not found. Run steps 8-9 first.', artifacts: [] };
     }

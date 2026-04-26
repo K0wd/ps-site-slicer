@@ -1687,7 +1687,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Added expense API methods (getExpenseMeta, searchExpenses, saveExpense, getExpenseAttachmentUrl) with real and mock implementations, plus ExpenseMeta and ExpenseItem TypeScript interfaces"
+                      "text": " — Added expense API methods (getExpenseMeta, searchExpenses, saveExpense, getExpenseAttachmentUrl) with real and mock implementations, plus ExpenseMeta and ExpenseItem TypeScript interfaces"
                     }
                   ]
                 }
@@ -1710,7 +1710,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Added Expenses navigation link to sidebar menu (between Timesheet and Clock Simple)"
+                      "text": " — Added Expenses navigation link to sidebar menu (between Timesheet and Clock Simple)"
                     }
                   ]
                 }
@@ -1733,7 +1733,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Expense search/list page with date range filtering, sorted card list, FAB to create"
+                      "text": " — Expense search/list page with date range filtering, sorted card list, FAB to create"
                     }
                   ]
                 }
@@ -1756,7 +1756,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Expense detail view with all fields, attachment image modal, FAB to edit"
+                      "text": " — Expense detail view with all fields, attachment image modal, FAB to edit"
                     }
                   ]
                 }
@@ -1779,7 +1779,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Create/edit expense form (shared component handles both modes)"
+                      "text": " — Create/edit expense form (shared component handles both modes)"
                     }
                   ]
                 }
@@ -1802,7 +1802,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Card component showing status badge, date, approval info, amount"
+                      "text": " — Card component showing status badge, date, approval info, amount"
                     }
                   ]
                 }
@@ -1825,7 +1825,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Full expense form with expense type, payment type, mileage calculator, WO search (manual + scheduled toggle), attachment upload, validation"
+                      "text": " — Full expense form with expense type, payment type, mileage calculator, WO search (manual + scheduled toggle), attachment upload, validation"
                     }
                   ]
                 }
@@ -1848,7 +1848,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Mileage sub-form with from/to location inputs (office suggestions) and auto-calculated amount"
+                      "text": " — Mileage sub-form with from/to location inputs (office suggestions) and auto-calculated amount"
                     }
                   ]
                 }
@@ -1871,7 +1871,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 404 page (required for Next.js static export build)"
+                      "text": " — 404 page (required for Next.js static export build)"
                     }
                   ]
                 }
@@ -1984,7 +1984,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap Expenses \u2014 should navigate to expense list page"
+                      "text": "Tap Expenses — should navigate to expense list page"
                     }
                   ]
                 }
@@ -2045,7 +2045,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Change date range and tap Search \u2014 list should update"
+                      "text": "Change date range and tap Search — list should update"
                     }
                   ]
                 }
@@ -2059,7 +2059,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap refresh icon in header \u2014 should reload data"
+                      "text": "Tap refresh icon in header — should reload data"
                     }
                   ]
                 }
@@ -2092,7 +2092,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap any expense card \u2014 should navigate to detail page"
+                      "text": "Tap any expense card — should navigate to detail page"
                     }
                   ]
                 }
@@ -2148,7 +2148,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap back arrow \u2014 should return to list"
+                      "text": "Tap back arrow — should return to list"
                     }
                   ]
                 }
@@ -2237,7 +2237,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Select a type that has a default amount \u2014 verify Amount field auto-populates and is read-only"
+                      "text": "Select a type that has a default amount — verify Amount field auto-populates and is read-only"
                     }
                   ]
                 }
@@ -2251,7 +2251,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Select a type/payment that requires a reason \u2014 verify Reason dropdown appears with warning"
+                      "text": "Select a type/payment that requires a reason — verify Reason dropdown appears with warning"
                     }
                   ]
                 }
@@ -2265,7 +2265,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Toggle 'Scheduled' switch on WO# field \u2014 verify it switches between text input and dropdown"
+                      "text": "Toggle 'Scheduled' switch on WO# field — verify it switches between text input and dropdown"
                     }
                   ]
                 }
@@ -2279,7 +2279,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "In manual WO mode, type a WO number \u2014 verify autocomplete search with validation"
+                      "text": "In manual WO mode, type a WO number — verify autocomplete search with validation"
                     }
                   ]
                 }
@@ -2293,7 +2293,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Attach an image \u2014 verify preview appears"
+                      "text": "Attach an image — verify preview appears"
                     }
                   ]
                 }
@@ -2307,7 +2307,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Fill all required fields and tap Save \u2014 verify success toast and redirect to list"
+                      "text": "Fill all required fields and tap Save — verify success toast and redirect to list"
                     }
                   ]
                 }
@@ -2396,7 +2396,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Change a field and save \u2014 verify changes are reflected"
+                      "text": "Change a field and save — verify changes are reflected"
                     }
                   ]
                 }
@@ -2457,7 +2457,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Enter miles value \u2014 verify Amount auto-calculates (miles x mileage rate)"
+                      "text": "Enter miles value — verify Amount auto-calculates (miles x mileage rate)"
                     }
                   ]
                 }
@@ -2485,7 +2485,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Save mileage expense \u2014 verify it appears in list with correct amount"
+                      "text": "Save mileage expense — verify it appears in list with correct amount"
                     }
                   ]
                 }
@@ -2610,7 +2610,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap Expenses \u2014 should navigate to expense list page"
+                      "text": "Tap Expenses — should navigate to expense list page"
                     }
                   ],
                   "attrs": {
@@ -2695,7 +2695,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Change date range and tap Search \u2014 list should update"
+                      "text": "Change date range and tap Search — list should update"
                     }
                   ],
                   "attrs": {
@@ -2715,7 +2715,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap refresh icon in header \u2014 should reload data"
+                      "text": "Tap refresh icon in header — should reload data"
                     }
                   ],
                   "attrs": {
@@ -2760,7 +2760,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap any expense card \u2014 should navigate to detail page"
+                      "text": "Tap any expense card — should navigate to detail page"
                     }
                   ],
                   "attrs": {
@@ -2840,7 +2840,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap back arrow \u2014 should return to list"
+                      "text": "Tap back arrow — should return to list"
                     }
                   ],
                   "attrs": {
@@ -2965,7 +2965,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Select a type that has a default amount \u2014 verify Amount field auto-populates and is read-only"
+                      "text": "Select a type that has a default amount — verify Amount field auto-populates and is read-only"
                     }
                   ],
                   "attrs": {
@@ -2985,7 +2985,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Select a type/payment that requires a reason \u2014 verify Reason dropdown appears with warning"
+                      "text": "Select a type/payment that requires a reason — verify Reason dropdown appears with warning"
                     }
                   ],
                   "attrs": {
@@ -3005,7 +3005,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Toggle 'Scheduled' switch on WO# field \u2014 verify it switches between text input and dropdown"
+                      "text": "Toggle 'Scheduled' switch on WO# field — verify it switches between text input and dropdown"
                     }
                   ],
                   "attrs": {
@@ -3025,7 +3025,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "In manual WO mode, type a WO number \u2014 verify autocomplete search with validation"
+                      "text": "In manual WO mode, type a WO number — verify autocomplete search with validation"
                     }
                   ],
                   "attrs": {
@@ -3045,7 +3045,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Attach an image \u2014 verify preview appears"
+                      "text": "Attach an image — verify preview appears"
                     }
                   ],
                   "attrs": {
@@ -3065,7 +3065,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Fill all required fields and tap Save \u2014 verify success toast and redirect to list"
+                      "text": "Fill all required fields and tap Save — verify success toast and redirect to list"
                     }
                   ],
                   "attrs": {
@@ -3190,7 +3190,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Change a field and save \u2014 verify changes are reflected"
+                      "text": "Change a field and save — verify changes are reflected"
                     }
                   ],
                   "attrs": {
@@ -3275,7 +3275,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Enter miles value \u2014 verify Amount auto-calculates (miles x mileage rate)"
+                      "text": "Enter miles value — verify Amount auto-calculates (miles x mileage rate)"
                     }
                   ],
                   "attrs": {
@@ -3315,7 +3315,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Save mileage expense \u2014 verify it appears in list with correct amount"
+                      "text": "Save mileage expense — verify it appears in list with correct amount"
                     }
                   ],
                   "attrs": {
@@ -3457,7 +3457,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " Checking with Darl, this order doesn\u2019t match the app. "
+                      "text": " Checking with Darl, this order doesn’t match the app. "
                     }
                   ],
                   "attrs": {
@@ -3477,7 +3477,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap Expenses \u2014 Verified should navigate to expense list page"
+                      "text": "Tap Expenses — Verified should navigate to expense list page"
                     }
                   ],
                   "attrs": {
@@ -3562,7 +3562,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Change date range and tap Search \u2014 Verified list should update"
+                      "text": "Change date range and tap Search — Verified list should update"
                     }
                   ],
                   "attrs": {
@@ -3582,7 +3582,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap refresh icon in header of the PWA \u2014 Verified should reload data"
+                      "text": "Tap refresh icon in header of the PWA — Verified should reload data"
                     }
                   ],
                   "attrs": {
@@ -3647,7 +3647,7 @@
                               "attrs": {
                                 "type": "file",
                                 "id": "429af041-2fee-4cae-8fc1-a8a4b482a472",
-                                "alt": "Screenshot 2026-04-08 at 3.57.03\u202fPM.png",
+                                "alt": "Screenshot 2026-04-08 at 3.57.03 PM.png",
                                 "collection": "",
                                 "localId": "17c7027ea038",
                                 "height": 934,
@@ -3707,7 +3707,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap any expense card \u2014 should navigate to detail page"
+                      "text": "Tap any expense card — should navigate to detail page"
                     }
                   ],
                   "attrs": {
@@ -3757,7 +3757,7 @@
                               "attrs": {
                                 "type": "file",
                                 "id": "5e6cd129-6014-4337-ab4c-4306cc8091a1",
-                                "alt": "Screenshot 2026-04-08 at 4.02.04\u202fPM.png",
+                                "alt": "Screenshot 2026-04-08 at 4.02.04 PM.png",
                                 "collection": "",
                                 "localId": "608834c611a0",
                                 "height": 484,
@@ -3847,7 +3847,7 @@
                     },
                     {
                       "type": "text",
-                      "text": "The attachment once uploaded isn\u2019t showing. "
+                      "text": "The attachment once uploaded isn’t showing. "
                     }
                   ],
                   "attrs": {
@@ -3867,7 +3867,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Tap back arrow \u2014 Verifed should return to list"
+                      "text": "Tap back arrow — Verifed should return to list"
                     }
                   ],
                   "attrs": {
@@ -3992,7 +3992,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Select a type that has a default amount \u2014 verified Amount field auto-populates and is read-only"
+                      "text": "Select a type that has a default amount — verified Amount field auto-populates and is read-only"
                     }
                   ],
                   "attrs": {
@@ -4012,7 +4012,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Select a type/payment that requires a reason \u2014 verified Reason dropdown appears with warning"
+                      "text": "Select a type/payment that requires a reason — verified Reason dropdown appears with warning"
                     }
                   ],
                   "attrs": {
@@ -4047,7 +4047,7 @@
                     },
                     {
                       "type": "text",
-                      "text": "The reimbursable to me check mark box isn\u2019t working. "
+                      "text": "The reimbursable to me check mark box isn’t working. "
                     }
                   ],
                   "attrs": {
@@ -4067,7 +4067,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Toggle 'Scheduled' switch on WO# field \u2014 verified it switches between text input and dropdown"
+                      "text": "Toggle 'Scheduled' switch on WO# field — verified it switches between text input and dropdown"
                     }
                   ],
                   "attrs": {
@@ -4087,7 +4087,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "In manual WO mode, type a WO number \u2014 verified autocomplete search with validation"
+                      "text": "In manual WO mode, type a WO number — verified autocomplete search with validation"
                     }
                   ],
                   "attrs": {
@@ -4135,7 +4135,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Attach an image \u2014 verified preview appears"
+                      "text": "Attach an image — verified preview appears"
                     }
                   ],
                   "attrs": {
@@ -4155,7 +4155,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Fill all required fields and tap Save \u2014 verifies success toast and redirect to list"
+                      "text": "Fill all required fields and tap Save — verifies success toast and redirect to list"
                     }
                   ],
                   "attrs": {
@@ -4280,7 +4280,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Change a field and save \u2014 verify changes are reflected"
+                      "text": "Change a field and save — verify changes are reflected"
                     }
                   ],
                   "attrs": {
@@ -4396,7 +4396,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Enter miles value \u2014 verified Amount auto-calculates (miles x mileage rate)"
+                      "text": "Enter miles value — verified Amount auto-calculates (miles x mileage rate)"
                     }
                   ],
                   "attrs": {
@@ -4436,7 +4436,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Save mileage expense \u2014 verified it appears in list with correct amount"
+                      "text": "Save mileage expense — verified it appears in list with correct amount"
                     }
                   ],
                   "attrs": {
@@ -4507,7 +4507,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Navigating to /expense/ showed Apache directory listing instead of the expense page. Fixed .htaccess to disable directory serving and handle trailing slashes."
+                      "text": " — Navigating to /expense/ showed Apache directory listing instead of the expense page. Fixed .htaccess to disable directory serving and handle trailing slashes."
                     }
                   ]
                 }
@@ -4530,7 +4530,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 New Expense form showed 'Loading metadata...' forever when sessionStorage was empty. Added API fallback fetch and null guard on initFromMeta."
+                      "text": " — New Expense form showed 'Loading metadata...' forever when sessionStorage was empty. Added API fallback fetch and null guard on initFromMeta."
                     }
                   ]
                 }
@@ -4553,7 +4553,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Custom Pressable+View checkbox didn't respond to clicks. Replaced with native HTML checkbox."
+                      "text": " — Custom Pressable+View checkbox didn't respond to clicks. Replaced with native HTML checkbox."
                     }
                   ]
                 }
@@ -4576,7 +4576,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 moment.js deprecation warning on detail page. Added explicit date format parsing."
+                      "text": " — moment.js deprecation warning on detail page. Added explicit date format parsing."
                     }
                   ]
                 }
@@ -4599,7 +4599,7 @@
                     },
                     {
                       "type": "text",
-                      "text": " \u2014 Added crossOrigin attribute for cross-origin image loading."
+                      "text": " — Added crossOrigin attribute for cross-origin image loading."
                     }
                   ]
                 }
@@ -4651,7 +4651,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Navigate to Expenses, refresh the page \u2014 should show expense list (not directory listing)"
+                      "text": "Navigate to Expenses, refresh the page — should show expense list (not directory listing)"
                     }
                   ]
                 }
@@ -4665,7 +4665,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Click + to create new expense \u2014 form should load immediately with dropdowns populated"
+                      "text": "Click + to create new expense — form should load immediately with dropdowns populated"
                     }
                   ]
                 }
@@ -4679,7 +4679,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "Toggle Reimbursable to me checkbox \u2014 should check/uncheck reliably"
+                      "text": "Toggle Reimbursable to me checkbox — should check/uncheck reliably"
                     }
                   ]
                 }
@@ -4693,7 +4693,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "View expense detail \u2014 Date Entered should show without console warnings"
+                      "text": "View expense detail — Date Entered should show without console warnings"
                     }
                   ]
                 }
@@ -4707,7 +4707,7 @@
                   "content": [
                     {
                       "type": "text",
-                      "text": "View expense with attachment \u2014 click attachment link to view image in modal"
+                      "text": "View expense with attachment — click attachment link to view image in modal"
                     }
                   ]
                 }
@@ -4754,7 +4754,7 @@
             },
             {
               "type": "text",
-              "text": " When opening an attachment, it is too dark, you can\u2019t see it. "
+              "text": " When opening an attachment, it is too dark, you can’t see it. "
             }
           ]
         },
@@ -4771,7 +4771,7 @@
               "attrs": {
                 "type": "file",
                 "id": "b2411da4-1d5e-4c35-a0ce-3a3400f5efec",
-                "alt": "Screenshot 2026-04-09 at 12.13.39\u202fPM.png",
+                "alt": "Screenshot 2026-04-09 at 12.13.39 PM.png",
                 "collection": "",
                 "height": 937,
                 "width": 893
@@ -4799,7 +4799,7 @@
             },
             {
               "type": "text",
-              "text": " When you go back into an expense and click on Edit, you can\u2019t see the preview."
+              "text": " When you go back into an expense and click on Edit, you can’t see the preview."
             }
           ]
         },
@@ -4816,7 +4816,7 @@
               "attrs": {
                 "type": "file",
                 "id": "509a7a4b-c78d-4f59-8e84-d7ed9ecd7cac",
-                "alt": "Screenshot 2026-04-09 at 12.20.06\u202fPM.png",
+                "alt": "Screenshot 2026-04-09 at 12.20.06 PM.png",
                 "collection": "",
                 "height": 935,
                 "width": 920

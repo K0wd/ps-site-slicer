@@ -1,6 +1,0 @@
-  - image-20260415-170748.png (436379 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/31318
-  - image-20260415-170804.png (436281 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/31319
-  - image-20260416-000836.png (691777 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/31328
-  - Screenshot 2025-11-13 at 11.55.26 AM.png (8124 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/16765
-  - Screenshot 2025-11-13 at 12.07.48 PM.png (10183 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/16763
-  - Screenshot 2025-11-13 at 12.14.36 PM.png (9940 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/16764

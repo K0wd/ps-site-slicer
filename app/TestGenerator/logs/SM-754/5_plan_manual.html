@@ -3,43 +3,43 @@
 
   <h4 style="margin:12px 0 4px 0;"><b>Testing on TEST</b></h4>
   <ul>
-    <li><b>Verify</b> a text-based filter (ID, WO#, Description, or PO#) narrows the Purchasing Tracker table &mdash; should reduce the row count to only matching records and produce an export containing only those filtered rows.</li>
-    <li><b>Verify</b> the Request Date and Request By Date filters narrow the table to records within the selected date range &mdash; should export only rows whose date values satisfy the applied condition.</li>
-    <li><b>Verify</b> dropdown filters (Type, Status, Priority, Dept, Vendor, Requested Total, Needs My Approval) narrow the table correctly and the Division column has no filter option &mdash; should confirm each dropdown filter produces a filtered export and that Division displays values only.</li>
-    <li><b>Verify</b> the Approval column filter presents a checkbox dropdown (Approved, Pending Approval, Override, Rejected, Blank) and that selecting <code>Blank</code> returns only rows with a NULL or empty Approval value &mdash; should export only blank-Approval rows with no rows carrying an approval status.</li>
-    <li><b>Verify</b> the Approver(s) column filter <code>Blank</code> selection returns only rows with no approver assigned &mdash; should export successfully with the Approvers column empty for every row.</li>
-    <li><b>Verify</b> clearing a filter removes the column header filter indicator and fully restores the full record set &mdash; should leave no stale filter state affecting the table or subsequent operations.</li>
-    <li><b>Verify</b> export completes without freezing on a moderate filtered result set (50&ndash;500 rows) &mdash; should start downloading within 30 seconds and produce a file whose row count matches the filtered table count.</li>
+    <li><b>Verify</b> the Approval column filter presents a dropdown with selectable options (<code>Approved</code> / <code>Pending Approval</code> / <code>Override</code> / <code>Rejected</code> / <code>Blank</code>) — should show no free-text search field.</li>
+    <li><b>Verify</b> selecting <code>Blank</code> on the Approval column filter narrows the table to only rows where Approval is NULL, empty, or <code>Approval Not Needed</code> — should exclude any previously-approved rows and export without an infinite spinner.</li>
+    <li><b>Verify</b> selecting <code>Blank</code> on the Approver(s) filter narrows the table to only PO records with no approvers in either designated approvers or approval history — should exclude records with named approvers and export with an empty Approver(s) column.</li>
+    <li><b>Verify</b> filtering Approver(s) by a known approver name and exporting — should produce a CSV where the Approver(s) column is populated with that approver's name (regression for previously-missing export data).</li>
+    <li><b>Verify</b> applying the Dept filter then clicking the <b>X</b> to clear it — should reset the table to unfiltered state and remove the filter indicator icon from the Dept column header.</li>
+    <li><b>Verify</b> the Division column header has no filter icon or dropdown — should be display-only with no filter control present.</li>
+    <li><b>Verify</b> selecting two values simultaneously on the Status filter (e.g., <code>Approved</code> + <code>Pending</code>) — should display rows matching either status with both values shown active in the filter chip, and the export should reflect the combined result.</li>
   </ul>
 
   <h4 style="margin:16px 0 4px 0;"><b>Results on TEST</b></h4>
   <ul>
     <li>
-      <b>Verified</b> a text-based filter (ID, WO#, Description, or PO#) narrowed the Purchasing Tracker table &mdash; should reduce the row count to only matching records and produce an export containing only those filtered rows. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <b>Verified</b> the Approval column filter presents a dropdown with selectable options (<code>Approved</code> / <code>Pending Approval</code> / <code>Override</code> / <code>Rejected</code> / <code>Blank</code>) — no free-text search field shown. <span style="color:#006644;font-weight:bold;">PASSED</span>
       <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
     </li>
     <li>
-      <b>Verified</b> the Request Date and Request By Date filters narrowed the table to records within the selected date range &mdash; should export only rows whose date values satisfy the applied condition. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <b>Verified</b> selecting <code>Blank</code> on the Approval column filter narrows the table to only rows where Approval is NULL, empty, or <code>Approval Not Needed</code> — no approved rows appeared and export completed without an infinite spinner. <span style="color:#006644;font-weight:bold;">PASSED</span>
       <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
     </li>
     <li>
-      <b>Verified</b> dropdown filters (Type, Status, Priority, Dept, Vendor, Requested Total, Needs My Approval) narrowed the table correctly and the Division column had no filter option &mdash; should confirm each dropdown filter produces a filtered export and that Division displays values only. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <b>Verified</b> selecting <code>Blank</code> on the Approver(s) filter narrows the table to only PO records with no approvers — records with named approvers excluded; exported CSV shows empty Approver(s) column throughout. <span style="color:#006644;font-weight:bold;">PASSED</span>
       <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
     </li>
     <li>
-      <b>Verified</b> the Approval column filter presented a checkbox dropdown (Approved, Pending Approval, Override, Rejected, Blank) and selecting <code>Blank</code> returned only rows with a NULL or empty Approval value &mdash; should export only blank-Approval rows with no rows carrying an approval status. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <b>Verified</b> filtering Approver(s) by a known approver name and exporting — CSV Approver(s) column was populated with the correct approver name (regression confirmed resolved). <span style="color:#006644;font-weight:bold;">PASSED</span>
       <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
     </li>
     <li>
-      <b>Verified</b> the Approver(s) column filter <code>Blank</code> selection returned only rows with no approver assigned &mdash; should export successfully with the Approvers column empty for every row. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <b>Verified</b> applying then clearing the Dept filter via the <b>X</b> — table reset to unfiltered state and the filter indicator icon was removed from the Dept column header. <span style="color:#006644;font-weight:bold;">PASSED</span>
       <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
     </li>
     <li>
-      <b>Verified</b> clearing a filter removed the column header filter indicator and fully restored the full record set &mdash; should leave no stale filter state affecting the table or subsequent operations. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <b>Verified</b> the Division column header has no filter icon or dropdown — column is display-only as designed. <span style="color:#006644;font-weight:bold;">PASSED</span>
       <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
     </li>
     <li>
-      <b>Verified</b> export completed without freezing on a moderate filtered result set (50&ndash;500 rows) &mdash; should start downloading within 30 seconds and produce a file whose row count matches the filtered table count. <span style="color:#006644;font-weight:bold;">PASSED</span>
+      <b>Verified</b> selecting two values simultaneously on the Status filter — table returned rows matching either status, both values active in the filter chip, and the exported CSV reflected the combined result. <span style="color:#006644;font-weight:bold;">PASSED</span>
       <div style="color:#888;font-style:italic;padding:8px 0;">[screenshot placeholder]</div>
     </li>
   </ul>

@@ -49,7 +49,7 @@ export class Pipeline {
     }));
   }
 
-  async runSingleStep(stepNumber: number, ticketKey?: string): Promise<StepOutput> {
+  async runSingleStep(stepNumber: number, ticketKey?: string, options?: { parallel?: boolean }): Promise<StepOutput> {
     if (this.running) {
       throw new Error('Pipeline is already running');
     }
@@ -61,7 +61,7 @@ export class Pipeline {
 
     try {
       const runId = this.db.createRun(stepNumber, stepNumber, ticketKey);
-      const output = await this.executeStep(stepNumber, runId, ticketKey || null);
+      const output = await this.executeStep(stepNumber, runId, ticketKey || null, options);
       const durationMs = Date.now() - startTime;
 
       if (stepNumber === 2 && output.status === 'pass' && output.data?.selectedTicket) {
@@ -71,7 +71,7 @@ export class Pipeline {
       const status = output.status === 'fail' ? 'failed' : 'completed';
       this.db.finishRun(runId, status, durationMs);
 
-      this.emitSSE('run-complete', { runId, status, durationMs });
+      this.emitSSE('run-complete', { runId, status, durationMs, message: output.message });
       return output;
     } finally {
       this.running = false;
@@ -90,6 +90,18 @@ export class Pipeline {
     this.emitSSE('run-started', { runId, stepStart, stepEnd, ticketKey, filter });
 
     try {
+      // Tool steps (100+) run directly — no ticket discovery needed
+      if (stepStart >= 100) {
+        for (let s = stepStart; s <= stepEnd; s++) {
+          const output = await this.executeStep(s, runId, ticketKey || null);
+          if (output.status === 'fail') break;
+        }
+        const durationMs = Date.now() - startTime;
+        this.db.finishRun(runId, 'completed', durationMs);
+        this.emitSSE('run-complete', { runId, status: 'completed', durationMs });
+        return;
+      }
+
       let currentTicket = ticketKey || null;
       let allTickets: string[] = [];
       let step = stepStart;
@@ -156,12 +168,15 @@ export class Pipeline {
     }
   }
 
-  private async executeStep(stepNumber: number, runId: number, ticketKey: string | null): Promise<StepOutput> {
+  private async executeStep(stepNumber: number, runId: number, ticketKey: string | null, options?: { parallel?: boolean }): Promise<StepOutput> {
     const stepDef = STEP_DEFINITIONS.find(d => d.number === stepNumber);
     if (!stepDef) throw new Error(`Unknown step: ${stepNumber}`);
 
     if (stepDef.requiresTicket && !ticketKey) {
-      return { status: 'fail', message: 'Ticket key required for this step', artifacts: [] };
+      const msg = 'Ticket key required for this step';
+      this.stepStatuses.set(stepNumber, 'fail');
+      this.emitSSE('step-status', { stepNumber, status: 'fail', message: msg });
+      return { status: 'fail', message: msg, artifacts: [] };
     }
 
     this.currentStepNumber = stepNumber;
@@ -180,6 +195,17 @@ export class Pipeline {
       db: this.db,
       logger: this.logger,
       emitSSE: this.emitSSE,
+      options,
+      runPrerequisite: async (prereqStep: number) => {
+        this.emitSSE('step-status', { stepNumber: prereqStep, status: 'running', message: 'Auto-running prerequisite...' });
+        const prereqResultId = this.db.createStepResult(runId, prereqStep, STEP_DEFINITIONS.find(d => d.number === prereqStep)?.name || `Step ${prereqStep}`, ticketKey || undefined);
+        const prereqCtx = { ...ctx, stepResultId: prereqResultId, runPrerequisite: undefined };
+        const prereqStepImpl = createStep(prereqStep);
+        const prereqOutput = await prereqStepImpl.run(prereqCtx);
+        this.stepStatuses.set(prereqStep, prereqOutput.status);
+        this.emitSSE('step-status', { stepNumber: prereqStep, status: prereqOutput.status, message: prereqOutput.message });
+        return prereqOutput;
+      },
     };
 
     const step = createStep(stepNumber);

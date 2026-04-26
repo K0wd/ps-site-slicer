@@ -10,6 +10,9 @@ import { Step08ExecuteTests } from './steps/Step08ExecuteTests.js';
 import { Step09DetermineResults } from './steps/Step09DetermineResults.js';
 import { Step10PostResults } from './steps/Step10PostResults.js';
 import { Step11TransitionTicket } from './steps/Step11TransitionTicket.js';
+import { Eng01CheckSteps } from './steps/Eng01CheckSteps.js';
+import { Eng02RunTests } from './steps/Eng02RunTests.js';
+import { Eng03HealScenario } from './steps/Eng03HealScenario.js';
 
 const STEP_CLASSES: Record<number, new () => Step> = {
   1: Step01VerifyAuth,
@@ -23,6 +26,9 @@ const STEP_CLASSES: Record<number, new () => Step> = {
   9: Step09DetermineResults,
   10: Step10PostResults,
   11: Step11TransitionTicket,
+  101: Eng01CheckSteps,
+  102: Eng02RunTests,
+  103: Eng03HealScenario,
 };
 
 export function createStep(stepNumber: number): Step {

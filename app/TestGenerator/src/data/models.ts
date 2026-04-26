@@ -88,5 +88,8 @@ export const STEP_DEFINITIONS: StepDefinition[] = [
   { number: 8,  name: 'Execute Tests',           requiresTicket: true },
   { number: 9,  name: 'Determine Results',       requiresTicket: true },
   { number: 10, name: 'Post Results',            requiresTicket: true },
-  { number: 11, name: 'Transition Ticket',       requiresTicket: true },
+  { number: 11,  name: 'Transition Ticket',         requiresTicket: true },
+  { number: 101, name: 'Check Steps',                 requiresTicket: false },
+  { number: 102, name: 'Run Tests',                  requiresTicket: false },
+  { number: 103, name: 'Heal Scenario',              requiresTicket: false },
 ];

@@ -96,6 +96,52 @@ properties/
 - Keep debug table values sanitized for plain-text logs (replace `|` in cell text) and source them from stable CSV headers.
 - Keep command-line reporting simple and readable when updating Cucumber configuration.
 
+## Gherkin Writing Rule — Reuse Existing Step Text First (Step 6)
+
+Before writing any Gherkin scenario, read `tests/steps/*.steps.ts` and extract every known step text pattern. When a scenario step can be expressed using an existing pattern, use that exact text — do not paraphrase. Only invent new step text when no existing step covers the intent.
+
+After generating all Gherkin, run `npx bddgen` in dry-run mode. Save the list of unmatched steps (lint errors = no implementation found) to `6_unmatched_steps.txt`. This is the only work left for Step 7. Steps not in that list need no further action.
+
+**The goal: arrive at Step 7 with the smallest possible gap list.**
+
+## Step Implementation Rule — One Step At A Time (Step 7 and all automation writing)
+
+This is the core rule for all automation writing activities. It applies everywhere a Gherkin step has no implementation: Step 7 of the pipeline, manual step writing, or any future automation scope.
+
+**Step 7 works only from the gap list (`6_unmatched_steps.txt`). Every step not in that list is skipped.**
+
+**The rule: implement one unmatched step, prove it passes, record it, then and only then move to the next.**
+
+```
+FOR EACH unmatched step (from 6_unmatched_steps.txt), in scenario order:
+
+  1. IMPLEMENT — write exactly one step definition
+       - Read properties/*.ts for XPath selectors (never hardcode)
+       - Append to the appropriate *.steps.ts file
+       - Do not write any other steps at the same time
+
+  2. VERIFY — run: npx bddgen
+       FAIL → retry once with the lint error as context
+       FAIL again → stop this TC; log blocker; do not continue
+
+  3. RUN — run: npx playwright test --grep @TC-XX
+       Test the step in the context of its TC scenario
+
+  4. RESULT:
+       PASS → ★ RECORD: remove from unmatched list; log "★ recorded: <step text>" ★
+               → move to the next unmatched step
+
+       FAIL → stop this TC entirely
+               log the failure detail
+               do NOT record the step
+               do NOT continue to the next step
+               remaining steps in this TC are skipped (not proven)
+```
+
+**Never implement two steps at once. Never skip a failing step. Never advance without a playwright pass.**
+
+The reference library (`tests/steps/*.steps.ts`) grows one proven step at a time. Every recorded step is reused automatically by the next Step 6 run — reducing the gap list further each ticket.
+
 ## Pipelines related rules
 
 - For Azure DevOps feature execution, use one stage per feature file so the pipeline view stays clear and presentation-friendly.

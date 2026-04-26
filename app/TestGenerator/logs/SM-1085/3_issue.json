@@ -11,7 +11,7 @@
           "content": [
             {
               "type": "text",
-              "text": "\ud83d\udcdd User Story: Expense Module Migration to SiteManager PWA"
+              "text": "📝 User Story: Expense Module Migration to SiteManager PWA"
             }
           ]
         },
@@ -354,16 +354,16 @@
     "assignee": "Kim Bandeleon",
     "reporter": "Darl Anthony Pepito",
     "labels": [],
-    "environment": null,
+    "environment": "",
     "parent": {
       "key": "SM-950",
       "summary": "PWA for SM Mobile"
     },
     "attachments": [
-      "Screenshot 2026-04-08 at 3.57.03\u202fPM.png",
-      "Screenshot 2026-04-08 at 4.02.04\u202fPM.png",
-      "Screenshot 2026-04-09 at 12.13.39\u202fPM.png",
-      "Screenshot 2026-04-09 at 12.20.06\u202fPM.png"
+      "Screenshot 2026-04-08 at 3.57.03 PM.png",
+      "Screenshot 2026-04-08 at 4.02.04 PM.png",
+      "Screenshot 2026-04-09 at 12.13.39 PM.png",
+      "Screenshot 2026-04-09 at 12.20.06 PM.png"
     ]
   }
 }
