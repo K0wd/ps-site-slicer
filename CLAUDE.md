@@ -85,5 +85,17 @@ tests/
 └── properties/*.properties.ts — XPath locators per page (POM)
 html/                          — htmlBody snapshots (gitignored)
 rules/                         — QA and ISTQB rule files
-.claude/                       — quality.md, wiki.md
+.claude/                       — quality.md, wiki.md, expert/app rules contexts
+app/TestGenerator/             — single-app monolith (see Module map below)
 ```
+
+## Module map (`app/TestGenerator/src/`)
+
+| Domain | Path | Owns |
+|---|---|---|
+| `shared/` | infra | Config, Database, models, StoryLogger, Pipeline, Step, StepRegistry |
+| `services/` | external integrations | ClaudeService, JiraService, GitService, PlaywrightService, ContextBuilder |
+| `generator/steps/` | Step01–07 | ticket lookup → review → test plan → Gherkin → automated tests |
+| `automator/steps/` | Step08–11 + Eng01–04 | execute → results → post → transition; healing pipeline |
+| `automator/scheduler/` | scheduling | Scheduler (cron-like for engineering loops) |
+| `createbug/` | bug filing | TicketCreator.sh + template.html (folded from former `app/BugCreator/`) |

@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, existsSync, mkdtempSync, writeFileSync } from 'fs';
 import { resolve, join, basename } from 'path';
 import { tmpdir } from 'os';
-import type { Config } from '../config/Config.js';
+import type { Config } from '../shared/config/Config.js';
 
 export class ContextBuilder {
   private tempDir: string | null = null;

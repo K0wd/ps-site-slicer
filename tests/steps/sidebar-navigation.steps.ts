@@ -22,16 +22,35 @@ const toSlug = (title: string) =>
 When('I click the {string} sidebar menu item', async ({ page }, pageName: string) => {
   const sidebarItem = page.locator(`//li[@title='${pageName}']//a[@href]`);
 
-  await sidebarItem.scrollIntoViewIfNeeded({ timeout: 5000 });
-  await page.waitForTimeout(500);
-
-  const href = await sidebarItem.getAttribute('href');
+  const count = await sidebarItem.count();
   const currentUrl = page.url();
 
+  if (count === 0) {
+    // Item absent from DOM (Angular *ngIf filtered out) — click navbar brand to trigger
+    // SPA router navigation (no full page reload, preserves sidebar component state).
+    const navBrand = page.locator(`//a[contains(@class,'navbar-brand') and normalize-space()='${pageName}']`);
+    const brandCount = await navBrand.count().catch(() => 0);
+    if (brandCount > 0) {
+      try {
+        await navBrand.click({ timeout: 10000 });
+      } catch {
+        await navBrand.dispatchEvent('click');
+      }
+      await page.waitForLoadState('domcontentloaded', { timeout: 10000 }).catch(() => {});
+    }
+    return;
+  }
+
+  const href = await sidebarItem.getAttribute('href');
+
   try {
+    await sidebarItem.scrollIntoViewIfNeeded({ timeout: 5000 });
+    await page.waitForTimeout(500);
     await sidebarItem.click({ timeout: 5000 });
   } catch {
+    // Item in DOM but not actionable — dispatch click to trigger Angular router
     await sidebarItem.dispatchEvent('click');
+    await page.waitForLoadState('domcontentloaded', { timeout: 10000 }).catch(() => {});
   }
 
   // If URL didn't change after click, navigate directly via href

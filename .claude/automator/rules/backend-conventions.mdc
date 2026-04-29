@@ -1,0 +1,68 @@
+# TestGenerator UI — Backend Conventions
+
+## TypeScript Rules
+
+- Strict TypeScript. All types defined in `src/data/models.ts`.
+- Use `type` imports (`import type { ... }`) for type-only imports.
+- No `any` — define interfaces for all data shapes.
+- Services are classes instantiated once in `index.ts` and passed via constructor injection.
+
+## Express Routes
+
+- All routes defined in `server.ts` inside `createServer()`.
+- Route handlers are synchronous where possible. Async pipeline operations return `202`-style immediate response ("Pipeline started") and run in the background.
+- JSON request/response. Use `express.json()` middleware.
+- Error responses: `{ error: "message" }` with appropriate HTTP status.
+- No authentication (local tool, single user).
+
+## SSE Protocol
+
+The SSE stream at `/api/stream` emits named events. Each event has a JSON `data` payload.
+
+| Event | Payload | When |
+|-------|---------|------|
+| `connected` | `{}` | Client connects |
+| `log` | `{ timestamp, stepNumber, level, message }` | Any pipeline log line |
+| `step-status` | `{ stepNumber, status, message? }` | Step status changes |
+| `step-progress` | `{ stepNumber, duration }` | Step duration updates |
+| `ticket-selected` | `{ ticketKey }` | Pipeline selects a ticket |
+| `run-started` | `{}` | Pipeline run begins |
+| `run-complete` | `{ status, durationMs? }` | Pipeline run finishes |
+| `error` | `{ message }` | Pipeline error |
+| `schedule-fired` | `{ name, time }` | Scheduled run triggers |
+| `schedule-updated` | `{}` | Schedule list changed |
+
+New SSE events: add to `emitSSE()` in `index.ts`, handle in `connectSSE()` in `app.js`.
+
+## Database (SQLite)
+
+- Schema managed in `Database.ts` constructor (CREATE TABLE IF NOT EXISTS).
+- All queries use prepared statements (better-sqlite3's `.prepare()`).
+- Tables: `runs`, `step_results`, `step_logs`, `step_artifacts`, `test_runs`, `test_case_results`, `schedules`.
+- Reads return plain objects (better-sqlite3 `.all()` / `.get()`).
+- Writes return `lastInsertRowid` or `changes`.
+
+## Pipeline Integration
+
+- `Pipeline.ts` is the bridge between the Express server and the step implementations.
+- Steps are registered in `StepRegistry.ts` and executed by `Pipeline.runSteps()` or `Pipeline.runSingleStep()`.
+- Each step class extends `Step` and implements `execute()`.
+- Steps emit SSE events via the `emitSSE` callback passed through the Pipeline constructor.
+- The pipeline tracks `isRunning` state — only one run at a time.
+
+## Services
+
+| Service | Purpose |
+|---------|---------|
+| `JiraService` | Jira REST API (issue, comments, transitions, attachments) |
+| `ClaudeService` | Claude CLI wrapper (prompt execution, token tracking) |
+| `GitService` | Git operations (log, diff, changed files) |
+| `PlaywrightService` | Test execution (npx playwright test) |
+| `ContextBuilder` | Assembles context files for Claude prompts |
+
+## Adding a New API Endpoint
+
+1. Add the route in `server.ts` inside `createServer()`.
+2. If it needs DB access, add the query method to `Database.ts`.
+3. If it needs a new model, define the interface in `models.ts`.
+4. If it triggers pipeline work, call through `Pipeline` — never run steps directly from a route.

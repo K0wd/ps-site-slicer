@@ -2,8 +2,6 @@
  * Maintenance Admin Page (SPA) — /spa/requests/maintadmin
  * Source: html/home.html sidebar snapshot
  * Captured: 2026-04-12
- *
- * TODO: Surf live app to capture page-specific elements (inputs, buttons, tables).
  */
 
 // ── Sidebar Navigation ──
@@ -11,8 +9,12 @@ export const SIDEBAR_MAINTENANCE_ADMIN_XPATH = "//li[@title='Maintenance Admin']
 export const SIDEBAR_MAINTENANCE_ADMIN_ICON_XPATH = "//li[@title='Maintenance Admin']//i[contains(@class,'material-icons') and text()='lock']";
 export const SIDEBAR_MAINTENANCE_ADMIN_TEXT_XPATH = "//li[@title='Maintenance Admin']//p[normalize-space()='Maintenance Admin']";
 
-// ── Page Elements ──
-// TODO: Populate after surfing /spa/requests/maintadmin and capturing html/maintenance-admin.html
+// ── Departments Page (legacy iframe) ──
+// Primary: labeled input; fallback: any text input inside a department form
+export const DEPT_NAME_INPUT_XPATH = "//input[@name='name' or @id='name' or contains(@id,'epartment') or contains(@name,'epartment') or contains(@placeholder,'epartment')]";
+// Department list table rows (td cells containing department names)
+export const DEPT_LIST_ROW_XPATH = "//table//tr[td]";
+export const DEPT_LIST_CELL_XPATH = (name: string) => `//table//td[normalize-space(.)='${name}']`;
 
 // ── Element Map (Gherkin-facing) ──
 export const MAINTENANCE_ADMIN_ELEMENTS: Record<string, string> = {

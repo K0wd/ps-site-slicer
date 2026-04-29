@@ -1,7 +1,7 @@
 Feature: Login
 
-  @smoke
-  Scenario: Login flow — UI branding and full authentication
+  @LOGIN-1 @smoke
+  Scenario: LOGIN-1 Login flow — UI branding and full authentication
     # -- Username page UI (soft: isolates visual regressions) --
     Given I am on the login page
     Then I should see the app logo

@@ -16,6 +16,7 @@ import {
   USER_PROFILE_XPATH,
   LOGOUT_ICON_XPATH,
   SIDEBAR_FILTER_INPUT_XPATH,
+  SIDEBAR_NAV_ITEMS_XPATH,
   VERSION_XPATH,
   menuItemXpath,
   WIDGET_MENU_ITEM_XPATH,
@@ -90,6 +91,32 @@ Then('I should see the {string} menu item', async ({ page }, menuName: string) =
 When('I type {string} in the sidebar filter', async ({ page }, text: string) => {
   await page.locator(`xpath=${SIDEBAR_FILTER_INPUT_XPATH}`).fill(text);
   await page.waitForTimeout(500);
+});
+
+Then('the sidebar should show only menu items matching {string}', async ({ page }, filterText: string) => {
+  await page.waitForTimeout(500);
+  const items = page.locator(`xpath=${SIDEBAR_NAV_ITEMS_XPATH}`);
+  const count = await items.count();
+  for (let i = 0; i < count; i++) {
+    const item = items.nth(i);
+    if (await item.isVisible()) {
+      const title = (await item.getAttribute('title')) ?? '';
+      expect(title.toLowerCase()).toContain(filterText.toLowerCase());
+    }
+  }
+});
+
+Then('the sidebar filter should still contain {string}', async ({ page }, filterText: string) => {
+  const value = await page.locator(`xpath=${SIDEBAR_FILTER_INPUT_XPATH}`).inputValue();
+  expect(value).toBe(filterText);
+});
+
+Then('the sidebar should show all menu items', async ({ page }) => {
+  await page.waitForTimeout(500);
+  // A non-"Admin" item that must be visible when the filter is cleared
+  await expect(
+    page.locator('xpath=//app-sidebar-cmp//li[@title="Dashboard"]')
+  ).toBeVisible({ timeout: 5000 });
 });
 
 Then('I should see the SM version in the sidebar', async ({ page }) => {

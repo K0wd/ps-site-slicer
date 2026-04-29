@@ -1,4 +1,4 @@
-import type { Config } from '../config/Config.js';
+import type { Config } from '../shared/config/Config.js';
 
 export class JiraService {
   private authHeader: string;

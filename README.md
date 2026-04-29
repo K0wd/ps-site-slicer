@@ -37,22 +37,25 @@ Web UI and pipeline for automated QA using Claude Code + Jira API. Start the ser
 
 Steps auto-run prerequisites when inputs are missing (e.g. step 8 auto-runs step 7 if no test-run directory exists).
 
-### Engineering Pipeline (Steps 101–103)
+### Engineering Pipeline (Steps 101–105)
 
 | Step | Name | Description |
 |------|------|-------------|
 | 101 | Check Steps | Run `bddgen`, parse missing step definitions, write `.test` files to `tests/testrun/` |
-| 102 | Run Tests | Run Playwright, parse failures, write `.test` files |
-| 103 | Heal Scenario | Auto-chains 101→102, calls Claude to fix the first failing `.test` file, verifies the fix |
+| 102 | Run Tests | Per-test execution by tag, live-streamed output, writes `.test`/`.flaky` files on failure |
+| 103 | Healing | Round-based iterative healing of `.test` files (max 5 rounds), per-round log artifacts |
+| 104 | Decalcification | Picks first `.flaky` file, runs scenario 3× per round to verify stability, heals until stable (max 2 rounds) |
+| 105 | App Scraper | Parses `sidebar-navigation.feature`, walks each page, captures `html/<slug>.html` snapshots for property-file generation |
 
 Engineering steps do not require a Jira ticket — they operate on the current test suite.
 
 ### UI Features
 
-- **Pipeline tabs**: Quality (1–11) and Engineering (101–103) in separate tabs
+- **Pipeline tabs**: Quality (1–11) and Engineering (101–105) in separate tabs
 - **Ticket Creator**: Draft Jira tickets via Claude from the bottom panel
 - **Ticket autocomplete**: Known tickets from log directories populate the ticket input
 - **Claude Status & Insights**: Check CLI version and generate usage insights
+- **Restart**: Restart the TestGenerator server in-place (detached respawn — no supervisor needed); UI auto-reloads when the new process is up
 - **Resizable bottom panel**: Drag handle to adjust log area height
 - **Parallel toggle**: Steps 6 and 7 have per-step parallel/sequential mode buttons
 
@@ -60,6 +63,28 @@ Timing summary printed at run end: `Step | Name | Duration | Tokens Used | Statu
 
 ## Test Coverage
 
-**122 scenarios** across 5 feature files. `npm run test` runs `@smoke` tagged scenarios only.
+10 feature files (login, dashboard, forgot-password, nav-bar, sidebar-navigation, import-costs, maintenance-admin, purchasing-tracker, timesheet-admin, vendor-admin). `npm run test` runs `@smoke` tagged scenarios only.
 
 See [TestCoverage.md](TestCoverage.md) for the full breakdown.
+
+## TestGenerator Unit Tests
+
+Vitest-based unit tests for the TestGenerator backend (config, database, models, pipeline, step registry, story logger, server endpoints):
+
+```bash
+cd app/TestGenerator
+npm test          # 78 tests across 8 files (~1.7s)
+npm run test:watch
+```
+
+## Publishing — GitHub + GitLab
+
+Push the current branch to both remotes in one shot via `scripts/push-both.sh`:
+
+```bash
+git remote add gitlab git@gitlab.com:powerslice-software-development/sm-test-artifacts.git  # one-time
+./scripts/push-both.sh           # interactive
+./scripts/push-both.sh -y        # skip confirmation
+```
+
+The script forces `~/.ssh/fulcrum` for both pushes via `GIT_SSH_COMMAND`, so no `~/.ssh/config` changes are needed.

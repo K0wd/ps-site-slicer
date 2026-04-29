@@ -3,7 +3,8 @@ Feature: Sidebar Navigation
   Background:
     Given I am logged in and on the dashboard
 
-  Scenario Outline: Navigate to "<Page>" via sidebar
+  @SIDEBAR-1
+  Scenario Outline: SIDEBAR-1 Navigate to "<Page>" via sidebar
     When I click the "<Page>" sidebar menu item
     Then the "<Page>" page should load at "<Route>"
     And I should see the "sidebar toggle button" in the nav bar
@@ -89,7 +90,8 @@ Feature: Sidebar Navigation
       | WO Tracker               | /spa/wots/index-new                |
       | WOT Export Queue         | /spa/wotexports/index              |
 
-  Scenario Outline: Expand "<Parent>" parent menu
+  @SIDEBAR-2
+  Scenario Outline: SIDEBAR-2 Expand "<Parent>" parent menu
     When I click the "<Parent>" sidebar parent menu
     Then the "<Parent>" submenu should expand
 

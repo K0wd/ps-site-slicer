@@ -9,6 +9,12 @@ import {
   CONTEXT_MENU_PANEL_XPATH,
   GOLD_STAR_ICON_XPATH,
   GOLD_STAR_IN_ROW_XPATH,
+  ADD_NEW_BUTTON_XPATH,
+  DIALOG_NAME_INPUT_XPATH,
+  DIALOG_SUBMIT_BUTTON_XPATH,
+  DIALOG_CONTAINER_XPATH,
+  DUPLICATE_NAME_ERROR_XPATH,
+  REFRESH_ICON_XPATH,
 } from '../properties/cascade-templates.properties';
 
 const { When, Then } = createBdd();
@@ -218,4 +224,51 @@ Then('the first template should no longer display the gold star icon', async ({ 
 Then('exactly one gold star icon should be visible in the template list', async ({ page }) => {
   const stars = page.locator(`xpath=${GOLD_STAR_ICON_XPATH}`);
   await expect(stars).toHaveCount(1, { timeout: 10000 });
+});
+
+// ── Create / Attempt Template via Add New dialog ──
+
+async function openAddNewAndFillName(page: any, name: string): Promise<void> {
+  const addBtn = page.locator(`xpath=${ADD_NEW_BUTTON_XPATH}`);
+  await expect(addBtn.first()).toBeVisible({ timeout: 10000 });
+  await addBtn.first().scrollIntoViewIfNeeded({ timeout: 5000 });
+  try {
+    await addBtn.first().click({ timeout: 5000 });
+  } catch {
+    await addBtn.first().dispatchEvent('click');
+  }
+  const nameInput = page.locator(`xpath=${DIALOG_NAME_INPUT_XPATH}`);
+  await expect(nameInput.first()).toBeVisible({ timeout: 10000 });
+  await nameInput.first().fill(name);
+  const submitBtn = page.locator(`xpath=${DIALOG_SUBMIT_BUTTON_XPATH}`);
+  await expect(submitBtn.first()).toBeVisible({ timeout: 5000 });
+  try {
+    await submitBtn.first().click({ timeout: 5000 });
+  } catch {
+    await submitBtn.first().dispatchEvent('click');
+  }
+}
+
+When('I create a cascade template named {string}', async ({ page }, name: string) => {
+  await openAddNewAndFillName(page, name);
+  const dialog = page.locator(`xpath=${DIALOG_CONTAINER_XPATH}`);
+  await expect(dialog).toHaveCount(0, { timeout: 15000 });
+  // Navigate back to the same page to guarantee the template list reloads
+  await page.goto('/spa/main/cascade-template-admin');
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+  const row = page.locator(`xpath=//mat-row[.//mat-cell[contains(normalize-space(),'${name}')]]`);
+  await expect(row.first()).toBeVisible({ timeout: 15000 });
+});
+
+When('I attempt to create a cascade template named {string}', async ({ page }, name: string) => {
+  await openAddNewAndFillName(page, name);
+  // Wait for the duplicate error to surface before returning so it is still visible
+  // when the following assertion step runs immediately after.
+  const error = page.locator(`xpath=${DUPLICATE_NAME_ERROR_XPATH}`);
+  await error.first().waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+});
+
+Then('I should see a duplicate name validation error', async ({ page }) => {
+  const error = page.locator(`xpath=${DUPLICATE_NAME_ERROR_XPATH}`);
+  await expect(error.first()).toBeVisible({ timeout: 10000 });
 });

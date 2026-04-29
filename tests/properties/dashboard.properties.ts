@@ -18,6 +18,7 @@ export const LOGOUT_ICON_XPATH = "//mat-icon[@title='Log out']";
 
 // ── Sidebar ──
 export const SIDEBAR_FILTER_INPUT_XPATH = "//input[@placeholder='Filter Menu' or @id='sidebarFilter']";
+export const SIDEBAR_NAV_ITEMS_XPATH = "//app-sidebar-cmp//li[@title]";
 
 // ── Version ──
 export const VERSION_XPATH = "//*[contains(text(), 'SM VERSION')]";

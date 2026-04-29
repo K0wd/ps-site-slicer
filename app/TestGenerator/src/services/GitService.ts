@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import type { Config } from '../config/Config.js';
+import type { Config } from '../shared/config/Config.js';
 
 export class GitService {
   constructor(private config: Config) {}

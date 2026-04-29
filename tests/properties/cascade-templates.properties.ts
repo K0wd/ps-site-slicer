@@ -34,6 +34,14 @@ export const GOLD_STAR_IN_ROW_XPATH = "//mat-row[.//mat-icon[normalize-space()='
 export const ADD_NEW_BUTTON_XPATH = "//button[.//span[contains(normalize-space(),'Add New')]]";
 export const SEARCH_TEMPLATES_INPUT_XPATH = "//input[@placeholder='Search templates']";
 
+// ── Create Template Dialog ──
+export const DIALOG_NAME_INPUT_XPATH = "//mat-dialog-container//input";
+export const DIALOG_SUBMIT_BUTTON_XPATH = "//mat-dialog-container//mat-dialog-actions//button[1]";
+export const DIALOG_CONTAINER_XPATH = "//mat-dialog-container";
+
+// ── Validation Error ──
+export const DUPLICATE_NAME_ERROR_XPATH = "//mat-snack-bar-container | //mat-error | //mat-dialog-container//*[contains(@class,'error') or contains(@class,'alert')]";
+
 // ── Refresh ──
 export const REFRESH_ICON_XPATH = "//mat-icon[contains(@class,'arrow-btn') and normalize-space()='refresh']";
 

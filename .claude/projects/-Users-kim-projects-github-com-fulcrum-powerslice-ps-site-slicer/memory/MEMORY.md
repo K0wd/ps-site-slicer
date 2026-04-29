@@ -1,0 +1,1 @@
+- [BiteForge project](project_biteforge.md) — app/ suite: TestGenerator (pipeline UI, don't touch) + BugCreator (ticket drafter)

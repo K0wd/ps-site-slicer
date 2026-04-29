@@ -1,5 +1,7 @@
 import { spawn } from 'child_process';
-import type { Config } from '../config/Config.js';
+import { appendFileSync, mkdirSync } from 'fs';
+import { resolve } from 'path';
+import type { Config } from '../shared/config/Config.js';
 
 export interface ClaudeOptions {
   outputFormat?: 'json' | 'text';
@@ -15,7 +17,19 @@ export interface ClaudeResult {
 }
 
 export class ClaudeService {
+  private signal?: AbortSignal;
+
   constructor(private config: Config) {}
+
+  setSignal(signal?: AbortSignal): void { this.signal = signal; }
+
+  private logExecutionTime(startMs: number): void {
+    const seconds = Math.round((Date.now() - startMs) / 1000);
+    try {
+      mkdirSync(this.config.logsDir, { recursive: true });
+      appendFileSync(resolve(this.config.logsDir, 'claude-execution-timer.log'), `Claude executed for ${seconds}s\n`, 'utf-8');
+    } catch { /* swallow — never break a Claude call due to logging */ }
+  }
 
   async prompt(input: string, options: ClaudeOptions = {}): Promise<ClaudeResult> {
     const args = ['-p'];
@@ -25,12 +39,22 @@ export class ClaudeService {
     if (options.allowedTools) args.push('--allowedTools', options.allowedTools);
 
     const cwd = options.cwd || this.config.projectDir;
+    const startMs = Date.now();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolveProm, reject) => {
       const proc = spawn('claude', args, {
         cwd,
         stdio: ['pipe', 'pipe', 'pipe'],
       });
+
+      let settled = false;
+
+      if (this.signal) {
+        if (this.signal.aborted) { proc.kill(); this.logExecutionTime(startMs); reject(new Error('Cancelled')); return; }
+        this.signal.addEventListener('abort', () => {
+          if (!settled) { proc.kill(); this.logExecutionTime(startMs); reject(new Error('Cancelled')); }
+        }, { once: true });
+      }
 
       let stdout = '';
       let stderr = '';
@@ -42,6 +66,8 @@ export class ClaudeService {
       proc.stdin.end();
 
       proc.on('close', (code) => {
+        settled = true;
+        this.logExecutionTime(startMs);
         if (code !== 0 && !stdout) {
           reject(new Error(`Claude CLI exited with code ${code}: ${stderr}`));
           return;
@@ -52,12 +78,12 @@ export class ClaudeService {
             const parsed = JSON.parse(stdout);
             const usage = parsed.usage || {};
             const tokenUsage = (usage.input_tokens || 0) + (usage.cache_read_input_tokens || 0) + (usage.output_tokens || 0);
-            resolve({ result: parsed.result || '', tokenUsage, raw: parsed });
+            resolveProm({ result: parsed.result || '', tokenUsage, raw: parsed });
           } catch {
-            resolve({ result: stdout, tokenUsage: 0, raw: null });
+            resolveProm({ result: stdout, tokenUsage: 0, raw: null });
           }
         } else {
-          resolve({ result: stdout, tokenUsage: 0, raw: null });
+          resolveProm({ result: stdout, tokenUsage: 0, raw: null });
         }
       });
     });
@@ -71,12 +97,22 @@ export class ClaudeService {
     if (options.allowedTools) args.push('--allowedTools', options.allowedTools);
 
     const cwd = options.cwd || this.config.projectDir;
+    const startMs = Date.now();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolveProm, reject) => {
       const proc = spawn('claude', args, {
         cwd,
         stdio: ['pipe', 'pipe', 'pipe'],
       });
+
+      let settled = false;
+
+      if (this.signal) {
+        if (this.signal.aborted) { proc.kill(); this.logExecutionTime(startMs); reject(new Error('Cancelled')); return; }
+        this.signal.addEventListener('abort', () => {
+          if (!settled) { proc.kill(); this.logExecutionTime(startMs); reject(new Error('Cancelled')); }
+        }, { once: true });
+      }
 
       let stdout = '';
       let stderr = '';
@@ -93,11 +129,13 @@ export class ClaudeService {
       proc.stdin.end();
 
       proc.on('close', (code) => {
+        settled = true;
+        this.logExecutionTime(startMs);
         if (code !== 0 && !stdout) {
           reject(new Error(`Claude CLI exited with code ${code}: ${stderr}`));
           return;
         }
-        resolve({ result: stdout, tokenUsage: 0, raw: null });
+        resolveProm({ result: stdout, tokenUsage: 0, raw: null });
       });
     });
   }

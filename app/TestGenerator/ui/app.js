@@ -12,19 +12,25 @@ const STEPS = [
   { number: 11,  name: 'Transition Ticket' },
   { number: 101, name: 'Check Steps' },
   { number: 102, name: 'Run Tests' },
-  { number: 103, name: 'Heal Scenario' },
+  { number: 103, name: 'Healing' },
+  { number: 104, name: 'Decalcification' },
+  { number: 105, name: 'App Scraper' },
 ];
 
 const state = {
   steps: STEPS.map(s => ({ ...s, status: 'idle', duration: null, message: null })),
   running: false,
+  runningStep: null,
   ticketKey: null,
   ticketSummary: null,
   ticketStatus: null,
   ticketAssignee: null,
+  jiraBaseUrl: null,
   schedules: [],
   schedModalStep: null,
   parallelMode: { 6: true, 7: false },
+  debugHeal: false,
+  stepHistory: {},
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -72,14 +78,24 @@ function renderGridSection(container, steps) {
         </div>
       </div>
       <div class="step-name">${step.name}</div>
+      <div class="step-history-dots">${(state.stepHistory[step.number] || []).map(s =>
+        `<span class="step-circle ${s}" title="${s}"></span>`
+      ).join('')}</div>
       <div class="step-footer">
         <span class="step-duration">${step.duration || ''}</span>
         <div class="step-actions">
           ${(step.number === 6 || step.number === 7) ? `<button class="step-parallel-btn ${state.parallelMode[step.number] ? 'active' : ''}" data-step="${step.number}" title="${state.parallelMode[step.number] ? 'Parallel' : 'Sequential'}">${state.parallelMode[step.number] ? '&#8782;' : '&#8801;'}</button>` : ''}
+          ${step.number === 103 ? `<button class="step-debug-btn ${state.debugHeal ? 'active' : ''}" data-step="103" title="${state.debugHeal ? 'Debug: step-by-step' : 'Debug: off'}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M4 12h2m12 0h2M12 4v2m0 12v2"/></svg>
+          </button>` : ''}
           <button class="step-sched-btn" data-step="${step.number}" title="Schedule">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </button>
-          <button class="step-run-btn" data-step="${step.number}" ${state.running ? 'disabled' : ''}>Run</button>
+          <button class="step-run-btn ${state.running && state.runningStep === step.number ? 'stopping' : ''}" data-step="${step.number}">
+            ${state.running && state.runningStep === step.number
+              ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>'
+              : '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>'}
+          </button>
         </div>
       </div>
       ${step.message ? `<div class="step-message" title="${esc(step.message)}">${esc(step.message)}</div>` : ''}
@@ -90,7 +106,12 @@ function renderGridSection(container, steps) {
   container.querySelectorAll('.step-run-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      runStep(parseInt(btn.dataset.step));
+      const stepNum = parseInt(btn.dataset.step);
+      if (state.running && state.runningStep === stepNum) {
+        cancelPipeline();
+      } else if (!state.running) {
+        runStep(stepNum);
+      }
     });
   });
 
@@ -111,6 +132,15 @@ function renderGridSection(container, steps) {
     });
   });
 
+  container.querySelectorAll('.step-debug-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      state.debugHeal = !state.debugHeal;
+      renderGrid();
+      appendLog({ timestamp: now(), stepNumber: 103, level: 'info', message: `Heal debug: ${state.debugHeal ? 'ON — step-by-step (test → fix → verify)' : 'OFF — full heal'}` });
+    });
+  });
+
   container.querySelectorAll('.step-card').forEach(card => {
     card.addEventListener('click', () => loadStepLogs(parseInt(card.dataset.stepNumber)));
   });
@@ -119,7 +149,19 @@ function renderGridSection(container, steps) {
 function renderTicketBar() {
   if (state.ticketKey) {
     ticketBar.classList.remove('hidden');
-    $('#ticket-key-display').textContent = state.ticketKey;
+    const keyEl = $('#ticket-key-display');
+    if (state.jiraBaseUrl) {
+      keyEl.innerHTML = '';
+      const a = document.createElement('a');
+      a.href = `${state.jiraBaseUrl}/browse/${state.ticketKey}`;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = state.ticketKey;
+      a.title = `Open ${state.ticketKey} in Jira`;
+      keyEl.appendChild(a);
+    } else {
+      keyEl.textContent = state.ticketKey;
+    }
     $('#ticket-summary-display').textContent = state.ticketSummary || '';
     $('#ticket-status-display').textContent = state.ticketStatus || '';
     $('#ticket-assignee-display').textContent = state.ticketAssignee || '';
@@ -131,12 +173,29 @@ function renderTicketBar() {
 function appendLog(entry) {
   const line = document.createElement('div');
   line.className = `log-line ${entry.level || 'info'}`;
-  line.innerHTML = `<span class="ts">${entry.timestamp || ''}</span><span class="tag">[Step ${entry.stepNumber || '?'}]</span><span class="msg">${esc(entry.message || '')}</span>`;
+  line.innerHTML = `<span class="ts">${entry.timestamp || ''}</span><span class="tag">[Step ${entry.stepNumber || '?'}]</span><span class="msg">${renderLogMessage(entry.message)}</span>`;
   logOutput.appendChild(line);
   logOutput.scrollTop = logOutput.scrollHeight;
 }
 
 function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+
+// Render a log message with Gherkin step coloring.
+// Lines like "  ✓ Given foo" / "  ✗ When bar" / "  - Then baz" / "  ? And qux"
+// get a class based on outcome (.gherkin-pass / .gherkin-fail / .gherkin-skip / .gherkin-unknown).
+// The Gherkin keyword (Given|When|Then|And|But) is bolded.
+function renderLogMessage(message) {
+  const text = String(message || '');
+  const match = text.match(/^(\s*)(✓|✗|-|\?)\s+(Given|When|Then|And|But)(\s+)(.*)$/);
+  if (!match) return esc(text);
+  const [, lead, marker, keyword, sep, rest] = match;
+  const cls =
+    marker === '✓' ? 'gherkin-pass' :
+    marker === '✗' ? 'gherkin-fail' :
+    marker === '-' ? 'gherkin-skip' :
+                     'gherkin-unknown';
+  return `<span class="${cls}">${esc(lead)}${esc(marker)} <span class="gherkin-keyword">${esc(keyword)}</span>${esc(sep)}${esc(rest)}</span>`;
+}
 
 function formatDuration(ms) {
   if (!ms) return '';
@@ -248,6 +307,8 @@ async function loadRunDetail(runId) {
 
 const stepLogsHeader = $('#step-logs-header');
 const stepLogsOutput = $('#step-logs-output');
+let stepLogsViewingStep = null;
+let stepLogsLiveSection = null;
 
 function switchTab(tabName) {
   $$('.tab').forEach(t => t.classList.remove('active'));
@@ -259,8 +320,12 @@ function switchTab(tabName) {
 
 async function loadStepLogs(stepNum) {
   switchTab('step-logs');
+  stepLogsViewingStep = stepNum;
+  stepLogsLiveSection = null;
   const stepDef = STEPS.find(s => s.number === stepNum);
-  stepLogsHeader.innerHTML = `<span class="step-logs-title">Step ${String(stepNum).padStart(2,'0')}: ${stepDef?.name || ''}</span>`;
+  const stepState = state.steps.find(s => s.number === stepNum);
+  const isRunning = stepState && stepState.status === 'running';
+  stepLogsHeader.innerHTML = `<span class="step-logs-title">Step ${String(stepNum).padStart(2,'0')}: ${stepDef?.name || ''}</span>${isRunning ? '<span class="step-logs-live-badge">LIVE</span>' : ''}`;
   stepLogsOutput.innerHTML = '<div class="empty-state">Loading...</div>';
 
   // highlight selected card
@@ -272,7 +337,7 @@ async function loadStepLogs(stepNum) {
     const results = await resp.json();
     stepLogsOutput.innerHTML = '';
 
-    if (results.length === 0) {
+    if (results.length === 0 && !isRunning) {
       stepLogsOutput.innerHTML = '<div class="empty-state">No logs for this step yet</div>';
       return;
     }
@@ -304,7 +369,7 @@ async function loadStepLogs(stepNum) {
         for (const l of r.logs) {
           const line = document.createElement('div');
           line.className = `log-line ${l.level || 'info'}`;
-          line.innerHTML = `<span class="ts">${l.timestamp || ''}</span><span class="msg">${esc(l.message || '')}</span>`;
+          line.innerHTML = `<span class="ts">${l.timestamp || ''}</span><span class="msg">${renderLogMessage(l.message)}</span>`;
           stepLogsOutput.appendChild(line);
         }
       }
@@ -316,9 +381,45 @@ async function loadStepLogs(stepNum) {
         stepLogsOutput.appendChild(err);
       }
     }
+
+    // Add live section if step is currently running
+    if (isRunning) {
+      const liveHeader = document.createElement('div');
+      liveHeader.className = 'step-log-run running';
+      liveHeader.innerHTML = `<span class="step-log-icon">&#9654;</span><span class="step-log-time">${now()}</span><span class="step-log-status">RUNNING</span>`;
+      stepLogsOutput.appendChild(liveHeader);
+      stepLogsLiveSection = document.createElement('div');
+      stepLogsLiveSection.className = 'step-logs-live';
+      stepLogsOutput.appendChild(stepLogsLiveSection);
+    }
   } catch {
     stepLogsOutput.innerHTML = '<div class="empty-state">Failed to load step logs</div>';
   }
+}
+
+function appendStepLog(entry) {
+  if (!stepLogsLiveSection) {
+    // Create live section on first log if viewing the right step
+    if (stepLogsViewingStep === entry.stepNumber) {
+      const existingEmpty = stepLogsOutput.querySelector('.empty-state');
+      if (existingEmpty) existingEmpty.remove();
+      const liveHeader = document.createElement('div');
+      liveHeader.className = 'step-log-run running';
+      liveHeader.innerHTML = `<span class="step-log-icon">&#9654;</span><span class="step-log-time">${now()}</span><span class="step-log-status">RUNNING</span>`;
+      stepLogsOutput.appendChild(liveHeader);
+      stepLogsLiveSection = document.createElement('div');
+      stepLogsLiveSection.className = 'step-logs-live';
+      stepLogsOutput.appendChild(stepLogsLiveSection);
+    } else {
+      return;
+    }
+  }
+
+  const line = document.createElement('div');
+  line.className = `log-line ${entry.level || 'info'}`;
+  line.innerHTML = `<span class="ts">${entry.timestamp || ''}</span><span class="msg">${renderLogMessage(entry.message)}</span>`;
+  stepLogsLiveSection.appendChild(line);
+  stepLogsOutput.scrollTop = stepLogsOutput.scrollHeight;
 }
 
 // ═══ TABS ═══
@@ -332,6 +433,12 @@ $$('.tab').forEach(tab => {
 
 clearLogsBtn.addEventListener('click', () => { logOutput.innerHTML = ''; });
 
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.step-card')) {
+    $$('.step-card').forEach(c => c.classList.remove('selected'));
+  }
+});
+
 // ═══ PIPELINE TABS ═══
 
 $$('.pipeline-tab').forEach(tab => {
@@ -344,50 +451,117 @@ $$('.pipeline-tab').forEach(tab => {
   });
 });
 
-// ═══ CLAUDE STATUS & INSIGHTS ═══
+// ═══ CLAUDE INSIGHTS ═══
 
-$('#claude-status-btn').addEventListener('click', async () => {
-  appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: 'Checking Claude status...' });
-  try {
-    const resp = await fetch('/api/claude/status');
-    const data = await resp.json();
-    if (data.status === 'ok') {
-      appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: `Claude CLI: ${data.version}` });
-    } else {
-      appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: `Claude CLI: ${data.message}` });
-    }
-  } catch (e) {
-    appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: `Status check failed: ${e.message}` });
+function setInsightsState(state, title) {
+  const el = $('#insights-status');
+  el.dataset.state = state;
+  el.title = title || '';
+  if (state === 'available') {
+    el.innerHTML = '<a href="/api/claude/insights/report" target="_blank" style="color:inherit;text-decoration:inherit">Insights Available!</a>';
+  } else if (state === 'generating') {
+    el.textContent = 'Insights generating...';
+  } else if (state === 'error') {
+    el.textContent = 'Insights generation failed!';
+  } else {
+    el.textContent = '';
   }
-});
+}
 
 $('#claude-insights-btn').addEventListener('click', async () => {
+  setInsightsState('generating');
   appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: 'Generating insights (running claude /insights)...' });
   try {
     const resp = await fetch('/api/claude/insights/generate', { method: 'POST' });
     const data = await resp.json();
     if (data.error) {
+      setInsightsState('error');
       appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: `Insights error: ${data.error}` });
     } else {
       appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: data.message || 'Insights generated' });
       checkInsights();
     }
   } catch (e) {
+    setInsightsState('error');
     appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: `Insights failed: ${e.message}` });
   }
+});
+
+function confirmDialog(message, { title = 'Confirm', okLabel = 'OK', cancelLabel = 'Cancel', danger = false } = {}) {
+  return new Promise((resolveDialog) => {
+    const overlay = $('#confirm-modal');
+    const titleEl = $('#confirm-title');
+    const messageEl = $('#confirm-message');
+    const okBtn = $('#confirm-ok-btn');
+    const cancelBtn = $('#confirm-cancel-btn');
+
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    okBtn.textContent = okLabel;
+    cancelBtn.textContent = cancelLabel;
+    okBtn.classList.toggle('is-danger', danger);
+
+    const cleanup = (result) => {
+      overlay.classList.add('hidden');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      overlay.removeEventListener('click', onBackdrop);
+      document.removeEventListener('keydown', onKey);
+      resolveDialog(result);
+    };
+    const onOk = () => cleanup(true);
+    const onCancel = () => cleanup(false);
+    const onBackdrop = (e) => { if (e.target === overlay) cleanup(false); };
+    const onKey = (e) => {
+      if (e.key === 'Escape') cleanup(false);
+      if (e.key === 'Enter') cleanup(true);
+    };
+
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    overlay.addEventListener('click', onBackdrop);
+    document.addEventListener('keydown', onKey);
+
+    overlay.classList.remove('hidden');
+    okBtn.focus();
+  });
+}
+
+$('#restart-server-btn').addEventListener('click', async () => {
+  const ok = await confirmDialog('Restart the TestGenerator server?', { title: 'Restart Server', okLabel: 'Restart', danger: true });
+  if (!ok) return;
+  appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: 'Restarting server...' });
+  try {
+    await fetch('/api/restart', { method: 'POST' });
+  } catch {}
+  const start = Date.now();
+  const poll = async () => {
+    try {
+      const r = await fetch('/api/status', { cache: 'no-store' });
+      if (r.ok) {
+        appendLog({ timestamp: now(), stepNumber: '-', level: 'info', message: 'Server back online — reloading UI' });
+        location.reload();
+        return;
+      }
+    } catch {}
+    if (Date.now() - start > 30000) {
+      appendLog({ timestamp: now(), stepNumber: '-', level: 'error', message: 'Restart timeout — server did not come back within 30s' });
+      return;
+    }
+    setTimeout(poll, 500);
+  };
+  setTimeout(poll, 800);
 });
 
 async function checkInsights() {
   try {
     const resp = await fetch('/api/claude/insights');
     const data = await resp.json();
-    const link = $('#claude-insights-link');
     if (data.available) {
-      link.classList.remove('hidden');
       const date = new Date(data.updatedAt);
-      link.title = `Insights report — updated ${date.toLocaleString()}`;
+      setInsightsState('available', `Insights report — updated ${date.toLocaleString()}`);
     } else {
-      link.classList.add('hidden');
+      setInsightsState('none');
     }
   } catch {}
 }
@@ -397,12 +571,37 @@ async function checkInsights() {
 async function runStep(stepNum) {
   const ticketKey = ticketInput.value.trim().toUpperCase() || undefined;
   const parallel = state.parallelMode[stepNum] ?? undefined;
+  const debugHeal = stepNum === 103 ? (state.debugHeal || undefined) : undefined;
+
+  // Immediately show running state
+  state.running = true;
+  state.runningStep = stepNum;
+  const step = state.steps.find(s => s.number === stepNum);
+  if (step) step.status = 'running';
+  updateRunBtn();
+  renderGrid();
+
   try {
-    await fetch(`/api/run/step/${stepNum}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ticketKey, parallel }),
-    });
-  } catch (e) { appendLog({ timestamp: now(), level: 'error', message: `Failed: ${e.message}` }); }
+    // Step 103 invokes the heal loop (Eng03 repeated until clean / unhealable / max-iters)
+    if (stepNum === 103) {
+      await fetch('/api/heal/loop', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ debugHeal }),
+      });
+    } else {
+      await fetch(`/api/run/step/${stepNum}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketKey, parallel, debugHeal }),
+      });
+    }
+  } catch (e) {
+    state.running = false;
+    state.runningStep = null;
+    if (step) step.status = 'idle';
+    updateRunBtn();
+    renderGrid();
+    appendLog({ timestamp: now(), level: 'error', message: `Failed: ${e.message}` });
+  }
 }
 
 async function runPipeline() {
@@ -421,7 +620,36 @@ async function runPipeline() {
   } catch (e) { appendLog({ timestamp: now(), level: 'error', message: `Failed: ${e.message}` }); }
 }
 
-runBtn.addEventListener('click', runPipeline);
+async function cancelPipeline() {
+  try {
+    await fetch('/api/cancel', { method: 'POST' });
+  } catch (e) { appendLog({ timestamp: now(), level: 'error', message: `Cancel failed: ${e.message}` }); }
+}
+
+function updateRunBtn() {
+  const playIcon = runBtn.querySelector('.icon-play');
+  const stopIcon = runBtn.querySelector('.icon-stop');
+  const label = runBtn.querySelector('.btn-label');
+  if (state.running) {
+    playIcon.classList.add('hidden');
+    stopIcon.classList.remove('hidden');
+    label.textContent = 'Stop';
+    runBtn.classList.add('is-stop');
+  } else {
+    playIcon.classList.remove('hidden');
+    stopIcon.classList.add('hidden');
+    label.textContent = 'Run';
+    runBtn.classList.remove('is-stop');
+  }
+}
+
+runBtn.addEventListener('click', () => {
+  if (state.running) {
+    cancelPipeline();
+  } else {
+    runPipeline();
+  }
+});
 
 // ═══ SCHEDULE MODAL ═══
 
@@ -709,7 +937,13 @@ function connectSSE() {
     appendLog({ timestamp: now(), level: 'info', stepNumber: '-', message: 'Connected to TestGenerator' });
   });
 
-  source.addEventListener('log', (e) => { appendLog(JSON.parse(e.data)); });
+  source.addEventListener('log', (e) => {
+    const data = JSON.parse(e.data);
+    appendLog(data);
+    if (data.stepNumber && data.stepNumber === stepLogsViewingStep) {
+      appendStepLog(data);
+    }
+  });
 
   source.addEventListener('step-status', (e) => {
     const data = JSON.parse(e.data);
@@ -717,11 +951,27 @@ function connectSSE() {
     if (step) {
       step.status = data.status;
       step.message = data.message || null;
+      if (data.status === 'running') {
+        state.running = true;
+        state.runningStep = data.stepNumber;
+      } else if (state.runningStep === data.stepNumber) {
+        state.runningStep = null;
+      }
       if (data.stepNumber === 3 && data.status === 'pass' && data.message) {
         const match = data.message.match(/^(SM-\S+)\s+—\s+(.+?)(?:\s+\||$)/);
         if (match) { state.ticketSummary = match[2]; renderTicketBar(); }
       }
+      updateRunBtn();
       renderGrid();
+      // Refresh step logs when the viewed step finishes
+      if (data.stepNumber === stepLogsViewingStep && data.status !== 'running') {
+        stepLogsLiveSection = null;
+        loadStepLogs(data.stepNumber);
+      }
+      // Auto-open step logs when a step starts running and user clicks its card
+      if (data.status === 'running' && data.stepNumber === stepLogsViewingStep) {
+        loadStepLogs(data.stepNumber);
+      }
     }
   });
 
@@ -738,16 +988,20 @@ function connectSSE() {
 
   source.addEventListener('run-started', () => {
     state.running = true;
+    updateRunBtn();
     renderGrid();
   });
 
   source.addEventListener('run-complete', (e) => {
     const data = JSON.parse(e.data);
-    state.running = false; renderGrid();
+    state.running = false;
+    state.runningStep = null;
+    updateRunBtn();
     const msg = data.message ? ` — ${data.message}` : '';
     appendLog({ timestamp: now(), stepNumber: '-', level: data.status === 'completed' ? 'info' : 'error',
       message: `Pipeline ${data.status}${data.durationMs ? ` (${formatDuration(data.durationMs)})` : ''}${msg}` });
     loadHistory();
+    refreshStepHistory();
   });
 
   source.addEventListener('schedule-fired', (e) => {
@@ -759,7 +1013,16 @@ function connectSSE() {
     try { const data = JSON.parse(e.data); appendLog({ timestamp: now(), level: 'error', stepNumber: '-', message: data.message || 'Error' }); } catch { /* reconnect */ }
   });
 
-  source.onerror = () => { state.running = false; };
+  source.onerror = () => { state.running = false; state.runningStep = null; updateRunBtn(); };
+}
+
+async function refreshStepHistory() {
+  try {
+    const resp = await fetch('/api/status');
+    const data = await resp.json();
+    state.stepHistory = data.stepHistory || {};
+    renderGrid();
+  } catch {}
 }
 
 // ═══ INIT ═══
@@ -775,11 +1038,17 @@ async function init() {
     ]);
     const status = await statusResp.json();
     state.running = status.running;
+    state.stepHistory = status.stepHistory || {};
+    state.jiraBaseUrl = status.jiraBaseUrl || null;
     for (const s of status.steps) {
       const step = state.steps.find(st => st.number === s.stepNumber);
-      if (step) step.status = s.status;
+      if (step) {
+        step.status = s.status;
+        if (s.status === 'running') state.runningStep = s.stepNumber;
+      }
     }
     state.schedules = await schedResp.json();
+    updateRunBtn();
     renderGrid();
   } catch {
     state.running = false;

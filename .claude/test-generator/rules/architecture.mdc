@@ -1,0 +1,77 @@
+# TestGenerator UI — Architecture Rules
+
+## Project Name: BiteForge
+
+The TestGenerator UI is the web dashboard for the BiteForge QA automation suite. It provides a browser-based interface to the 11-step TestGenerator pipeline that was previously CLI-only.
+
+## Stack
+
+- **Backend:** Express 5 + TypeScript (tsx), served from `src/`
+- **Frontend:** Vanilla HTML/CSS/JS (no framework), served from `ui/`
+- **Database:** SQLite via better-sqlite3, stored in `data/`
+- **Real-time:** Server-Sent Events (SSE) at `/api/stream`
+- **Port:** `TESTGEN_PORT` env var, default `3847`
+
+## Architecture Principles
+
+1. **No build step for the frontend.** The UI is three static files (`index.html`, `style.css`, `app.js`) served directly by Express. No bundler, no transpiler, no npm frontend deps. Keep it this way.
+
+2. **SSE for all real-time updates.** The backend pushes events (`step-status`, `log`, `run-started`, `run-complete`, `step-progress`, `ticket-selected`, `schedule-fired`, `schedule-updated`) via a single `/api/stream` endpoint. The frontend never polls.
+
+3. **Backend owns all pipeline state.** The `Pipeline` class is the single source of truth for run state. The UI is a read-mostly observer that can trigger runs but never manages state directly.
+
+4. **SQLite for persistence.** Runs, step results, logs, artifacts, schedules, and test case results are all stored in the Database class. The frontend reads via REST, never directly.
+
+5. **One Express server, one process.** The server, pipeline, scheduler, and SSE all run in the same Node process. No microservices, no worker processes.
+
+## Directory Layout
+
+```
+app/TestGenerator/
+├── src/                     # TypeScript backend
+│   ├── index.ts             # Entry point — wires everything together
+│   ├── server.ts            # Express routes + SSE
+│   ├── config/Config.ts     # Environment + path config
+│   ├── data/
+│   │   ├── Database.ts      # SQLite wrapper
+│   │   └── models.ts        # Type definitions + STEP_DEFINITIONS
+│   ├── pipeline/
+│   │   ├── Pipeline.ts      # Orchestrator
+│   │   ├── Step.ts          # Base step class
+│   │   ├── StepRegistry.ts  # Step registration
+│   │   └── steps/           # Step01…Step11 implementations
+│   ├── services/            # External integrations
+│   │   ├── JiraService.ts
+│   │   ├── ClaudeService.ts
+│   │   ├── GitService.ts
+│   │   ├── PlaywrightService.ts
+│   │   └── ContextBuilder.ts
+│   ├── scheduler/Scheduler.ts
+│   └── logger/StoryLogger.ts
+├── ui/                      # Static frontend (NO build step)
+│   ├── index.html
+│   ├── style.css
+│   └── app.js
+├── data/                    # SQLite database files (gitignored)
+├── logs/                    # Pipeline run logs per ticket
+├── steps/                   # Legacy bash step scripts (used by TestGenerator.sh)
+├── TestGenerator.sh         # CLI orchestrator (bash, still works independently)
+└── package.json
+```
+
+## API Surface
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/stream` | SSE event stream |
+| GET | `/api/status` | Current pipeline state |
+| POST | `/api/run` | Start pipeline (stepStart, stepEnd, ticketKey, filter) |
+| POST | `/api/run/step/:num` | Run single step |
+| GET | `/api/runs` | Recent run history |
+| GET | `/api/runs/:id` | Single run detail |
+| GET | `/api/runs/:id/steps/:num` | Step result with logs + artifacts |
+| GET | `/api/schedules` | List schedules |
+| POST | `/api/schedules` | Create schedule |
+| PUT | `/api/schedules/:id` | Update schedule |
+| DELETE | `/api/schedules/:id` | Delete schedule |
+| POST | `/api/schedules/:id/toggle` | Toggle schedule on/off |

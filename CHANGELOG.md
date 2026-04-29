@@ -4,12 +4,107 @@ All notable changes to this project are documented here. Newest entries first.
 
 ---
 
+## 2026-04-29 — Eng04 Decalcification, Eng05 App Scraper, Vitest Suite, Rules Reorg
+
+### Engineering Pipeline — Eng04 & Eng05 (NEW)
+- **Eng 104 — Decalcification**: picks the first `tests/testrun/<ID>.flaky` file, runs the scenario `VERIFY_RUNS=3` times, and iterates rounds (`MAX_ROUNDS=2`) of Claude-driven fixes until the test is stable across all verify passes. 15-minute Claude timeout; per-round logs under `tests/testrun/<ID>/round-N/`.
+- **Eng 105 — App Scraper**: parses `tests/features/sidebar-navigation.feature` for the page list, walks each page in a logged-in browser session, captures `html/<slug>.html` snapshots used to seed property files.
+- Both registered in `StepRegistry` (104, 105); neither requires a Jira ticket.
+
+### Eng02 / Eng03 Rewrites
+- **Eng 102 — Run Tests** (~440 lines, was 230): per-test execution by tag (`--grep "ID\b"`), live-streamed output, Gherkin step indicators, writes `.test`/`.flaky` files on failure.
+- **Eng 103 — Healing** (~932 lines, was 151): round-based iterative healing (max 5 rounds), per-round log artifacts, previous-attempt context, debug-mode toggle, 5-min Claude timeout, HTML snapshot context.
+
+### Vitest Unit Suite (NEW)
+- New `app/TestGenerator/vitest.config.ts` and 8 test files: `Config.test.ts`, `Database.test.ts`, `models.test.ts`, `StoryLogger.test.ts`, `Pipeline.test.ts`, `Step.test.ts`, `StepRegistry.test.ts`, `server.test.ts`
+- Suite total: **78 tests across 8 files** (~1.7s)
+
+### `src/` Reorganization (Option A) — split off from prior pipeline/ tree
+- `src/{config,data,logger}/` and `src/pipeline/{Pipeline,Step,StepRegistry}.ts` → `src/shared/{config,data,logger,pipeline}/`
+- `src/pipeline/steps/Step01–07*` → `src/generator/steps/`; `Step08–11*`, `Eng01–04*` → `src/automator/steps/`
+- `src/scheduler/` → `src/automator/scheduler/`
+- `app/BugCreator/` folded into `app/TestGenerator/src/createbug/` (TicketCreator.sh + template.html); BugCreator logs preserved under `app/TestGenerator/logs/createbug/`
+
+### TestGenerator — New Feature & Step Coverage
+- New Gherkin features: `purchasing-tracker.feature`, `timesheet-admin.feature`, `vendor-admin.feature`
+- Matching step definitions: `purchasing-tracker.steps.ts`, `timesheet-admin.steps.ts`, `vendor-admin.steps.ts`
+- Total feature files now **10** (was 5)
+
+### Server & Services
+- `server.ts` (~86 lines changed) + `server.test.ts` (vitest, 100 lines)
+- `ClaudeService` / `PlaywrightService` gained `setSignal()` / `AbortController` support — cancel kills active child processes immediately
+- `PlaywrightService.runTest()` runs `npx bddgen && npx playwright test` as a single shell command, `--project chromium`, with `onData` streaming callback
+
+### Email Notifications Scaffold (Eng05 prep)
+- `.env.example` adds SMTP block: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`, `EMAIL_TO`, `EMAIL_DRY_RUN`
+- Defaults to dry-run; real sends require a Gmail App Password
+
+### Rules & Memory Reorganization (`.claude/`, `.claude-self/`)
+- Rules moved out of `app/TestGenerator/rules/` and `app/BugCreator/rules/` into top-level `.claude/` and `.claude-self/`:
+  - `automator/rules/backend-conventions.mdc`
+  - `createbug/rules/jira-ticket-creation.md`
+  - `test-generator/rules/architecture.mdc`
+  - `ui/rules/{design-system,frontend-conventions}.mdc`
+- New project memory under `.claude/projects/<project>/memory/` (`MEMORY.md`, `project_biteforge.md`)
+- Added `.claude/settings.json` and `.claude-self/settings.json`
+
+### Documentation
+- New `app/TestGenerator/CHANGELOG.md` — module-local change log
+- New `app/TestGenerator/CLIENT-DEPLOYMENT-GUIDE.md` — deployment instructions for client environments
+- New `app/TestGenerator/FEATURES.md` — feature inventory of the runner
+- New `app/TestGenerator/whats-next.md` — roadmap notes
+- New `app/TestGenerator/heal-scenario.fix.md` — heal scenario fix notes
+
+### CLAUDE.md
+- Added **Module map** table for `app/TestGenerator/src/` (`shared/`, `services/`, `generator/steps/`, `automator/steps/`, `automator/scheduler/`, `createbug/`)
+- Added KISS / terse-output rule to global instructions
+
+### SM-754 Logs
+- Refreshed `5_plan.md`, `5_plan_manual.html`, and `story.md` with the latest pipeline outputs
+
+### Housekeeping
+- Removed obsolete ticket-specific feature files: `SM-742`, `SM-754`, `SM-775`, `SM-803`
+- Removed `app/BugCreator/rules/jira-ticket-creation.md` (rules now live under `.claude/`)
+- Regenerated `.features-gen/` for the renamed/added features
+
+---
+
+## 2026-04-27 — Monorepo Restructure, Restart Control, Dual-Remote Publishing
+
+### TestGenerator Module Reorganization
+- `src/pipeline/steps/Step01–07*` → `src/generator/steps/`
+- `src/pipeline/steps/Step08–11*`, `Eng01–03*` → `src/automator/steps/`
+- `src/scheduler/` → `src/automator/scheduler/`
+- `src/config/`, `src/data/`, `src/logger/`, `src/pipeline/` → `src/shared/{config,data,logger,pipeline}/`
+- `app/BugCreator/` (template, TicketCreator.sh, logs) folded into `app/TestGenerator/src/createbug/` and `app/TestGenerator/logs/createbug/`
+- Old `app/TestGenerator/rules/ui-*.mdc` removed (consolidated into `.claude/`)
+
+### Server — Restart Endpoint
+- New `POST /api/restart` — responds 200, then spawns a detached child of the current process (`process.argv`) and `process.exit(0)`. Works with or without an external supervisor.
+- Added `src/server.test.ts` (vitest) with 2 tests covering response shape and the spawn+exit sequence. Suite total: **78 tests across 8 files**.
+
+### UI — Restart Button + White Action Buttons
+- New **Restart** button in the bottom-panel actions row, between **Insights** and **Clear**. Confirms before firing, polls `/api/status` until the new process is up, then reloads.
+- `.btn-clear` restyled: white border + white text on transparent background, subtle translucent fill on hover. Applies to all 3 panel-action buttons.
+
+### Test Suite — New Feature Coverage
+- New Gherkin features: `cascade-templates`, `import-costs`, `maintenance-admin`, `purchasing-tracker`, `search`, `timesheet-admin`, `vendor-admin`
+- New step definitions for each, plus additions to `dashboard.steps.ts`, `login.steps.ts`, `cascade-templates.steps.ts`
+- `tests/properties/maintenance-admin.properties.ts` updated
+- Removed obsolete `.features-gen/tests/features/SM-1105.feature.spec.js`
+
+### Publishing — Dual Remote
+- New `scripts/push-both.sh` — pushes the current branch to both `origin` (GitHub) and `gitlab`, forcing `~/.ssh/fulcrum` via `GIT_SSH_COMMAND` (no global SSH config changes). Supports `-y` to skip the confirmation prompt.
+- One-time setup required before first GitLab push: `git remote add gitlab git@gitlab.com:powerslice-software-development/sm-test-artifacts.git`
+
+---
+
 ## 2026-04-26 — Engineering Pipeline, Prerequisite Auto-Run, UI Overhaul
 
 ### Engineering Steps (NEW — Steps 101–103)
 - **Eng 101 — Check Steps**: runs `npx bddgen`, parses missing step definitions, writes structured `.test` files to `tests/testrun/` grouped by scenario
 - **Eng 102 — Run Tests**: runs Playwright with `--project=edge`, parses test failures, writes `.test` files with error output and Gherkin context
-- **Eng 103 — Heal Scenario**: auto-chains 101→102, picks the first `.test` file, calls Claude with streaming to analyze and fix the failure, verifies the fix with a targeted test run, removes the `.test` file on success
+- **Eng 103 — Healing**: auto-chains 101→102, picks the first `.test` file, calls Claude with streaming to analyze and fix the failure, verifies the fix with a targeted test run, removes the `.test` file on success
 - Engineering steps do not require a Jira ticket — registered in `StepRegistry` at numbers 101–103
 - Pipeline handles step numbers ≥100 as "tool steps" that skip ticket discovery
 

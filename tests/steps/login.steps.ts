@@ -14,6 +14,10 @@ import {
   SAFETY_MODAL_TITLE_XPATH,
   SAFETY_MODAL_OK_XPATH,
 } from '../properties/login-password.properties';
+import {
+  LEGACY_IFRAME_SELECTOR,
+  IMPORT_COSTS_ELEMENTS,
+} from '../properties/import-costs.properties';
 
 const { Given, When, Then } = createBdd();
 
@@ -93,6 +97,17 @@ When('I click the {string} button', async ({ page }, name: string) => {
     await page.locator(`xpath=${LETS_GO_BUTTON_XPATH}`).click();
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(5000);
+  } else {
+    if (!page.url().includes('/requests/importcosts')) {
+      await page.goto('/spa/requests/importcosts');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(2000);
+    }
+    const xpath = IMPORT_COSTS_ELEMENTS[name] ?? `//button[normalize-space(.)='${name}']`;
+    const frame = page.frameLocator(LEGACY_IFRAME_SELECTOR);
+    const btn = frame.locator(`xpath=${xpath}`).first();
+    await btn.waitFor({ state: 'visible', timeout: 10000 });
+    await btn.click();
   }
 });
 

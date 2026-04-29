@@ -36,14 +36,15 @@
       <div class="input-group range-group">
         <label>Steps</label>
         <div class="range-inputs">
-          <input type="number" id="step-start" min="1" max="11" value="1">
+          <input type="text" inputmode="numeric" pattern="[0-9]*" id="step-start" value="1">
           <span class="range-sep">to</span>
-          <input type="number" id="step-end" min="1" max="11" value="11">
+          <input type="text" inputmode="numeric" pattern="[0-9]*" id="step-end" value="11">
         </div>
       </div>
       <button id="run-btn" class="btn-primary">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
-        Run
+        <svg class="icon-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        <svg class="icon-stop hidden" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+        <span class="btn-label">Run</span>
       </button>
     </div>
   </header>
@@ -105,9 +106,9 @@
           </button>
         </div>
         <div class="panel-actions">
-          <a class="insights-link hidden" id="claude-insights-link" href="/api/claude/insights/report" target="_blank">Insights Available!</a>
-          <button class="btn-clear" id="claude-status-btn" title="Claude Status">Status</button>
+          <span class="insights-status" id="insights-status"></span>
           <button class="btn-clear" id="claude-insights-btn" title="Generate Insights">Insights</button>
+          <button class="btn-clear" id="restart-server-btn" title="Restart TestGenerator server">Restart</button>
           <button class="btn-clear" id="clear-logs-btn" title="Clear logs">Clear</button>
         </div>
       </div>
@@ -232,6 +233,22 @@
         <div class="sched-divider"></div>
         <div class="sched-list-header">Active Schedules</div>
         <div id="sched-list" class="sched-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Dialog -->
+  <div id="confirm-modal" class="modal-overlay hidden">
+    <div class="modal modal-confirm">
+      <div class="modal-header">
+        <h2 id="confirm-title">Confirm</h2>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-message" class="confirm-message"></p>
+        <div class="confirm-actions">
+          <button class="btn-clear" id="confirm-cancel-btn">Cancel</button>
+          <button class="btn-primary" id="confirm-ok-btn">OK</button>
+        </div>
       </div>
     </div>
   </div>

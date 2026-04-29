@@ -1,12 +1,21 @@
 import express from 'express';
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, statSync } from 'fs';
 import { resolve } from 'path';
-import { execSync } from 'child_process';
-import type { Config } from './config/Config.js';
-import type { Database } from './data/Database.js';
-import type { Pipeline } from './pipeline/Pipeline.js';
+import { execSync, spawn } from 'child_process';
+import type { Config } from './shared/config/Config.js';
+import type { Database } from './shared/data/Database.js';
+import type { Pipeline } from './shared/pipeline/Pipeline.js';
 import type { ClaudeService } from './services/ClaudeService.js';
 import type { Response, Request } from 'express';
+
+// Normalize a ticket key: bare numeric → SM-N; trim & uppercase; pass through null/undefined.
+function normalizeTicketKey<T extends string | null | undefined>(input: T): T {
+  if (input === undefined || input === null) return input;
+  const s = String(input).trim();
+  if (s === '') return input;
+  if (/^\d+$/.test(s)) return ('SM-' + s) as T;
+  return s.toUpperCase() as T;
+}
 
 export function createServer(config: Config, db: Database, pipeline: Pipeline, sseClients: Set<Response>, onScheduleChange?: () => void, claude?: ClaudeService) {
   const app = express();
@@ -32,12 +41,13 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
       if (lastRuns.length > 0) {
         const lastSteps = db.getStepResults(lastRuns[0].id);
         for (const ls of lastSteps) {
-          const s = steps.find((st: any) => st.stepNumber === ls.step_number);
+          const s = steps.find((st: any) => st.stepNumber === ls.stepNumber);
           if (s && s.status === 'idle') s.status = ls.status;
         }
       }
     }
-    res.json({ running: pipeline.isRunning, steps });
+    const stepHistory = db.getRecentStepStatuses(5);
+    res.json({ running: pipeline.isRunning, steps, stepHistory, jiraBaseUrl: config.jiraBaseUrl });
   });
 
   // --- Schedules ---
@@ -72,7 +82,8 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
 
   // --- Run Pipeline ---
   app.post('/api/run', (req: Request, res: Response) => {
-    const { stepStart, stepEnd, ticketKey, filter } = req.body;
+    const { stepStart, stepEnd, filter } = req.body;
+    const ticketKey = normalizeTicketKey(req.body.ticketKey);
     if (!stepStart || !stepEnd) { res.status(400).json({ error: 'stepStart and stepEnd required' }); return; }
     if (pipeline.isRunning) { res.status(409).json({ error: 'Pipeline is already running' }); return; }
     res.json({ message: 'Pipeline started' });
@@ -82,15 +93,34 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
     });
   });
 
+  // --- Cancel ---
+  app.post('/api/cancel', (_req: Request, res: Response) => {
+    if (!pipeline.isRunning) { res.json({ message: 'Nothing running' }); return; }
+    pipeline.cancel();
+    res.json({ message: 'Cancel requested' });
+  });
+
+  // --- Heal Loop (Eng03 in a loop until clean / unhealable / max-iters) ---
+  app.post('/api/heal/loop', (req: Request, res: Response) => {
+    if (pipeline.isRunning) { res.status(409).json({ error: 'Pipeline is already running' }); return; }
+    const { debugHeal } = req.body || {};
+    res.json({ message: 'Heal loop started' });
+    pipeline.runHealLoop({ debugHeal }).catch(err => {
+      const payload = `event: error\ndata: ${JSON.stringify({ message: String(err) })}\n\n`;
+      for (const client of sseClients) client.write(payload);
+    });
+  });
+
   // --- Run Single Step ---
   app.post('/api/run/step/:num', (req: Request, res: Response) => {
     const stepNum = parseInt(req.params.num, 10);
-    const { ticketKey, parallel } = req.body;
-    const validStepNums = new Set([1,2,3,4,5,6,7,8,9,10,11,101,102,103]);
+    const { parallel, debugHeal } = req.body;
+    const ticketKey = normalizeTicketKey(req.body.ticketKey);
+    const validStepNums = new Set([1,2,3,4,5,6,7,8,9,10,11,101,102,103,104,105]);
     if (isNaN(stepNum) || !validStepNums.has(stepNum)) { res.status(400).json({ error: 'Invalid step number' }); return; }
     if (pipeline.isRunning) { res.status(409).json({ error: 'Pipeline is already running' }); return; }
     res.json({ message: `Step ${stepNum} started` });
-    pipeline.runSingleStep(stepNum, ticketKey, { parallel }).catch(err => {
+    pipeline.runSingleStep(stepNum, ticketKey, { parallel, debugHeal }).catch(err => {
       const payload = `event: error\ndata: ${JSON.stringify({ message: String(err) })}\n\n`;
       for (const client of sseClients) client.write(payload);
     });
@@ -221,16 +251,6 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
     } catch { res.status(404).json({ error: 'Draft not found' }); }
   });
 
-  // --- Claude Status ---
-  app.get('/api/claude/status', async (_req: Request, res: Response) => {
-    try {
-      const version = execSync('claude --version', { encoding: 'utf-8', timeout: 5000 }).trim();
-      res.json({ status: 'ok', version });
-    } catch (err) {
-      res.json({ status: 'error', message: String(err) });
-    }
-  });
-
   // --- Claude Insights ---
   const insightsReportPath = resolve(process.env.HOME || '', '.claude-self', 'usage-data', 'report.html');
 
@@ -250,6 +270,32 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
     } catch (err) {
       res.json({ message: 'Insights generation attempted', note: String(err).substring(0, 200) });
     }
+  });
+
+  app.post('/api/restart', (_req: Request, res: Response) => {
+    res.json({ message: 'Restarting server...' });
+    setTimeout(() => {
+      // Re-spawn through npm so the tsx loader is registered for the new process.
+      // process.argv[0] is bare `node` and would fail on .ts files.
+      const lifecycleEvent = process.env.npm_lifecycle_event;
+      let cmd: string;
+      let args: string[];
+      if (lifecycleEvent) {
+        cmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+        args = ['run', lifecycleEvent];
+      } else {
+        cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+        args = ['tsx', 'src/index.ts'];
+      }
+      const child = spawn(cmd, args, {
+        cwd: process.cwd(),
+        env: process.env,
+        detached: true,
+        stdio: 'inherit',
+      });
+      child.unref();
+      process.exit(0);
+    }, 200);
   });
 
   app.get('/api/claude/insights/report', (_req: Request, res: Response) => {

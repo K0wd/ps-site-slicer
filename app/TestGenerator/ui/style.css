@@ -50,6 +50,7 @@ input[type="text"], input[type="number"], select {
 input:focus, select:focus { outline: none; border-color: var(--accent); }
 #ticket-input { width: 100px; text-transform: uppercase; }
 input[type="number"] { width: 44px; text-align: center; }
+#step-start, #step-end { width: 40px; text-align: center; padding-left: 4px; padding-right: 4px; }
 .range-inputs { display: flex; align-items: center; gap: 4px; }
 .range-sep { color: var(--text-3); font-size: 12px; }
 
@@ -61,13 +62,15 @@ input[type="number"] { width: 44px; text-align: center; }
 }
 .btn-primary:hover { opacity: 0.85; }
 .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-primary.is-stop { background: var(--red); }
+.btn-primary .hidden { display: none; }
 
 .btn-clear {
-  background: none; border: 1px solid var(--border); color: var(--text-3);
+  background: none; border: 1px solid #fff; color: #fff;
   padding: 3px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
-.btn-clear:hover { color: var(--text); border-color: var(--text-3); }
+.btn-clear:hover { background: rgba(255, 255, 255, 0.08); }
 
 /* ═══ TICKET BAR ═══ */
 .ticket-bar {
@@ -82,6 +85,8 @@ input[type="number"] { width: 44px; text-align: center; }
   color: var(--accent); background: var(--accent-dim);
   padding: 2px 10px; border-radius: 4px;
 }
+.ticket-key a { color: inherit; text-decoration: none; }
+.ticket-key a:hover { text-decoration: underline; }
 .ticket-summary { font-size: 14px; color: var(--text-2); }
 .ticket-meta { display: flex; align-items: center; gap: 12px; }
 .ticket-status-badge {
@@ -151,7 +156,8 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-.step-name { font-size: 13px; font-weight: 500; margin-bottom: 8px; line-height: 1.3; }
+.step-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; line-height: 1.3; }
+.step-history-dots { display: flex; gap: 4px; align-items: center; margin-bottom: 6px; min-height: 8px; }
 
 .step-footer { display: flex; justify-content: space-between; align-items: center; }
 .step-duration { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
@@ -161,10 +167,11 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 
 .step-run-btn {
   background: none; border: 1px solid var(--border); color: var(--text-2);
-  padding: 3px 12px; border-radius: 4px; font-size: 11px; cursor: pointer;
-  transition: all 0.15s; font-weight: 500;
+  padding: 3px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;
+  transition: all 0.15s; font-weight: 500; display: flex; align-items: center; gap: 3px;
 }
 .step-run-btn:hover { color: var(--text); border-color: var(--accent); background: var(--accent-dim); }
+.step-run-btn.stopping:hover { border-color: var(--red); background: var(--red-dim); }
 .step-run-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .step-sched-btn {
@@ -181,6 +188,14 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 }
 .step-parallel-btn:hover { border-color: var(--accent); color: var(--accent); }
 .step-parallel-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+
+.step-debug-btn {
+  background: none; border: 1px solid var(--border); color: var(--text-3);
+  padding: 2px 5px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
+  font-size: 12px; line-height: 1;
+}
+.step-debug-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+.step-debug-btn.active { color: var(--yellow); border-color: var(--yellow); background: var(--yellow-dim); }
 
 .sched-badge { font-size: 12px; margin-right: 2px; }
 
@@ -201,11 +216,23 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 }
 .panel-actions { display: flex; gap: 6px; align-items: center; }
 
-.insights-link {
-  color: var(--green); font-size: 11px; text-decoration: none; font-weight: 500;
+.insights-status {
+  font-size: 11px; font-weight: 500; display: none;
 }
-.insights-link:hover { text-decoration: underline; }
-.insights-link.hidden { display: none; }
+.insights-status[data-state="available"] {
+  display: inline; color: var(--green); text-decoration: none; cursor: pointer;
+}
+.insights-status[data-state="available"]:hover { text-decoration: underline; }
+.insights-status[data-state="generating"] {
+  display: inline; color: var(--yellow); animation: pulse-fade 1.4s ease-in-out infinite;
+}
+.insights-status[data-state="error"] {
+  display: inline; color: var(--red);
+}
+@keyframes pulse-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
 .panel-tabs { display: flex; }
 .tab {
   background: none; border: none; color: var(--text-3); padding: 10px 16px;
@@ -223,12 +250,17 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
   flex: 1; padding: 10px 14px; font-family: var(--mono); font-size: 12px;
   line-height: 1.7; overflow-y: auto; color: var(--text-2); min-height: 0;
 }
-.log-line { padding: 1px 0; display: flex; gap: 0; white-space: pre-wrap; word-break: break-word; }
+.log-line { padding: 1px 0; display: flex; gap: 6px; white-space: pre-wrap; word-break: break-word; }
 .log-line.error { color: var(--red); }
 .log-line.warn { color: var(--yellow); }
 .log-line.debug { color: var(--text-3); font-size: 11px; }
+.log-line .gherkin-pass { color: var(--green); }
+.log-line .gherkin-fail { color: var(--red); }
+.log-line .gherkin-skip { color: var(--text-3); }
+.log-line .gherkin-unknown { color: var(--yellow); }
+.log-line .gherkin-keyword { font-weight: 700; }
 .log-line .ts { color: var(--text-3); min-width: 75px; flex-shrink: 0; }
-.log-line .tag { color: var(--accent); min-width: 72px; flex-shrink: 0; font-weight: 600; }
+.log-line .tag { color: var(--accent); min-width: 80px; flex-shrink: 0; font-weight: 600; }
 .log-line .msg { flex: 1; }
 
 /* ═══ HISTORY ═══ */
@@ -370,6 +402,19 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 
 .step-card.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 
+.step-log-run.running { border-left: 3px solid var(--accent); }
+.step-log-run.running .step-log-icon { color: var(--accent); }
+.step-log-run.running .step-log-status { color: var(--accent); }
+
+.step-logs-live-badge {
+  font-size: 10px; font-weight: 700; color: var(--green);
+  border: 1px solid var(--green); border-radius: 3px;
+  padding: 1px 5px; margin-left: auto; letter-spacing: 0.5px;
+  animation: pulse-fade 1.4s ease-in-out infinite;
+}
+
+.step-logs-live { padding: 0 0 4px 0; }
+
 /* ═══ SCHEDULE BUTTON ═══ */
 .btn-schedule {
   background: none; border: 1px solid var(--border); color: var(--text-2);
@@ -403,6 +448,21 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 .modal-close:hover { color: var(--text); }
 
 .modal-body { padding: 20px; }
+
+/* ─── Confirm dialog ─────────────────────────────────────────────────── */
+.modal-confirm { width: 420px; }
+.confirm-message {
+  font-size: 13px; color: var(--text-2); line-height: 1.5;
+  margin-bottom: 18px; white-space: pre-wrap;
+}
+.confirm-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.confirm-actions .btn-clear,
+.confirm-actions .btn-primary {
+  padding: 6px 16px; font-size: 13px; height: auto;
+}
+.btn-primary.is-danger { background: var(--red); }
 
 /* Cron Preview */
 .cron-preview {

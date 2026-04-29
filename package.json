@@ -7,6 +7,7 @@
     "dev": "npm run dev --prefix app/TestGenerator",
     "test": "npx bddgen && npx playwright test --grep @smoke && node scripts/archive-results.js",
     "test:edge": "npx bddgen && npx playwright test --project=edge && node scripts/archive-results.js",
+    "test:chrome": "npx bddgen && npx playwright test --project=chromium && node scripts/archive-results.js",
     "test:ui": "npx bddgen && npx playwright test --ui",
     "test:report": "npx playwright show-report",
     "test:archive": "node scripts/archive-results.js"
