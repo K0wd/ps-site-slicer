@@ -72,6 +72,26 @@ alwaysApply: false
 - Keep changelog newest-first.
 - Use one date section per day in changelog and append same-day updates under it.
 
+## Gherkin Writing — Reuse Step Text First (Step 6)
+
+- Before generating any Gherkin, read `tests/steps/*.steps.ts` and extract all known step patterns.
+- Write scenario steps using exact existing step text wherever the intent matches — never paraphrase.
+- After generating all Gherkin, run `npx bddgen` dry-run and save unmatched steps to `6_unmatched_steps.txt`.
+- Only unmatched steps (lint errors) carry forward to Step 7. Everything else is already done.
+
+## Step Implementation — One Step At A Time (Step 7 and all automation writing)
+
+This rule applies to every automation writing activity without exception.
+
+- **Gap list only**: Step 7 reads `6_unmatched_steps.txt`. Steps not in that list are skipped — they already have implementations.
+- **One at a time**: implement exactly one unmatched step per cycle. Never write two steps simultaneously.
+- **Verify**: run `npx bddgen` after each implementation. Retry once on failure; stop the TC on second failure.
+- **Prove it**: run `npx playwright test --grep @TC-XX`. Do not advance until the step passes in context.
+- **Record on pass**: log "★ recorded: <step text>"; remove from unmatched list; move to next step.
+- **Stop on fail**: halt the TC. Do not skip ahead. Do not record unproven steps.
+
+The library grows one confirmed step at a time. Recorded steps feed back into Step 6's reuse check on the next ticket — shrinking the gap list permanently.
+
 ## Engineering Principles
 
 - Keep implementations KISS and readable.
