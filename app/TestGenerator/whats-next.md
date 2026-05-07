@@ -62,7 +62,7 @@ The heal loop works end-to-end but wastes time on unfixable errors and gives poo
 
 ### 2.1 Global CLAUDE.md
 
-Create `~/.claude/CLAUDE.md` with cross-project rules:
+Create `~/.claude-self/CLAUDE.md` with cross-project rules:
 - **Plan-before-place** — propose UI placement before editing
 - **Modal-not-mailto** — contact CTAs default to in-page modal
 - **Read-before-edit** — always Read before Edit/Write

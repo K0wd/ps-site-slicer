@@ -45,6 +45,15 @@ export const DUPLICATE_NAME_ERROR_XPATH = "//mat-snack-bar-container | //mat-err
 // ── Refresh ──
 export const REFRESH_ICON_XPATH = "//mat-icon[contains(@class,'arrow-btn') and normalize-space()='refresh']";
 
+// ── Template Step Duration Input ──
+export const STEP_DURATION_INPUT_XPATH = "(//input[@formcontrolname='days'] | //input[contains(@placeholder,'Days') or contains(@placeholder,'days')] | //mat-cell[contains(@class,'mat-column-days')]//input)[1]";
+
+// ── All step duration inputs (unbounded — used to count steps in a template) ──
+export const STEP_ALL_DURATION_INPUTS_XPATH = "//input[@formcontrolname='days'] | //input[contains(@placeholder,'Days') or contains(@placeholder,'days')] | //mat-cell[contains(@class,'mat-column-days')]//input";
+
+// ── Template Step Date Cells (downstream calculated dates) ──
+export const STEP_DATE_CELL_XPATH = "//mat-cell[contains(@class,'mat-column-date') or contains(@class,'mat-column-startDate') or contains(@class,'mat-column-endDate') or contains(@class,'mat-column-start') or contains(@class,'mat-column-end')] | //input[@formcontrolname='date' or @formcontrolname='startDate' or @formcontrolname='endDate' or @formcontrolname='start' or @formcontrolname='end']";
+
 // ── Element Map (Gherkin-facing) ──
 export const CASCADE_TEMPLATES_ELEMENTS: Record<string, string> = {
   'sidebar cascade templates': SIDEBAR_CASCADE_TEMPLATES_XPATH,

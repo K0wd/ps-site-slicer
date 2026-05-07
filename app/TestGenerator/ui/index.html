@@ -38,7 +38,7 @@
         <div class="range-inputs">
           <input type="text" inputmode="numeric" pattern="[0-9]*" id="step-start" value="1">
           <span class="range-sep">to</span>
-          <input type="text" inputmode="numeric" pattern="[0-9]*" id="step-end" value="11">
+          <input type="text" inputmode="numeric" pattern="[0-9]*" id="step-end" value="10" max="10">
         </div>
       </div>
       <button id="run-btn" class="btn-primary">
@@ -109,7 +109,7 @@
           <span class="insights-status" id="insights-status"></span>
           <button class="btn-clear" id="claude-insights-btn" title="Generate Insights">Insights</button>
           <button class="btn-clear" id="restart-server-btn" title="Restart TestGenerator server">Restart</button>
-          <button class="btn-clear" id="clear-logs-btn" title="Clear logs">Clear</button>
+          <button class="btn-clear" id="clear-logs-btn" title="Clear logs and reset step status badges">Clear</button>
         </div>
       </div>
       <div id="tab-logs" class="tab-content active">

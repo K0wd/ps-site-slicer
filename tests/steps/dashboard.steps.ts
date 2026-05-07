@@ -24,6 +24,15 @@ import {
   WIDGET_ICONS_CSS,
   WIDGET_REMOVE_XPATH,
 } from '../properties/dashboard.properties';
+import {
+  TARGET_URL as INTAKE_EMAIL_ADMIN_URL,
+  SIDEBAR_TITLE_CANDIDATES as INTAKE_EMAIL_ADMIN_SIDEBAR_TITLES,
+  sidebarLinkByTitleXpath,
+  ADD_NEW_BUTTON_XPATH as INTAKE_EMAIL_ADMIN_ADD_NEW_XPATH,
+  REQUIRED_FIELD_INPUT_XPATH as INTAKE_EMAIL_ADMIN_REQUIRED_INPUT_XPATH,
+  SAVE_BUTTON_XPATH as INTAKE_EMAIL_ADMIN_SAVE_BUTTON_XPATH,
+  SUCCESS_NOTIFICATION_XPATH as INTAKE_EMAIL_ADMIN_SUCCESS_XPATH,
+} from '../properties/intake-email-admin.properties';
 
 const { Given, When, Then } = createBdd();
 
@@ -58,6 +67,62 @@ Given('I am logged in and on the dashboard', async ({ page }) => {
   }
 
   await expect(page).toHaveURL(/\/spa\/dashboard\/index/);
+});
+
+// ── SM-1118 — Admin UI Module for Incoming Email Processing ──
+When('I navigate to the target form for the ticket under test', async ({ page }) => {
+  for (const title of INTAKE_EMAIL_ADMIN_SIDEBAR_TITLES) {
+    const link = page.locator(`xpath=${sidebarLinkByTitleXpath(title)}`);
+    if ((await link.count().catch(() => 0)) > 0) {
+      await link.first().scrollIntoViewIfNeeded({ timeout: 5000 });
+      try {
+        await link.first().click({ timeout: 5000 });
+      } catch {
+        await link.first().dispatchEvent('click');
+      }
+      await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+      return;
+    }
+  }
+  await page.goto(INTAKE_EMAIL_ADMIN_URL);
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+});
+
+When('I leave one or more required fields empty', async ({ page }) => {
+  // Open a blank create form so required fields start empty.
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+  const addBtn = page.locator(`xpath=${INTAKE_EMAIL_ADMIN_ADD_NEW_XPATH}`).first();
+  if (await addBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await addBtn.click();
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+  }
+  // Clear any pre-populated required inputs so save triggers validation.
+  const requiredInputs = page.locator(`xpath=${INTAKE_EMAIL_ADMIN_REQUIRED_INPUT_XPATH}`);
+  const count = await requiredInputs.count().catch(() => 0);
+  for (let i = 0; i < count; i++) {
+    await requiredInputs.nth(i).fill('').catch(() => {});
+  }
+});
+
+When('I attempt to save the form', async ({ page }) => {
+  const saveBtn = page.locator(`xpath=${INTAKE_EMAIL_ADMIN_SAVE_BUTTON_XPATH}`).first();
+  await expect(saveBtn).toBeVisible({ timeout: 10_000 });
+  try {
+    await saveBtn.click({ timeout: 5000 });
+  } catch {
+    await saveBtn.dispatchEvent('click');
+  }
+  await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {});
+});
+
+Then('no new record should be created in the system', async ({ page }) => {
+  // Validation blocked the save: the form must still be open and no
+  // success notification (saved/created) should be visible.
+  const saveBtn = page.locator(`xpath=${INTAKE_EMAIL_ADMIN_SAVE_BUTTON_XPATH}`).first();
+  await expect(saveBtn).toBeVisible({ timeout: 5_000 });
+
+  const successToast = page.locator(`xpath=${INTAKE_EMAIL_ADMIN_SUCCESS_XPATH}`);
+  await expect(successToast).toHaveCount(0, { timeout: 3_000 });
 });
 
 Then('I should see the search input', async ({ page }) => {

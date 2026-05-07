@@ -10,7 +10,19 @@
     "test:chrome": "npx bddgen && npx playwright test --project=chromium && node scripts/archive-results.js",
     "test:ui": "npx bddgen && npx playwright test --ui",
     "test:report": "npx playwright show-report",
-    "test:archive": "node scripts/archive-results.js"
+    "test:archive": "node scripts/archive-results.js",
+    "test:e2e": "npx bddgen && npx playwright test",
+    "test:unit": "npx vitest run",
+    "test:unit:certs": "npx vitest run --project sm-certs",
+    "test:unit:pwa": "npx vitest run --project sm-pwa",
+    "test:unit:spa": "npx vitest run --project sm-spa",
+    "test:unit:testgen": "npx vitest run --project testgenerator",
+    "test:unit:watch": "npx vitest watch",
+    "test:api": "echo 'API tests not yet configured'",
+    "logs": "npx serve app/TestGenerator/logs/info -l 4000",
+    "priorities": "node scripts/jira-priorities.mjs",
+    "jira": "node scripts/jira-priorities.mjs && npx serve app/TestGenerator/logs/info -l 4000",
+    "test:all": "npm run test:unit && npm run test:e2e"
   },
   "repository": {
     "type": "git",
@@ -30,6 +42,7 @@
     "@types/node": "^25.5.2",
     "dotenv": "^17.4.1",
     "playwright-bdd": "^8.5.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.5"
   }
 }

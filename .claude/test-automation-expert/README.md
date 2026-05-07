@@ -8,18 +8,18 @@ Gives Claude expertise in test automation conventions — project structure, sel
 |---|---|
 | `automation.md` | Core automation conventions — structure, selectors, Gherkin, logging, pipelines |
 | `effective-rules-summary.md` | Condensed QA rules (<200 lines) — scope, navigation, assertions, exports |
-| `rules/page-xpath-inventory.mdc` | How to inventory web elements as XPaths into POM properties |
-| `rules/sidebar-navigation-reliability.mdc` | Reliable sidebar navigation patterns in Playwright |
-| `rules/headless-dashboard-readiness.mdc` | Keeping headless runs in desktop layout |
-| `rules/appreciation.mdc` | Appreciation reminder (always apply) |
+| `../rules/page-xpath-inventory.mdc` | How to inventory web elements as XPaths into POM properties |
+| `../rules/sidebar-navigation-reliability.mdc` | Reliable sidebar navigation patterns in Playwright |
+| `../rules/headless-dashboard-readiness.mdc` | Keeping headless runs in desktop layout |
+| `../rules/appreciation.mdc` | Appreciation reminder (always apply) |
 
 ## How to Use
 
 ### In CLAUDE.md (mandatory reads)
 ```markdown
 ## Mandatory: Read Before Any Automation Work
-1. `rules/automation.mdc` — Project automation conventions
-2. `rules/effective-rules-summary.mdc` — Condensed QA rules
+1. `../rules/automation.mdc` — Project automation conventions
+2. `../rules/effective-rules-summary.mdc` — Condensed QA rules
 ```
 
 ### Key Principles Enforced

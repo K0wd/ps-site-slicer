@@ -12,13 +12,15 @@ export class Step02FindTicket extends Step {
     let jql: string;
     let maxResults = 20;
 
+    const ELIGIBLE_STATUSES = '"To Do", "In Progress", "Testing", "QA Verified", "Stage Prep", "On Stage", "Stage Verified", "Push to Live", "Merged", "Done"';
+
     if (ctx.ticketKey?.match(/^SM(-[A-Z]+)?-\d+$/i)) {
       jql = `project = SM AND key = ${ctx.ticketKey} AND (labels is EMPTY OR labels not in (no_ai_test)) ORDER BY priority ASC, rank ASC`;
       maxResults = 1;
     } else if (filter === 'me') {
-      jql = 'project = SM AND assignee in ("kbandeleon@gmail.com", "Kim Bandeleon") AND (labels is EMPTY OR labels not in (no_ai_test)) ORDER BY priority ASC, status ASC, rank ASC';
+      jql = `project = SM AND assignee in ("kbandeleon@gmail.com", "Kim Bandeleon") AND status in (${ELIGIBLE_STATUSES}) AND (labels is EMPTY OR labels not in (no_ai_test)) ORDER BY updated DESC`;
     } else {
-      jql = 'project = SM AND (status = Testing OR assignee in ("kbandeleon@gmail.com", "Kim Bandeleon")) AND (labels is EMPTY OR labels not in (no_ai_test)) ORDER BY priority ASC, status ASC, rank ASC';
+      jql = `project = SM AND status in (${ELIGIBLE_STATUSES}) AND (labels is EMPTY OR labels not in (no_ai_test)) ORDER BY updated DESC`;
     }
 
     const result = await ctx.services.jira.search(jql, 'summary,status,assignee,reporter,priority', maxResults);
@@ -38,6 +40,10 @@ export class Step02FindTicket extends Step {
     this.log(`Found ${tickets.length} ticket(s)`);
     for (const t of tickets) {
       this.log(`  ${t.key} | ${t.status} | ${t.assignee} | ${t.summary.substring(0, 60)}`);
+      ctx.db.upsertTicketTracker(t.key, {
+        jiraStatus: t.status,
+        jiraSummary: t.summary,
+      });
     }
 
     const selected = tickets[0];

@@ -115,7 +115,7 @@ export class Eng04Decalcification extends Step {
       try {
         claudeResult = await this.withTimeout(
           ctx.services.claude.promptStreaming(healPrompt, {
-            allowedTools: 'Bash,Read,Write,Edit,Grep,Glob',
+            allowedTools: 'Bash,Read,Write,Edit,Grep,Glob,mcp__context7,mcp__playwright',
             appendSystemPromptFile: contextFile,
           }, (chunk) => {
             this.emitClaudeProgress(chunk);

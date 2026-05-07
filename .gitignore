@@ -32,3 +32,10 @@ tests/testrun/
 
 # Root logs
 logs/
+
+# Sibling Powerslice repos (defensive — these are cloned beside ps-site-slicer,
+# not inside it; entries protect against accidental nested clones)
+/sm-spa/
+/sm-pwa/
+/sm-certs/
+/sm-test-artifacts/

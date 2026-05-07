@@ -60,24 +60,36 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
     if (name === undefined || minute === undefined || hour === undefined) {
       res.status(400).json({ error: 'name, minute, and hour are required' }); return;
     }
-    const id = db.createSchedule(name, minute, hour, stepStart || 1, stepEnd || 11, filter, ticketKey, intervalHours || undefined);
+    const id = db.createSchedule(name, minute, hour, stepStart || 1, stepEnd || 10, filter, ticketKey, intervalHours || undefined);
     onScheduleChange?.();
     res.json({ id, message: 'Schedule created' });
   });
 
   app.post('/api/schedules/delete/:sid', (req: Request, res: Response) => {
-    db.deleteSchedule(parseInt(req.params.sid, 10));
+    db.deleteSchedule(parseInt(req.params.sid as string, 10));
     onScheduleChange?.();
     res.json({ message: 'Deleted' });
   });
 
   app.post('/api/schedules/toggle/:sid', (req: Request, res: Response) => {
-    const id = parseInt(req.params.sid, 10);
+    const id = parseInt(req.params.sid as string, 10);
     const sched = db.getSchedule(id);
     if (!sched) { res.status(404).json({ error: 'Not found' }); return; }
     db.updateSchedule(id, { enabled: !sched.enabled });
     onScheduleChange?.();
     res.json({ enabled: !sched.enabled });
+  });
+
+  // --- Run All (4-Thread Mode) ---
+  app.post('/api/run/all', (req: Request, res: Response) => {
+    const { filter, parallel6, t2Only, resetBlocked } = req.body || {};
+    if (pipeline.isRunning) { res.status(409).json({ error: 'Pipeline is already running' }); return; }
+    const modeDesc = t2Only ? 'T2-only (Gherkin generation)' : 'Thread 1 bootstrap → Threads 2/3/4 concurrent';
+    res.json({ message: `Run-all started (${modeDesc})` });
+    pipeline.runAll(filter, { parallel6: !!parallel6, t2Only: !!t2Only, resetBlocked: !!resetBlocked }).catch(err => {
+      const payload = `event: error\ndata: ${JSON.stringify({ message: String(err) })}\n\n`;
+      for (const client of sseClients) client.write(payload);
+    });
   });
 
   // --- Run Pipeline ---
@@ -86,8 +98,10 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
     const ticketKey = normalizeTicketKey(req.body.ticketKey);
     if (!stepStart || !stepEnd) { res.status(400).json({ error: 'stepStart and stepEnd required' }); return; }
     if (pipeline.isRunning) { res.status(409).json({ error: 'Pipeline is already running' }); return; }
+    // Range runs cap at Step 10 — Step 11 (transition) is operator-only via the single-step panel.
+    const cappedEnd = stepStart < 100 ? Math.min(stepEnd, 10) : stepEnd;
     res.json({ message: 'Pipeline started' });
-    pipeline.runSteps(stepStart, stepEnd, ticketKey, filter).catch(err => {
+    pipeline.runSteps(stepStart, cappedEnd, ticketKey, filter).catch(err => {
       const payload = `event: error\ndata: ${JSON.stringify({ message: String(err) })}\n\n`;
       for (const client of sseClients) client.write(payload);
     });
@@ -113,32 +127,32 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
 
   // --- Run Single Step ---
   app.post('/api/run/step/:num', (req: Request, res: Response) => {
-    const stepNum = parseInt(req.params.num, 10);
-    const { parallel, debugHeal } = req.body;
+    const stepNum = parseInt(req.params.num as string, 10);
+    const { parallel, debugHeal, runAll, testTypes } = req.body;
     const ticketKey = normalizeTicketKey(req.body.ticketKey);
     const validStepNums = new Set([1,2,3,4,5,6,7,8,9,10,11,101,102,103,104,105]);
     if (isNaN(stepNum) || !validStepNums.has(stepNum)) { res.status(400).json({ error: 'Invalid step number' }); return; }
     if (pipeline.isRunning) { res.status(409).json({ error: 'Pipeline is already running' }); return; }
     res.json({ message: `Step ${stepNum} started` });
-    pipeline.runSingleStep(stepNum, ticketKey, { parallel, debugHeal }).catch(err => {
+    pipeline.runSingleStep(stepNum, ticketKey, { parallel, debugHeal, runAll, testTypes }).catch(err => {
       const payload = `event: error\ndata: ${JSON.stringify({ message: String(err) })}\n\n`;
       for (const client of sseClients) client.write(payload);
     });
   });
 
-  // --- Known Tickets (from logs) ---
+  // --- Known Tickets (from logs/info) ---
   app.get('/api/tickets', (_req: Request, res: Response) => {
     try {
-      const logsDir = resolve(config.testGeneratorDir, 'logs');
-      if (!existsSync(logsDir)) { res.json([]); return; }
-      const tickets = readdirSync(logsDir)
+      const infoDir = config.infoDir;
+      if (!existsSync(infoDir)) { res.json([]); return; }
+      const tickets = readdirSync(infoDir)
         .filter((d: string) => {
-          const full = resolve(logsDir, d);
+          const full = resolve(infoDir, d);
           return statSync(full).isDirectory() && /^[A-Z]+-/.test(d);
         })
         .map((d: string) => {
           const ticketKey = d.replace(/\s+(done|failed).*$/i, '');
-          const dir = resolve(logsDir, d);
+          const dir = resolve(infoDir, d);
           const hasPlan = existsSync(resolve(dir, '5_plan.md'));
           const hasFeature = existsSync(resolve(dir, '6_gherkin_scratch'));
           const stat = statSync(dir);
@@ -159,7 +173,7 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
   });
 
   app.get('/api/steps/:stepNum/history', (req: Request, res: Response) => {
-    const stepNum = parseInt(req.params.stepNum, 10);
+    const stepNum = parseInt(req.params.stepNum as string, 10);
     const results = db.getStepHistory(stepNum).map((s: any) => ({
       ...s,
       logs: db.getLogs(s.id, 200),
@@ -168,7 +182,7 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
   });
 
   app.get('/api/runs/:rid', (req: Request, res: Response) => {
-    const id = parseInt(req.params.rid, 10);
+    const id = parseInt(req.params.rid as string, 10);
     const run = db.getRun(id);
     if (!run) { res.status(404).json({ error: 'Run not found' }); return; }
     const steps = db.getStepResults(id).map((s: any) => ({
@@ -192,7 +206,7 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
     try {
       let rules = '';
       let template = '';
-      try { rules = readFileSync(resolve(bugCreatorDir, 'rules/jira-ticket-creation.md'), 'utf-8'); } catch { /* ok */ }
+      try { rules = readFileSync(resolve(config.projectDir, '.claude-self/rules/jira-ticket-creation.md'), 'utf-8'); } catch { /* ok */ }
       try { template = readFileSync(resolve(bugCreatorDir, 'template.html'), 'utf-8'); } catch { /* ok */ }
 
       const prompt = [
@@ -246,7 +260,7 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
 
   app.get('/api/bug-drafts/:filename', (req: Request, res: Response) => {
     try {
-      const html = readFileSync(resolve(bugDraftsDir, req.params.filename), 'utf-8');
+      const html = readFileSync(resolve(bugDraftsDir, req.params.filename as string), 'utf-8');
       res.type('html').send(html);
     } catch { res.status(404).json({ error: 'Draft not found' }); }
   });
@@ -273,6 +287,7 @@ export function createServer(config: Config, db: Database, pipeline: Pipeline, s
   });
 
   app.post('/api/restart', (_req: Request, res: Response) => {
+    if (pipeline.isRunning) pipeline.cancel();
     res.json({ message: 'Restarting server...' });
     setTimeout(() => {
       // Re-spawn through npm so the tsx loader is registered for the new process.

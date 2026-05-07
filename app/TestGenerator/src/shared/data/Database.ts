@@ -88,6 +88,31 @@ export class Database {
         notes        TEXT
       );
 
+      CREATE TABLE IF NOT EXISTS tc_tracker (
+        ticket_key       TEXT NOT NULL,
+        tc_id            TEXT NOT NULL,
+        phase            TEXT NOT NULL DEFAULT 'queued',
+        last_step        INTEGER,
+        last_step_status TEXT,
+        verdict          TEXT,
+        last_updated     TEXT NOT NULL DEFAULT (datetime('now')),
+        notes            TEXT,
+        PRIMARY KEY (ticket_key, tc_id)
+      );
+
+      CREATE TABLE IF NOT EXISTS ticket_tracker (
+        ticket_key      TEXT PRIMARY KEY,
+        jira_status     TEXT,
+        jira_summary    TEXT,
+        phase           TEXT NOT NULL DEFAULT 'queued',
+        last_step       INTEGER,
+        last_step_status TEXT,
+        total_tcs       INTEGER,
+        automated_tcs   INTEGER,
+        last_updated    TEXT NOT NULL DEFAULT (datetime('now')),
+        notes           TEXT
+      );
+
       CREATE TABLE IF NOT EXISTS schedules (
         id             INTEGER PRIMARY KEY AUTOINCREMENT,
         name           TEXT NOT NULL,
@@ -288,6 +313,163 @@ export class Database {
 
   updateNextRun(id: number, nextRunAt: string): void {
     this.db.prepare(`UPDATE schedules SET next_run_at = ? WHERE id = ?`).run(nextRunAt, id);
+  }
+
+  // --- Ticket Tracker ---
+
+  upsertTicketTracker(ticketKey: string, fields: {
+    jiraStatus?: string;
+    jiraSummary?: string;
+    phase?: string;
+    lastStep?: number;
+    lastStepStatus?: string;
+    totalTcs?: number;
+    automatedTcs?: number;
+    notes?: string;
+  }): void {
+    const existing = this.db.prepare(`SELECT ticket_key FROM ticket_tracker WHERE ticket_key = ?`).get(ticketKey);
+    if (!existing) {
+      this.db.prepare(
+        `INSERT INTO ticket_tracker (ticket_key, jira_status, jira_summary, phase, last_step, last_step_status, total_tcs, automated_tcs, notes)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(
+        ticketKey,
+        fields.jiraStatus || null,
+        fields.jiraSummary || null,
+        fields.phase || 'queued',
+        fields.lastStep ?? null,
+        fields.lastStepStatus || null,
+        fields.totalTcs ?? null,
+        fields.automatedTcs ?? null,
+        fields.notes || null,
+      );
+      return;
+    }
+    const sets: string[] = [];
+    const vals: any[] = [];
+    if (fields.jiraStatus !== undefined) { sets.push('jira_status = ?'); vals.push(fields.jiraStatus); }
+    if (fields.jiraSummary !== undefined) { sets.push('jira_summary = ?'); vals.push(fields.jiraSummary); }
+    if (fields.phase !== undefined) { sets.push('phase = ?'); vals.push(fields.phase); }
+    if (fields.lastStep !== undefined) { sets.push('last_step = ?'); vals.push(fields.lastStep); }
+    if (fields.lastStepStatus !== undefined) { sets.push('last_step_status = ?'); vals.push(fields.lastStepStatus); }
+    if (fields.totalTcs !== undefined) { sets.push('total_tcs = ?'); vals.push(fields.totalTcs); }
+    if (fields.automatedTcs !== undefined) { sets.push('automated_tcs = ?'); vals.push(fields.automatedTcs); }
+    if (fields.notes !== undefined) { sets.push('notes = ?'); vals.push(fields.notes); }
+    sets.push(`last_updated = datetime('now')`);
+    vals.push(ticketKey);
+    this.db.prepare(`UPDATE ticket_tracker SET ${sets.join(', ')} WHERE ticket_key = ?`).run(...vals);
+  }
+
+  upsertTcTracker(ticketKey: string, tcId: string, fields: {
+    phase?: string;
+    lastStep?: number;
+    lastStepStatus?: string;
+    verdict?: string;
+    notes?: string;
+  }): void {
+    const existing = this.db.prepare(`SELECT ticket_key FROM tc_tracker WHERE ticket_key = ? AND tc_id = ?`).get(ticketKey, tcId);
+    if (!existing) {
+      this.db.prepare(
+        `INSERT INTO tc_tracker (ticket_key, tc_id, phase, last_step, last_step_status, verdict, notes)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      ).run(
+        ticketKey, tcId,
+        fields.phase || 'queued',
+        fields.lastStep ?? null,
+        fields.lastStepStatus || null,
+        fields.verdict || null,
+        fields.notes || null,
+      );
+      return;
+    }
+    const sets: string[] = [];
+    const vals: any[] = [];
+    if (fields.phase !== undefined) { sets.push('phase = ?'); vals.push(fields.phase); }
+    if (fields.lastStep !== undefined) { sets.push('last_step = ?'); vals.push(fields.lastStep); }
+    if (fields.lastStepStatus !== undefined) { sets.push('last_step_status = ?'); vals.push(fields.lastStepStatus); }
+    if (fields.verdict !== undefined) { sets.push('verdict = ?'); vals.push(fields.verdict); }
+    if (fields.notes !== undefined) { sets.push('notes = ?'); vals.push(fields.notes); }
+    sets.push(`last_updated = datetime('now')`);
+    vals.push(ticketKey, tcId);
+    this.db.prepare(`UPDATE tc_tracker SET ${sets.join(', ')} WHERE ticket_key = ? AND tc_id = ?`).run(...vals);
+  }
+
+  getTcTrackers(ticketKey?: string): Array<{
+    ticketKey: string;
+    tcId: string;
+    phase: string;
+    lastStep: number | null;
+    lastStepStatus: string | null;
+    verdict: string | null;
+    lastUpdated: string;
+    notes: string | null;
+  }> {
+    const sql = `SELECT ticket_key AS ticketKey, tc_id AS tcId, phase,
+                        last_step AS lastStep, last_step_status AS lastStepStatus,
+                        verdict, last_updated AS lastUpdated, notes
+                 FROM tc_tracker ${ticketKey ? 'WHERE ticket_key = ?' : ''}
+                 ORDER BY ticket_key, tc_id`;
+    return (ticketKey ? this.db.prepare(sql).all(ticketKey) : this.db.prepare(sql).all()) as any;
+  }
+
+  getTicketTrackers(): Array<{
+    ticketKey: string;
+    jiraStatus: string | null;
+    jiraSummary: string | null;
+    phase: string;
+    lastStep: number | null;
+    lastStepStatus: string | null;
+    totalTcs: number | null;
+    automatedTcs: number | null;
+    lastUpdated: string;
+    notes: string | null;
+  }> {
+    return this.db.prepare(
+      `SELECT ticket_key AS ticketKey, jira_status AS jiraStatus, jira_summary AS jiraSummary,
+              phase, last_step AS lastStep, last_step_status AS lastStepStatus,
+              total_tcs AS totalTcs, automated_tcs AS automatedTcs,
+              last_updated AS lastUpdated, notes
+       FROM ticket_tracker ORDER BY last_updated DESC`
+    ).all() as any;
+  }
+
+  getTicketsByPhase(phase: string): string[] {
+    return (this.db.prepare(
+      `SELECT ticket_key FROM ticket_tracker WHERE phase = ? ORDER BY last_updated ASC`
+    ).all(phase) as Array<{ ticket_key: string }>).map(r => r.ticket_key);
+  }
+
+  getTicketsByPhases(phases: string[]): string[] {
+    if (phases.length === 0) return [];
+    const placeholders = phases.map(() => '?').join(', ');
+    return (this.db.prepare(
+      `SELECT ticket_key FROM ticket_tracker WHERE phase IN (${placeholders}) ORDER BY last_updated ASC`
+    ).all(...phases) as Array<{ ticket_key: string }>).map(r => r.ticket_key);
+  }
+
+  getTicketTracker(ticketKey: string): { phase: string; lastStep: number | null; lastStepStatus: string | null } | undefined {
+    return this.db.prepare(
+      `SELECT phase, last_step AS lastStep, last_step_status AS lastStepStatus FROM ticket_tracker WHERE ticket_key = ?`
+    ).get(ticketKey) as any;
+  }
+
+  getRunDurationStatsByTicket(): Map<string, { longestMs: number; lastMs: number }> {
+    const rows = this.db.prepare(
+      `SELECT ticket_key AS ticketKey,
+              MAX(duration_ms) AS longestMs,
+              (SELECT duration_ms FROM pipeline_runs r2
+               WHERE r2.ticket_key = r1.ticket_key AND r2.duration_ms IS NOT NULL
+               ORDER BY r2.id DESC LIMIT 1) AS lastMs
+       FROM pipeline_runs r1
+       WHERE ticket_key IS NOT NULL AND duration_ms IS NOT NULL
+       GROUP BY ticket_key`
+    ).all() as Array<{ ticketKey: string; longestMs: number | null; lastMs: number | null }>;
+    const out = new Map<string, { longestMs: number; lastMs: number }>();
+    for (const r of rows) {
+      if (r.longestMs == null || r.lastMs == null) continue;
+      out.set(r.ticketKey, { longestMs: r.longestMs, lastMs: r.lastMs });
+    }
+    return out;
   }
 
   cleanupStaleRuns(): void {

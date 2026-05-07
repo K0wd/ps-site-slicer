@@ -21,8 +21,9 @@
 set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$PROJECT_DIR/../../../.." && pwd)"
 LOGS_DIR="$PROJECT_DIR/logs"
-RULES_FILE="$PROJECT_DIR/rules/jira-ticket-creation.md"
+RULES_FILE="$REPO_ROOT/.claude-self/rules/jira-ticket-creation.md"
 TEMPLATE_FILE="$PROJECT_DIR/template.html"
 
 [ $# -ge 1 ] || { echo "Usage: $0 \"<brief ticket details>\" [--- \"<another ticket>\"] ..."; exit 1; }

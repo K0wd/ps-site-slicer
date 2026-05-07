@@ -1,15 +1,33 @@
+import { writeFileSync } from 'fs';
+import { resolve } from 'path';
 import type { Database } from '../data/Database.js';
 import type { Config } from '../config/Config.js';
 import type { StoryLogger } from '../logger/StoryLogger.js';
 import type { JiraService } from '../../services/JiraService.js';
 import type { ClaudeService } from '../../services/ClaudeService.js';
 import type { GitService } from '../../services/GitService.js';
+import type { GitLabService } from '../../services/GitLabService.js';
 import type { PlaywrightService } from '../../services/PlaywrightService.js';
 import type { ContextBuilder } from '../../services/ContextBuilder.js';
 import type { StepStatus, ArtifactType } from '../data/models.js';
 
+// Maps step number + status → tracker phase.
+// Any 'fail' status → 'blocked'. Step 2 is handled inside Step02FindTicket itself.
+const PHASE_MAP: Record<number, { pass: string; warn?: string }> = {
+  3: { pass: 'info_gathered' },
+  4: { pass: 'code_reviewed' },
+  5: { pass: 'plan_drafted' },
+  6: { pass: 'gherkin_done' },
+  7: { pass: 'fully_automated', warn: 'impl_partial' },
+  8: { pass: 'tests_executed' },
+  9: { pass: 'results_determined' },
+  10: { pass: 'results_posted' },
+  11: { pass: 'ticket_transitioned' },
+};
+
 export interface StepContext {
   ticketKey: string | null;
+  tcId?: string | null;
   runId: number;
   stepResultId: number;
   projectDir: string;
@@ -18,6 +36,7 @@ export interface StepContext {
     jira: JiraService;
     claude: ClaudeService;
     git: GitService;
+    gitlab: GitLabService;
     playwright: PlaywrightService;
     context: ContextBuilder;
   };
@@ -25,7 +44,7 @@ export interface StepContext {
   logger: StoryLogger;
   emitSSE: (event: string, data: unknown) => void;
   signal?: AbortSignal;
-  options?: { parallel?: boolean; debugHeal?: boolean };
+  options?: { parallel?: boolean; debugHeal?: boolean; runAll?: boolean; testTypes?: Array<'ui' | 'api' | 'unit'> };
   runPrerequisite?: (stepNumber: number) => Promise<StepOutput>;
 }
 
@@ -67,6 +86,9 @@ export abstract class Step {
         undefined
       );
 
+      this.writeReviewArtifact(ctx, output, durationMs);
+      this.updateTracker(ctx, output);
+
       this.log(`Step ${this.stepNumber} finished: ${output.status} — ${output.message} (${this.formatDuration(durationMs)})`);
 
       return output;
@@ -77,6 +99,9 @@ export abstract class Step {
 
       ctx.db.finishStepResult(ctx.stepResultId, 'fail', errorMsg, durationMs, undefined, errorStack);
 
+      this.writeReviewArtifact(ctx, { status: 'fail', message: errorMsg, artifacts: [] }, durationMs);
+      this.updateTracker(ctx, { status: 'fail', message: errorMsg, artifacts: [] });
+
       this.log(`Step ${this.stepNumber} FAILED: ${errorMsg}`);
 
       return {
@@ -84,6 +109,84 @@ export abstract class Step {
         message: errorMsg,
         artifacts: [],
       };
+    }
+  }
+
+  private writeReviewArtifact(ctx: StepContext, output: StepOutput, durationMs: number): void {
+    if (!ctx.ticketKey) return;
+    try {
+      const ticketDir = ctx.logger.initTicket(ctx.ticketKey);
+      const tcSuffix = ctx.tcId ? `_${ctx.tcId}` : '';
+      const reviewPath = resolve(ticketDir, `step${this.stepNumber}_review${tcSuffix}.md`);
+      const lines: string[] = [];
+      lines.push(`# Step ${this.stepNumber} — ${this.stepName}${ctx.tcId ? ` (${ctx.tcId})` : ''}`);
+      lines.push('');
+      lines.push(`- **Ticket:** ${ctx.ticketKey}`);
+      if (ctx.tcId) lines.push(`- **TC:** ${ctx.tcId}`);
+      lines.push(`- **Status:** ${output.status.toUpperCase()}`);
+      lines.push(`- **Duration:** ${this.formatDuration(durationMs)}`);
+      lines.push(`- **Generated:** ${new Date().toISOString()}`);
+      lines.push('');
+      lines.push('## Outcome');
+      lines.push('');
+      lines.push(output.message || '(no message)');
+      if (output.artifacts.length > 0) {
+        lines.push('');
+        lines.push('## Artifacts');
+        lines.push('');
+        for (const a of output.artifacts) {
+          lines.push(`- ${a.name} — \`${a.path}\``);
+        }
+      }
+      if (output.status === 'fail' || output.status === 'warn') {
+        lines.push('');
+        lines.push('## Flags');
+        lines.push('');
+        lines.push(`- ${output.status === 'fail' ? '🔴 BLOCKED' : '🟡 PARTIAL'} — review the outcome above and decide whether to retry, edit inputs, or escalate.`);
+      }
+      writeFileSync(reviewPath, lines.join('\n') + '\n', 'utf-8');
+    } catch {
+      // best-effort — never fail a step because the review file couldn't be written
+    }
+  }
+
+  private updateTracker(ctx: StepContext, output: StepOutput): void {
+    if (!ctx.ticketKey) return;
+    if (this.stepNumber === 2) return;  // Step02 manages its own tracker rows for the discovery list
+    try {
+      const mapping = PHASE_MAP[this.stepNumber];
+      let phase: string | undefined;
+      if (output.status === 'fail') phase = 'blocked';
+      else if (output.status === 'pass') phase = mapping?.pass;
+      else if (output.status === 'warn') phase = mapping?.warn ?? mapping?.pass;
+
+      // In per-TC mode, write to tc_tracker scoped to the TC; also update the ticket-level last_step.
+      if (ctx.tcId) {
+        ctx.db.upsertTcTracker(ctx.ticketKey, ctx.tcId, {
+          phase,
+          lastStep: this.stepNumber,
+          lastStepStatus: output.status,
+          verdict: typeof output.data?.verdict === 'string' ? output.data.verdict as string : undefined,
+        });
+        ctx.db.upsertTicketTracker(ctx.ticketKey, {
+          lastStep: this.stepNumber,
+          lastStepStatus: output.status,
+        });
+        return;
+      }
+
+      const totalTcs = typeof output.data?.totalTCs === 'number' ? output.data.totalTCs as number : undefined;
+      const automatedTcs = typeof output.data?.passCount === 'number' ? output.data.passCount as number : undefined;
+
+      ctx.db.upsertTicketTracker(ctx.ticketKey, {
+        phase,
+        lastStep: this.stepNumber,
+        lastStepStatus: output.status,
+        totalTcs,
+        automatedTcs,
+      });
+    } catch {
+      // best-effort — never fail a step because tracker write failed
     }
   }
 

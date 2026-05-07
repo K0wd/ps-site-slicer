@@ -5,7 +5,7 @@ const STEPS = [
   { number: 4,  name: 'Review Code' },
   { number: 5,  name: 'Draft Test Plan' },
   { number: 6,  name: 'Write Gherkin Steps' },
-  { number: 7,  name: 'Write Automated Tests' },
+  { number: 7,  name: 'Implement Gherkin Steps' },
   { number: 8,  name: 'Execute Tests' },
   { number: 9,  name: 'Determine Results' },
   { number: 10, name: 'Post Results' },
@@ -16,6 +16,13 @@ const STEPS = [
   { number: 104, name: 'Decalcification' },
   { number: 105, name: 'App Scraper' },
 ];
+
+const THREAD_LABELS = {
+  T1: 'Bootstrap — Steps 1-2 (always runs first)',
+  T2: 'Info Gathering — Steps 3-6',
+  T3: 'Implementation Loop — Steps 7-8 (loops until all TCs pass)',
+  T4: 'Finalization — Steps 9-10 (post results to ticket)',
+};
 
 const state = {
   steps: STEPS.map(s => ({ ...s, status: 'idle', duration: null, message: null })),
@@ -28,8 +35,12 @@ const state = {
   jiraBaseUrl: null,
   schedules: [],
   schedModalStep: null,
-  parallelMode: { 6: true, 7: false },
+  parallelMode: { 6: false, 7: false },
   debugHeal: false,
+  runAllMode: { 102: false },
+  testTypes: { 7: ['ui'] },
+  activeThreads: { T2: true, T3: true, T4: true }, // T1 is always on
+  parallelDots: {}, // { stepNumber: [{ tcId, status }] } — live per-TC slot status for parallel step 6
   stepHistory: {},
 };
 
@@ -73,6 +84,7 @@ function renderGridSection(container, steps) {
         <span class="step-number">${step.number >= 100 ? 'ENG' : 'STEP'} ${String(step.number).padStart(step.number >= 100 ? 3 : 2, '0')}</span>
         <div class="status-indicator">
           ${hasSchedule ? '<span class="sched-badge" title="Scheduled">&#128337;</span>' : ''}
+          ${step.number === 6 && state.parallelMode[6] && (state.parallelDots[6] || []).length > 0 ? `<div class="parallel-indicators">${(state.parallelDots[6] || []).map(d => `<span class="pdot pdot-${d.status}" title="${d.tcId}: ${d.status}"></span>`).join('')}</div>` : ''}
           <span class="status-dot ${step.status}"></span>
           ${step.status !== 'idle' ? `<span class="status-label ${step.status}">${step.status.toUpperCase()}</span>` : ''}
         </div>
@@ -83,11 +95,24 @@ function renderGridSection(container, steps) {
       ).join('')}</div>
       <div class="step-footer">
         <span class="step-duration">${step.duration || ''}</span>
-        <div class="step-actions">
-          ${(step.number === 6 || step.number === 7) ? `<button class="step-parallel-btn ${state.parallelMode[step.number] ? 'active' : ''}" data-step="${step.number}" title="${state.parallelMode[step.number] ? 'Parallel' : 'Sequential'}">${state.parallelMode[step.number] ? '&#8782;' : '&#8801;'}</button>` : ''}
+        <div class="step-actions-left">
+          ${step.number === 1 ? ['T1', 'T2', 'T3', 'T4'].map(t => {
+            const locked = t === 'T1';
+            const active = locked || state.activeThreads[t];
+            return `<button class="step-type-btn thread-btn thread-${t}${active ? ' active' : ''}${locked ? ' locked' : ''}" data-step="1" data-thread="${t}" title="${THREAD_LABELS[t]}">${t}</button>`;
+          }).join('') : ''}
+          ${step.number === 7 ? ['ui', 'api', 'unit'].map(t => {
+            const active = (state.testTypes[7] || ['ui']).includes(t);
+            return `<button class="step-type-btn type-${t}${active ? ' active' : ''}" data-step="7" data-type="${t}" title="${t.toUpperCase()} tests${active ? ' (on)' : ' (off)'}">${t.toUpperCase()}</button>`;
+          }).join('') : ''}
+          ${step.number === 6 ? `<button class="step-parallel-btn step-parallel-btn-text ${state.parallelMode[6] ? 'active' : ''}" data-step="6" title="${state.parallelMode[6] ? 'Parallel — TCs run concurrently' : 'Sequential — TCs run one at a time (click to enable parallel)'}">parallel</button>` : ''}
+          ${step.number === 7 ? `<button class="step-parallel-btn ${state.parallelMode[7] ? 'active' : ''}" data-step="7" title="${state.parallelMode[7] ? 'Parallel' : 'Sequential'}">${state.parallelMode[7] ? '&#8782;' : '&#8801;'}</button>` : ''}
+          ${step.number === 102 ? `<button class="step-runall-btn ${state.runAllMode[102] ? 'active' : ''}" data-step="102" title="${state.runAllMode[102] ? 'Run all: continue past failures, post one consolidated KB-3 comment' : 'Stop on first fail: per-test KB-3 comments (default)'}">All</button>` : ''}
           ${step.number === 103 ? `<button class="step-debug-btn ${state.debugHeal ? 'active' : ''}" data-step="103" title="${state.debugHeal ? 'Debug: step-by-step' : 'Debug: off'}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M4 12h2m12 0h2M12 4v2m0 12v2"/></svg>
           </button>` : ''}
+        </div>
+        <div class="step-actions">
           <button class="step-sched-btn" data-step="${step.number}" title="Schedule">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </button>
@@ -138,6 +163,46 @@ function renderGridSection(container, steps) {
       state.debugHeal = !state.debugHeal;
       renderGrid();
       appendLog({ timestamp: now(), stepNumber: 103, level: 'info', message: `Heal debug: ${state.debugHeal ? 'ON — step-by-step (test → fix → verify)' : 'OFF — full heal'}` });
+    });
+  });
+
+  container.querySelectorAll('.step-runall-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const stepNum = parseInt(btn.dataset.step);
+      state.runAllMode[stepNum] = !state.runAllMode[stepNum];
+      renderGrid();
+      appendLog({ timestamp: now(), stepNumber: stepNum, level: 'info', message: `Step ${stepNum}: Run-all ${state.runAllMode[stepNum] ? 'ON — one consolidated KB-3 comment' : 'OFF — per-test KB-3 comments, stop on first fail'}` });
+    });
+  });
+
+  container.querySelectorAll('.step-type-btn:not(.thread-btn)').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const stepNum = parseInt(btn.dataset.step);
+      const type = btn.dataset.type;
+      const current = state.testTypes[stepNum] || ['ui'];
+      const idx = current.indexOf(type);
+      if (idx >= 0) {
+        if (current.length > 1) state.testTypes[stepNum] = current.filter(t => t !== type);
+      } else {
+        state.testTypes[stepNum] = [...current, type];
+      }
+      renderGrid();
+      appendLog({ timestamp: now(), stepNumber: stepNum, level: 'info', message: `Step ${stepNum}: test types → ${state.testTypes[stepNum].join(', ')}` });
+    });
+  });
+
+  container.querySelectorAll('.thread-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const thread = btn.dataset.thread;
+      if (thread === 'T1') return; // always on
+      state.activeThreads[thread] = !state.activeThreads[thread];
+      syncStepRangeFromThreads();
+      renderGrid();
+      const on = state.activeThreads[thread];
+      appendLog({ timestamp: now(), stepNumber: 1, level: 'info', message: `${thread} ${on ? 'ON' : 'OFF'} — ${THREAD_LABELS[thread]}` });
     });
   });
 
@@ -431,7 +496,17 @@ $$('.tab').forEach(tab => {
   });
 });
 
-clearLogsBtn.addEventListener('click', () => { logOutput.innerHTML = ''; });
+clearLogsBtn.addEventListener('click', () => {
+  logOutput.innerHTML = '';
+  for (const step of state.steps) {
+    if (state.running && step.status === 'running') continue;
+    step.status = 'idle';
+    step.duration = null;
+    step.message = null;
+  }
+  if (!state.running) state.runningStep = null;
+  renderGrid();
+});
 
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.step-card')) {
@@ -572,6 +647,8 @@ async function runStep(stepNum) {
   const ticketKey = ticketInput.value.trim().toUpperCase() || undefined;
   const parallel = state.parallelMode[stepNum] ?? undefined;
   const debugHeal = stepNum === 103 ? (state.debugHeal || undefined) : undefined;
+  const runAll = stepNum === 102 ? (state.runAllMode[102] || undefined) : undefined;
+  const testTypes = stepNum === 7 ? (state.testTypes[7] || ['ui']) : undefined;
 
   // Immediately show running state
   state.running = true;
@@ -591,7 +668,7 @@ async function runStep(stepNum) {
     } else {
       await fetch(`/api/run/step/${stepNum}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticketKey, parallel, debugHeal }),
+        body: JSON.stringify({ ticketKey, parallel, debugHeal, runAll, testTypes }),
       });
     }
   } catch (e) {
@@ -604,17 +681,36 @@ async function runStep(stepNum) {
   }
 }
 
+function syncStepRangeFromThreads() {
+  const { T2, T3, T4 } = state.activeThreads;
+  if (T4)      { stepStartInput.value = '1'; stepEndInput.value = '10'; }
+  else if (T3) { stepStartInput.value = '1'; stepEndInput.value = '8'; }
+  else if (T2) { stepStartInput.value = '1'; stepEndInput.value = '6'; }
+  else         { stepStartInput.value = '1'; stepEndInput.value = '2'; }
+}
+
 async function runPipeline() {
   const ticketKey = ticketInput.value.trim().toUpperCase() || undefined;
   const filter = ticketKey ? undefined : filterSelect.value;
-  const stepStart = parseInt(stepStartInput.value);
-  const stepEnd = parseInt(stepEndInput.value);
+  const { T2, T3, T4 } = state.activeThreads;
+
   try {
-    const resp = await fetch('/api/run', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ stepStart, stepEnd, ticketKey, filter }),
-    });
-    if (resp.status === 409) {
+    let resp;
+    if (T4) {
+      // Full 4-thread concurrent mode
+      resp = await fetch('/api/run/all', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filter, parallel6: !!state.parallelMode[6] }),
+      });
+    } else {
+      // Sequential fallback: step range implied by highest active thread
+      const stepEnd = T3 ? 8 : T2 ? 6 : 2;
+      resp = await fetch('/api/run', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stepStart: 1, stepEnd, ticketKey, filter }),
+      });
+    }
+    if (resp && resp.status === 409) {
       appendLog({ timestamp: now(), level: 'warn', stepNumber: '-', message: 'Pipeline is already running' });
     }
   } catch (e) { appendLog({ timestamp: now(), level: 'error', message: `Failed: ${e.message}` }); }
@@ -988,6 +1084,9 @@ function connectSSE() {
 
   source.addEventListener('run-started', () => {
     state.running = true;
+    state.parallelDots = {};
+    runBtn.classList.remove('is-stopped');
+    runBtn.title = '';
     updateRunBtn();
     renderGrid();
   });
@@ -996,12 +1095,43 @@ function connectSSE() {
     const data = JSON.parse(e.data);
     state.running = false;
     state.runningStep = null;
+    state.parallelDots = {};
     updateRunBtn();
     const msg = data.message ? ` — ${data.message}` : '';
     appendLog({ timestamp: now(), stepNumber: '-', level: data.status === 'completed' ? 'info' : 'error',
       message: `Pipeline ${data.status}${data.durationMs ? ` (${formatDuration(data.durationMs)})` : ''}${msg}` });
     loadHistory();
     refreshStepHistory();
+  });
+
+  source.addEventListener('pipeline-stopped', (e) => {
+    const data = JSON.parse(e.data);
+    state.running = false;
+    state.runningStep = null;
+    updateRunBtn();
+    // Show a persistent banner on the run button so it's unmissable.
+    runBtn.title = `STOPPED — ${data.reason || 'pipeline error'}`;
+    runBtn.classList.add('is-stopped');
+    appendLog({ timestamp: now(), stepNumber: '-', level: 'error',
+      message: `⛔ PIPELINE STOPPED — ${data.reason === 'bddgen-failed' ? 'bddgen failed on ' + data.ticket + '. Fix the feature file and re-run.' : data.reason}` });
+  });
+
+  // Parallel TC dots — batch reset (all slots → running)
+  source.addEventListener('tc-parallel-batch', (e) => {
+    const { stepNumber, tcIds } = JSON.parse(e.data);
+    state.parallelDots[stepNumber] = tcIds.map(tcId => ({ tcId, status: 'running' }));
+    renderGrid();
+  });
+
+  // Parallel TC dots — individual slot update
+  source.addEventListener('tc-parallel-status', (e) => {
+    const { stepNumber, tcId, status } = JSON.parse(e.data);
+    const dots = state.parallelDots[stepNumber];
+    if (dots) {
+      const dot = dots.find(d => d.tcId === tcId);
+      if (dot) dot.status = status;
+      renderGrid();
+    }
   });
 
   source.addEventListener('schedule-fired', (e) => {

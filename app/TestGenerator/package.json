@@ -7,7 +7,8 @@
     "dashboard": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "kill:all": "lsof -ti :3847 | xargs kill -9 2>/dev/null; pkill -f 'tsx watch src/index.ts' 2>/dev/null; echo 'All dashboard instances killed'"
   },
   "dependencies": {
     "better-sqlite3": "^11.7.0",

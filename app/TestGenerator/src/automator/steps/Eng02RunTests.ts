@@ -2,6 +2,8 @@ import { writeFileSync, mkdirSync, existsSync, readFileSync, readdirSync } from 
 import { resolve, basename } from 'path';
 import { Step, type StepContext, type StepOutput } from '../../shared/pipeline/Step.js';
 
+type RunRecord = { tag: string; scenario: string; outcome: RunOutcome; duration: number; failedStep?: string; errorLine?: string };
+
 interface TestCaseTag {
   tag: string;
   featureFile: string;
@@ -18,8 +20,6 @@ interface TagHistory {
   outcomes: RunOutcome[];
   status: TagStatus;
   lastRun: string;
-  // True once the most-recent outcome has been posted as a KB-3 Jira comment.
-  // Reset to false on each new outcome and flipped to true when the post resolves.
   postedToKB3: boolean;
 }
 
@@ -38,9 +38,6 @@ function classify(outcomes: RunOutcome[]): TagStatus {
   return 'flaky';
 }
 
-// Playwright prints "N flaky" in its summary when a test fails on the first
-// attempt and passes on retry. Exit code is 0 in that case, so we'd otherwise
-// misclassify it as a clean pass.
 function detectFlaky(output: string): boolean {
   return /\b\d+\s+flaky\b/.test(output);
 }
@@ -53,9 +50,7 @@ export class Eng02RunTests extends Step {
   protected async execute(ctx: StepContext): Promise<StepOutput> {
     const testrunDir = resolve(ctx.projectDir, 'tests', 'testrun');
 
-    if (!existsSync(testrunDir)) {
-      mkdirSync(testrunDir, { recursive: true });
-    }
+    mkdirSync(testrunDir, { recursive: true });
 
     const summaryPath = resolve(testrunDir, 'summary.json');
     const summary = this.loadSummary(summaryPath);
@@ -68,13 +63,17 @@ export class Eng02RunTests extends Step {
       return { status: 'warn', message: 'No test case tags found', artifacts: [] };
     }
 
+    const runAll = ctx.options?.runAll ?? false;
     this.log(`Found ${testCases.length} test case(s) to run`);
+    if (runAll) this.log('Run-all mode: include stable-pass tests, continue past failures, post one consolidated KB-3 comment at end');
 
     let passed = 0;
     let flaky = 0;
     let failed = 0;
     let skipped = 0;
     let stableSkipped = 0;
+
+    const records: RunRecord[] = [];
 
     for (let i = 0; i < testCases.length; i++) {
       const tc = testCases[i];
@@ -93,23 +92,20 @@ export class Eng02RunTests extends Step {
         continue;
       }
 
-      if (summary.tags[tc.tag]?.status === 'stable-pass') {
+      if (!runAll && summary.tags[tc.tag]?.status === 'stable-pass') {
         this.log(`[${i + 1}/${testCases.length}] ${tc.tag}: skipped — stable-pass (last ${summary.tags[tc.tag].lastRun})`);
         stableSkipped++;
         continue;
       }
 
-      // ─── Report scenario info ──────────────────────────────────────────
       this.log(`━━━ [${i + 1}/${testCases.length}] ${tc.tag}: ${tc.scenarioName} ━━━`);
       this.log(`Feature: ${basename(tc.featureFile)}`);
       this.log(`Tags: ${tc.allTags.join(' ')}`);
 
-      // Report Gherkin steps
       for (const step of tc.gherkinSteps) {
         this.log(`  ${step}`, 'debug');
       }
 
-      // ─── Run test with streaming output ────────────────────────────────
       this.log(`Running: --grep "${tc.tag}" --project=chromium`);
 
       const startTime = Date.now();
@@ -118,11 +114,7 @@ export class Eng02RunTests extends Step {
       const result = await ctx.services.playwright.runTest(`${tc.tag}\\b`, (chunk) => {
         const lines = chunk.split('\n').filter(l => l.trim());
         for (const line of lines) {
-          // Strip ANSI escape codes (color/cursor) and orphaned [1A[2K cursor seqs.
-          const clean = line
-            .replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '')
-            .replace(/\[1A\[2K/g, '')
-            .trim();
+          const clean = this.stripAnsi(line).replace(/\[1A\[2K/g, '').trim();
           if (!clean) continue;
           if (clean.includes('ExperimentalWarning')) continue;
           if (clean.includes('trace-warnings')) continue;
@@ -142,11 +134,6 @@ export class Eng02RunTests extends Step {
       });
 
       const duration = Math.round((Date.now() - startTime) / 1000);
-      // Trust Playwright's exit code. Retried-but-eventually-passing tests
-      // emit "1 failed" in intermediate status lines while still exiting 0;
-      // grepping the output for "failed" misclassifies those as failures.
-      // The only failure mode the exit code misses is "No tests found" —
-      // Playwright still exits 0 in that case, so we guard against it.
       const noTestsFound = /No tests? found/i.test(result.output);
       const isFlaky = result.success && !noTestsFound && detectFlaky(result.output);
       const testPassed = result.success && !noTestsFound && !isFlaky;
@@ -155,7 +142,8 @@ export class Eng02RunTests extends Step {
         passed++;
         this.recordOutcome(summary, tc.tag, 'pass');
         this.saveSummary(summaryPath, summary);
-        this.postToKB3(ctx, summary, summaryPath, tc.tag, this.buildJiraComment(tc, 'pass', duration, summary.tags[tc.tag]));
+        await this.postToKB3(ctx, summary, summaryPath, tc.tag, this.buildJiraComment(tc, 'pass', duration, summary.tags[tc.tag]));
+        records.push({ tag: tc.tag, scenario: tc.scenarioName, outcome: 'pass', duration });
         for (const step of tc.gherkinSteps) {
           this.log(`  ✓ ${step}`);
         }
@@ -168,7 +156,8 @@ export class Eng02RunTests extends Step {
         flaky++;
         this.recordOutcome(summary, tc.tag, 'flaky');
         this.saveSummary(summaryPath, summary);
-        this.postToKB3(ctx, summary, summaryPath, tc.tag, this.buildJiraComment(tc, 'flaky', duration, summary.tags[tc.tag], result.output));
+        await this.postToKB3(ctx, summary, summaryPath, tc.tag, this.buildJiraComment(tc, 'flaky', duration, summary.tags[tc.tag], result.output));
+        records.push({ tag: tc.tag, scenario: tc.scenarioName, outcome: 'flaky', duration });
         writeFileSync(flakyFilePath, this.buildTestFile(tc, result.output), 'utf-8');
         this.log(`⚠ ${tc.tag} FLAKY — passed on retry (${duration}s)`, 'warn');
         this.log(`Wrote ${tc.tag}.flaky — pending decalcification`);
@@ -176,29 +165,47 @@ export class Eng02RunTests extends Step {
         continue;
       }
 
-      // ─── Failed — report details and stop ──────────────────────────────
       failed++;
       this.recordOutcome(summary, tc.tag, 'fail');
       this.saveSummary(summaryPath, summary);
-      this.postToKB3(ctx, summary, summaryPath, tc.tag, this.buildJiraComment(tc, 'fail', duration, summary.tags[tc.tag], result.output));
+      await this.postToKB3(ctx, summary, summaryPath, tc.tag, this.buildJiraComment(tc, 'fail', duration, summary.tags[tc.tag], result.output));
       this.log(`✗ ${tc.tag} FAILED (${duration}s)`, 'error');
 
-      // Parse and report Gherkin step results from output
-      this.reportStepResults(result.output, tc.gherkinSteps);
+      const stepAnalysis = this.analyzeStepResults(result.output, tc.gherkinSteps);
+      const failedStep = stepAnalysis.failedIdx >= 0 ? tc.gherkinSteps[stepAnalysis.failedIdx] : undefined;
+      const errorLine = stepAnalysis.errorLines[0];
+      records.push({ tag: tc.tag, scenario: tc.scenarioName, outcome: 'fail', duration, failedStep, errorLine });
+
+      this.reportStepResults(stepAnalysis, tc.gherkinSteps);
 
       writeFileSync(testFilePath, this.buildTestFile(tc, result.output), 'utf-8');
-      this.log(`Wrote ${tc.tag}.test — stopping to heal`);
 
-      const progress = this.buildProgressSummary(passed, flaky, failed, skipped, stableSkipped, testCases.length);
-      return {
-        status: 'warn',
-        message: `${tc.tag} failed — ${progress}`,
-        artifacts: [
-          { name: `${tc.tag}.test`, path: testFilePath, type: 'txt' },
-          { name: 'summary.json', path: summaryPath, type: 'txt' },
-        ],
-        data: { passed, flaky, failed, skipped, stableSkipped, total: testCases.length, failedTag: tc.tag },
-      };
+      if (!runAll) {
+        this.log(`Wrote ${tc.tag}.test — stopping to heal`);
+        const progress = this.buildProgressSummary(passed, flaky, failed, skipped, stableSkipped, testCases.length);
+        return {
+          status: 'warn',
+          message: `${tc.tag} failed — ${progress}`,
+          artifacts: [
+            { name: `${tc.tag}.test`, path: testFilePath, type: 'txt' },
+            { name: 'summary.json', path: summaryPath, type: 'txt' },
+          ],
+          data: { passed, flaky, failed, skipped, stableSkipped, total: testCases.length, failedTag: tc.tag },
+        };
+      }
+
+      this.log(`Wrote ${tc.tag}.test — continuing (run-all mode)`);
+      this.log('');
+    }
+
+    if (runAll && records.length > 0) {
+      const body = this.buildRunAllComment(records, passed, flaky, failed, skipped, stableSkipped, testCases.length);
+      ctx.services.jira.addComment('KB-3', body)
+        .then(() => this.log(`→ Posted run summary to KB-3 (${records.length} test(s))`, 'debug'))
+        .catch((err: unknown) => {
+          const msg = err instanceof Error ? err.message : String(err);
+          this.log(`Failed to post run summary to KB-3: ${msg}`, 'warn');
+        });
     }
 
     if (failed > 0 || flaky > 0 || skipped > 0) {
@@ -254,20 +261,19 @@ export class Eng02RunTests extends Step {
     };
   }
 
-  private postToKB3(ctx: StepContext, summary: SummaryFile, summaryPath: string, tag: string, body: string): void {
-    ctx.services.jira.addComment('KB-3', body)
-      .then(() => {
-        const entry = summary.tags[tag];
-        if (entry) {
-          entry.postedToKB3 = true;
-          this.saveSummary(summaryPath, summary);
-        }
-        this.log(`→ Posted ${tag} result to KB-3`, 'debug');
-      })
-      .catch((err: unknown) => {
-        const msg = err instanceof Error ? err.message : String(err);
-        this.log(`Failed to post ${tag} to KB-3: ${msg}`, 'warn');
-      });
+  private async postToKB3(ctx: StepContext, summary: SummaryFile, summaryPath: string, tag: string, body: string): Promise<void> {
+    try {
+      await ctx.services.jira.addComment('KB-3', body);
+      const entry = summary.tags[tag];
+      if (entry) {
+        entry.postedToKB3 = true;
+        this.saveSummary(summaryPath, summary);
+      }
+      this.log(`→ Posted ${tag} result to KB-3`, 'debug');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.log(`Failed to post ${tag} to KB-3: ${msg}`, 'warn');
+    }
   }
 
   private buildJiraComment(tc: TestCaseTag, outcome: RunOutcome, duration: number, history: TagHistory, errorOutput?: string): string {
@@ -315,8 +321,45 @@ export class Eng02RunTests extends Step {
     return lines.join('\n');
   }
 
-  private analyzeStepResults(output: string, gherkinSteps: string[]): { failedIdx: number; errorLines: string[] } {
-    const cleaned = output.split('\n').map(l => l.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').trim());
+  private buildRunAllComment(
+    records: Array<{ tag: string; scenario: string; outcome: RunOutcome; duration: number; failedStep?: string; errorLine?: string }>,
+    passed: number, flaky: number, failed: number, skipped: number, stableSkipped: number, total: number
+  ): string {
+    const lines: string[] = [];
+    lines.push(`Run summary — ${total} total · ${passed} passed · ${flaky} flaky · ${failed} failed${skipped ? ` · ${skipped} pending` : ''}${stableSkipped ? ` · ${stableSkipped} stable-pass skipped` : ''}`);
+    lines.push(`Run: ${new Date().toISOString()}`);
+    lines.push('');
+
+    const passList = records.filter(r => r.outcome === 'pass');
+    const flakyList = records.filter(r => r.outcome === 'flaky');
+    const failList = records.filter(r => r.outcome === 'fail');
+
+    if (passList.length > 0) {
+      lines.push(`✅ Passed (${passList.length}):`);
+      for (const r of passList) lines.push(`  • ${r.tag} — ${r.scenario} (${r.duration}s)`);
+      lines.push('');
+    }
+
+    if (flakyList.length > 0) {
+      lines.push(`⚠️ Flaky (${flakyList.length}):`);
+      for (const r of flakyList) lines.push(`  • ${r.tag} — ${r.scenario} (${r.duration}s)`);
+      lines.push('');
+    }
+
+    if (failList.length > 0) {
+      lines.push(`❌ Failed (${failList.length}):`);
+      for (const r of failList) {
+        const where = r.failedStep ? ` at "${r.failedStep}"` : '';
+        const why = r.errorLine ? ` — ${r.errorLine}` : '';
+        lines.push(`  • ${r.tag} — ${r.scenario} (${r.duration}s)${where}${why}`);
+      }
+    }
+
+    return lines.join('\n');
+  }
+
+  private analyzeStepResults(output: string, gherkinSteps: string[]): { failedIdx: number; errorLines: string[]; noTestsFound: boolean } {
+    const cleaned = output.split('\n').map(l => this.stripAnsi(l).trim());
     const cleanedJoined = cleaned.join('\n');
 
     let failedIdx = -1;
@@ -330,11 +373,11 @@ export class Eng02RunTests extends Step {
       t.includes('strict mode violation')
     ).slice(0, 12);
 
-    return { failedIdx, errorLines };
+    return { failedIdx, errorLines, noTestsFound: /No tests? found/i.test(output) };
   }
 
-  private reportStepResults(output: string, gherkinSteps: string[]): void {
-    const { failedIdx, errorLines } = this.analyzeStepResults(output, gherkinSteps);
+  private reportStepResults(analysis: { failedIdx: number; errorLines: string[]; noTestsFound: boolean }, gherkinSteps: string[]): void {
+    const { failedIdx, errorLines, noTestsFound } = analysis;
 
     for (let i = 0; i < gherkinSteps.length; i++) {
       if (failedIdx === -1)            this.log(`  ? ${gherkinSteps[i]}`, 'warn');
@@ -345,7 +388,7 @@ export class Eng02RunTests extends Step {
 
     for (const e of errorLines) this.log(`  ${e}`, 'error');
 
-    if (/No tests? found/i.test(output)) this.log('  No tests matched the grep pattern', 'error');
+    if (noTestsFound) this.log('  No tests matched the grep pattern', 'error');
   }
 
   private buildProgressSummary(passed: number, flaky: number, failed: number, skipped: number, stableSkipped: number, total: number): string {
@@ -416,7 +459,11 @@ export class Eng02RunTests extends Step {
       }
     }
 
-    return testCases.sort((a, b) => a.tag.localeCompare(b.tag));
+    return testCases.sort((a, b) => {
+      const [, ap, an] = a.tag.match(/^([A-Z]+)-(\d+)$/) ?? ['', a.tag, '0'];
+      const [, bp, bn] = b.tag.match(/^([A-Z]+)-(\d+)$/) ?? ['', b.tag, '0'];
+      return ap === bp ? Number(an) - Number(bn) : ap.localeCompare(bp);
+    });
   }
 
   private buildTestFile(tc: TestCaseTag, errorOutput: string): string {

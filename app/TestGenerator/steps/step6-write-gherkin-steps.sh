@@ -37,7 +37,7 @@ chomp_ticket_dir "$TICKET_KEY"
 TICKET_DIR="$CHOMP_TICKET_DIR"
 PLAN_FILE="$TICKET_DIR/5_plan.md"
 TESTS_DIR="$PROJECT_DIR/tests"
-RULES_DIR="$PROJECT_DIR/.claude/test-automation-expert/rules"
+RULES_DIR="$PROJECT_DIR/.claude-self/rules"
 SCRATCH_DIR="$TICKET_DIR/6_gherkin_scratch"
 
 chomp_step "6" "Write Gherkin Steps"

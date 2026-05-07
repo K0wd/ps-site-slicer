@@ -15,7 +15,7 @@ const { createServer } = await import('./server.js');
 describe('POST /api/restart', () => {
   let server: Server;
   let baseUrl: string;
-  let exitSpy: ReturnType<typeof vi.spyOn>;
+  let exitSpy: any;
   let tmp: string;
 
   beforeEach(async () => {

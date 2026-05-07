@@ -8,13 +8,9 @@ Before writing, reviewing, modifying, or planning any test-related code (feature
 2. **`rules/automation.mdc`** — Project automation conventions (structure, selectors, Gherkin, logging)
 3. **`rules/effective-rules-summary.mdc`** — Condensed QA rules (scope, navigation, assertions, exports)
 
-## Key Rules (Always Apply)
+## Project-Specific Rules
 
-- **Always double-check your work** — run tests after every code change, never assume they pass
-- **KISS principle** — simplest implementation that is clear, readable, and sufficient
-- **Use XPath selectors** from `tests/properties/*.properties.ts` — never hardcode selectors in steps
-- **Use Playwright error-context.md** page snapshots to fix broken XPaths (simpler than HTML parsing)
-- **Deterministic waits** — prefer `waitForURL`, `waitForLoadState`, visible checks over sleeps
+- **POM layer for this repo** — selectors live in `tests/properties/*.properties.ts`.
 
 ## Read On Demand (When Relevant)
 

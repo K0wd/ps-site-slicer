@@ -27,10 +27,10 @@ export class ContextBuilder {
   buildBaseContext(): string {
     const out: string[] = ['# Project Context — SiteManager\n'];
     const p = this.config.projectDir;
-    this.appendFile(resolve(p, '.claude/wiki.md'), out);
-    this.appendFile(resolve(p, '.claude/client-powerslice/wiki.md'), out);
-    this.appendFile(resolve(p, '.claude/client-powerslice/brain.md'), out);
-    this.appendFile(resolve(p, 'rules/brain.md'), out);
+    this.appendFile(resolve(p, '.claude-self/wiki.md'), out);
+    this.appendFile(resolve(p, '.claude-self/client-powerslice/wiki.md'), out);
+    this.appendFile(resolve(p, '.claude-self/client-powerslice/brain.md'), out);
+    this.appendFile(resolve(p, '.claude-self/rules/brain.md'), out);
     return out.join('\n');
   }
 
@@ -38,8 +38,8 @@ export class ContextBuilder {
     const out: string[] = [this.buildBaseContext()];
     const p = this.config.projectDir;
     out.push('\n\n# QA Expert Knowledge\n');
-    this.appendDir(resolve(p, '.claude/qa-expert'), '.md', out);
-    this.appendDir(resolve(p, '.claude/qa-expert/rules'), '.mdc', out);
+    this.appendDir(resolve(p, '.claude-self/qa-expert'), '.md', out);
+    this.appendDir(resolve(p, '.claude-self/rules'), '.mdc', out);
     return out.join('\n');
   }
 
@@ -47,11 +47,10 @@ export class ContextBuilder {
     const out: string[] = [this.buildBaseContext()];
     const p = this.config.projectDir;
     out.push('\n\n# ISTQB Test Automation References\n');
-    this.appendFile(resolve(p, '.claude/qa-expert/rules/istqb-ct-tas-test-automation-strategy-aide-context.mdc'), out);
-    this.appendFile(resolve(p, '.claude/qa-expert/rules/istqb-ctal-tae-test-automation-engineering-aide-context.mdc'), out);
+    this.appendFile(resolve(p, '.claude-self/rules/istqb-ct-tas-test-automation-strategy-aide-context.mdc'), out);
+    this.appendFile(resolve(p, '.claude-self/rules/istqb-ctal-tae-test-automation-engineering-aide-context.mdc'), out);
     out.push('\n\n# Test Automation Expert Knowledge\n');
-    this.appendDir(resolve(p, '.claude/test-automation-expert'), '.md', out);
-    this.appendDir(resolve(p, '.claude/test-automation-expert/rules'), '.mdc', out);
+    this.appendDir(resolve(p, '.claude-self/test-automation-expert'), '.md', out);
     return out.join('\n');
   }
 

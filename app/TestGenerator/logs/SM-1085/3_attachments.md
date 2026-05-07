@@ -1,4 +1,0 @@
-  - Screenshot 2026-04-08 at 3.57.03 PM.png (79491 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/30936
-  - Screenshot 2026-04-08 at 4.02.04 PM.png (41971 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/30935
-  - Screenshot 2026-04-09 at 12.13.39 PM.png (67975 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/30944
-  - Screenshot 2026-04-09 at 12.20.06 PM.png (83271 bytes) URL: https://powerslicesoftware.atlassian.net/rest/api/3/attachment/content/30945

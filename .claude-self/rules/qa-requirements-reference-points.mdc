@@ -1,0 +1,139 @@
+---
+description: Living list of cross-cutting QA concerns evaluated against every ticket during Phase 1 curation — security, error handling, performance, observability, accessibility, API contracts, and more
+alwaysApply: false
+---
+
+# QA Requirements Reference Points
+
+Every piece of test work is evaluated against this list during Phase 1 (requirements curation). For each item, the curated requirements record one of:
+
+- **Addressed** — the change covers this; the test will verify it
+- **Flagged gap** — concern applies but input doesn't address it; engineer dispositions during review
+- **Not applicable** — with a brief reason
+
+Gaps caught at Phase 1 are cheap. The same concern surfacing during Phase 4 is expensive.
+
+## Item statuses
+
+- **Active** — applied to every Phase 1 evaluation; gaps are blocking
+- **Proposed** — documented, not yet enforced; gaps are informational
+- **Deprecated** — kept for history, not applied
+
+---
+
+## Universal / Cross-cutting
+
+### Security
+
+| Reference point | Status |
+|---|---|
+| Authentication boundaries — verify authenticated and unauthenticated paths | Proposed |
+| Authorisation checks — verify denied/allowed paths for permission gates | Proposed |
+| Input validation — malformed / over-long / encoded payloads | Proposed |
+| Sensitive data handling — PII, credentials, tokens must not appear in responses, logs, or URLs | Proposed |
+
+### Error handling
+
+| Reference point | Status |
+|---|---|
+| Graceful failure modes — system fails predictably when upstream services misbehave | Proposed |
+| User-facing error messages — clear, actionable, no internal details leaked | Proposed |
+| No leaked diagnostics — stack traces, debug info, version strings must not surface to users | Proposed |
+
+### Performance
+
+| Reference point | Status |
+|---|---|
+| Latency budget per scenario — defined at authoring time, asserted in test where applicable | Proposed |
+| Behaviour under typical load — applies if change is in a hot path | Proposed |
+
+### Observability
+
+| Reference point | Status |
+|---|---|
+| Logging coverage — new events logged at appropriate levels; no PII in logs | Proposed |
+| Trace propagation — trace context preserved across service boundaries | Proposed |
+| Metrics emission — new metrics fire correctly; named consistently | Proposed |
+
+### Internationalisation
+
+| Reference point | Status |
+|---|---|
+| Locale support — works across officially supported locales | Proposed |
+| Character set handling — UTF-8 / non-Latin / RTL inputs | Proposed |
+| Date / time / timezone — renders and stores in right zone; no UTC drift | Proposed |
+
+### Backward compatibility
+
+| Reference point | Status |
+|---|---|
+| Existing-behaviour preservation — change does not break what other tests depend on | Proposed |
+| External contract stability — API contracts versioned/deprecated cleanly | Proposed |
+| Deprecation notices — phased-out items have documented sunset path | Proposed |
+
+---
+
+## UI-Specific
+
+### Accessibility (WCAG 2.1 AA)
+
+| Reference point | Status |
+|---|---|
+| Keyboard operability — every interactive element reachable/operable via keyboard | Proposed |
+| Screen reader compatibility — aria attributes correct; reading order coherent | Proposed |
+| Colour contrast — 4.5:1 text, 3:1 UI components | Proposed |
+| Focus indication — visible, meaningful, not removed by custom styling | Proposed |
+| Form labels and error association — inputs labelled; errors programmatically linked to fields | Proposed |
+| Zoom resilience — layout intact at 200%/400% zoom | Proposed |
+
+### Usability
+
+| Reference point | Status |
+|---|---|
+| Loading states — long-running operations show meaningful feedback | Proposed |
+| Empty states — first-use, no-data, no-results handled distinctly | Proposed |
+| Error states — visible recovery path when things break | Proposed |
+| Destructive-action confirmation — irreversible actions have a confirmation step | Proposed |
+
+### Browser compatibility
+
+| Reference point | Status |
+|---|---|
+| Cross-browser — Chromium / Firefox / WebKit (MS Edge channel for this project) | Proposed |
+
+---
+
+## API-Specific
+
+### Contract correctness
+
+| Reference point | Status |
+|---|---|
+| Response schema — matches published contract | Proposed |
+| Status codes — match contract; no 200s with error bodies | Proposed |
+| Error response shape — consistent envelope across endpoints | Proposed |
+
+### Behaviour
+
+| Reference point | Status |
+|---|---|
+| Rate limiting — enforced where contract says it is; correct headers returned | Proposed |
+| Idempotency — methods that claim it actually exhibit it under retry | Proposed |
+| Pagination — contract behaviour preserved; consistent across endpoints | Proposed |
+| Versioning — backward compatibility within a published version | Proposed |
+
+---
+
+## Integration / End-to-End
+
+| Reference point | Status |
+|---|---|
+| Cross-component data flow — state written at one component visible at the next | Proposed |
+| Transactional consistency — multi-step operations all-succeed or roll back cleanly | Proposed |
+| Session / auth continuity — identity preserved across component boundaries | Proposed |
+
+---
+
+## How to add items
+
+Add under the relevant section. Specify status. If retroactive (a concern that shipped as a regression), note the ticket/PR that surfaced the gap. Move deprecated items to a Deprecated section rather than deleting — rationale must survive.

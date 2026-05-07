@@ -4,16 +4,19 @@ import type { Config } from '../config/Config.js';
 
 export class StoryLogger {
   private logsDir: string;
+  private infoDir: string;
   private currentLog: string | null = null;
   private currentTicketDir: string | null = null;
 
   constructor(private config: Config) {
     this.logsDir = config.logsDir;
+    this.infoDir = config.infoDir ?? resolve(this.logsDir, 'info');
     mkdirSync(this.logsDir, { recursive: true });
+    mkdirSync(this.infoDir, { recursive: true });
   }
 
   initTicket(ticketKey: string): string {
-    this.currentTicketDir = resolve(this.logsDir, ticketKey);
+    this.currentTicketDir = resolve(this.infoDir, ticketKey);
     mkdirSync(this.currentTicketDir, { recursive: true });
     this.currentLog = resolve(this.currentTicketDir, 'story.md');
 

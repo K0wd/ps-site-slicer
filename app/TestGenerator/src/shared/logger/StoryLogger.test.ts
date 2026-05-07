@@ -19,7 +19,7 @@ describe('StoryLogger', () => {
 
   it('initTicket creates the ticket dir and story.md with header', () => {
     const dir = logger.initTicket('SM-100');
-    expect(dir).toBe(resolve(logsDir, 'SM-100'));
+    expect(dir).toBe(resolve(logsDir, 'info', 'SM-100'));
     const story = resolve(dir, 'story.md');
     expect(existsSync(story)).toBe(true);
     const content = readFileSync(story, 'utf-8');
@@ -29,7 +29,7 @@ describe('StoryLogger', () => {
 
   it('initTicket is idempotent — does not overwrite existing story.md', () => {
     logger.initTicket('SM-100');
-    const story = resolve(logsDir, 'SM-100', 'story.md');
+    const story = resolve(logsDir, 'info', 'SM-100', 'story.md');
     const original = readFileSync(story, 'utf-8');
     logger.initTicket('SM-100');
     expect(readFileSync(story, 'utf-8')).toBe(original);
@@ -38,7 +38,7 @@ describe('StoryLogger', () => {
   it('ticketDir reflects current ticket', () => {
     expect(logger.ticketDir).toBeNull();
     logger.initTicket('SM-200');
-    expect(logger.ticketDir).toBe(resolve(logsDir, 'SM-200'));
+    expect(logger.ticketDir).toBe(resolve(logsDir, 'info', 'SM-200'));
   });
 
   it('logStep, logInfo, logResult, logCode all append to current story', () => {
@@ -47,7 +47,7 @@ describe('StoryLogger', () => {
     logger.logInfo('found ticket');
     logger.logResult('PASS', 'all green');
     logger.logCode('snippet', 'console.log(1)');
-    const content = readFileSync(resolve(logsDir, 'SM-300', 'story.md'), 'utf-8');
+    const content = readFileSync(resolve(logsDir, 'info', 'SM-300', 'story.md'), 'utf-8');
     expect(content).toMatch(/## Step 1 — Verify Auth/);
     expect(content).toMatch(/- found ticket/);
     expect(content).toMatch(/\*\*PASS\*\* — all green/);
@@ -67,8 +67,8 @@ describe('StoryLogger', () => {
     logger.logInfo('a-info');
     logger.initTicket('SM-B');
     logger.logInfo('b-info');
-    const aContent = readFileSync(resolve(logsDir, 'SM-A', 'story.md'), 'utf-8');
-    const bContent = readFileSync(resolve(logsDir, 'SM-B', 'story.md'), 'utf-8');
+    const aContent = readFileSync(resolve(logsDir, 'info', 'SM-A', 'story.md'), 'utf-8');
+    const bContent = readFileSync(resolve(logsDir, 'info', 'SM-B', 'story.md'), 'utf-8');
     expect(aContent).toContain('a-info');
     expect(aContent).not.toContain('b-info');
     expect(bContent).toContain('b-info');

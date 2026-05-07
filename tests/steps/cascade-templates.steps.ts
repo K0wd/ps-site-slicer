@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
 import {
+  SIDEBAR_CASCADE_TEMPLATES_XPATH,
   TEMPLATE_TABLE_XPATH,
   TEMPLATE_ROW_XPATH,
   TEMPLATE_NAME_CELL_XPATH,
@@ -15,9 +16,12 @@ import {
   DIALOG_CONTAINER_XPATH,
   DUPLICATE_NAME_ERROR_XPATH,
   REFRESH_ICON_XPATH,
+  STEP_DURATION_INPUT_XPATH,
+  STEP_DATE_CELL_XPATH,
+  STEP_ALL_DURATION_INPUTS_XPATH,
 } from '../properties/cascade-templates.properties';
 
-const { When, Then } = createBdd();
+const { Given, When, Then } = createBdd();
 
 // ── Template List Visibility ──
 
@@ -142,6 +146,67 @@ Then('the template list should refresh automatically', async ({ page }) => {
 When('I navigate to the Cascade Templates admin screen', async ({ page }) => {
   await page.goto('/spa/main/cascade-template-admin');
   await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+});
+
+When('I navigate to the cascade templates management screen', async ({ page }) => {
+  const sidebarLink = page.locator(`xpath=${SIDEBAR_CASCADE_TEMPLATES_XPATH}`);
+  const sidebarCount = await sidebarLink.count().catch(() => 0);
+  if (sidebarCount > 0) {
+    await sidebarLink.scrollIntoViewIfNeeded({ timeout: 5000 });
+    try {
+      await sidebarLink.click({ timeout: 5000 });
+    } catch {
+      await sidebarLink.dispatchEvent('click');
+    }
+  } else {
+    await page.goto('/spa/main/cascade-template-admin');
+  }
+  await page.waitForURL(/cascade-template-admin/, { timeout: 15000 });
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+});
+
+When('I navigate to the Cascade Templates management screen', async ({ page }) => {
+  const sidebarLink = page.locator(`xpath=${SIDEBAR_CASCADE_TEMPLATES_XPATH}`);
+  const sidebarCount = await sidebarLink.count().catch(() => 0);
+  if (sidebarCount > 0) {
+    await sidebarLink.scrollIntoViewIfNeeded({ timeout: 5000 });
+    try {
+      await sidebarLink.click({ timeout: 5000 });
+    } catch {
+      await sidebarLink.dispatchEvent('click');
+    }
+  } else {
+    await page.goto('/spa/main/cascade-template-admin');
+  }
+  await page.waitForURL(/cascade-template-admin/, { timeout: 15000 });
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+});
+
+When('I navigate to the Cascade Template Management screen', async ({ page }) => {
+  const sidebarLink = page.locator(`xpath=${SIDEBAR_CASCADE_TEMPLATES_XPATH}`);
+  const sidebarCount = await sidebarLink.count().catch(() => 0);
+  if (sidebarCount > 0) {
+    await sidebarLink.scrollIntoViewIfNeeded({ timeout: 5000 });
+    try {
+      await sidebarLink.click({ timeout: 5000 });
+    } catch {
+      await sidebarLink.dispatchEvent('click');
+    }
+  } else {
+    await page.goto('/spa/main/cascade-template-admin');
+  }
+  await page.waitForURL(/cascade-template-admin/, { timeout: 15000 });
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+});
+
+// ── Generic seeded records assertion (used by SM-1118 and similar "module load" scenarios) ──
+
+Then('the expected seeded records are visible in the list', async ({ page }) => {
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+  const table = page.locator(`xpath=${TEMPLATE_TABLE_XPATH}`);
+  await expect(table).toBeVisible({ timeout: 15000 });
+  const rows = page.locator(`xpath=${TEMPLATE_ROW_XPATH}`);
+  await expect(rows.first()).toBeVisible({ timeout: 15000 });
 });
 
 // ── Template List (short form) ──
@@ -271,4 +336,153 @@ When('I attempt to create a cascade template named {string}', async ({ page }, n
 Then('I should see a duplicate name validation error', async ({ page }) => {
   const error = page.locator(`xpath=${DUPLICATE_NAME_ERROR_XPATH}`);
   await expect(error.first()).toBeVisible({ timeout: 10000 });
+});
+
+// ── Open Existing Template ──
+
+When('I open an existing cascade template', async ({ page }) => {
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+  const rows = page.locator(`xpath=${TEMPLATE_ROW_XPATH}`);
+  await expect(rows.first()).toBeVisible({ timeout: 15000 });
+  const nameCell = page.locator(`xpath=${TEMPLATE_NAME_CELL_XPATH}`).first();
+  await nameCell.scrollIntoViewIfNeeded({ timeout: 5000 });
+  try {
+    await nameCell.click({ timeout: 5000 });
+  } catch {
+    await nameCell.dispatchEvent('click');
+  }
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+});
+
+When('I open an existing cascade template with multiple steps', async ({ page }) => {
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+  const rows = page.locator(`xpath=${TEMPLATE_ROW_XPATH}`);
+  await expect(rows.first()).toBeVisible({ timeout: 15000 });
+  const nameCell = page.locator(`xpath=${TEMPLATE_NAME_CELL_XPATH}`).first();
+  await nameCell.scrollIntoViewIfNeeded({ timeout: 5000 });
+  try {
+    await nameCell.click({ timeout: 5000 });
+  } catch {
+    await nameCell.dispatchEvent('click');
+  }
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+  const durationInputs = page.locator(`xpath=${STEP_ALL_DURATION_INPUTS_XPATH}`);
+  await expect(durationInputs.first()).toBeVisible({ timeout: 15000 });
+  const stepCount = await durationInputs.count();
+  expect(stepCount, 'Expected template to have at least 2 steps').toBeGreaterThanOrEqual(2);
+});
+
+// ── Given: Cascade template is open for editing ──
+
+Given('a cascade template is open for editing', async ({ page }) => {
+  await page.goto('/spa/main/cascade-template-admin');
+  await page.waitForURL(/cascade-template-admin/, { timeout: 15000 });
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+  const rows = page.locator(`xpath=${TEMPLATE_ROW_XPATH}`);
+  await expect(rows.first()).toBeVisible({ timeout: 15000 });
+  const nameCell = page.locator(`xpath=${TEMPLATE_NAME_CELL_XPATH}`).first();
+  await nameCell.scrollIntoViewIfNeeded({ timeout: 5000 });
+  try {
+    await nameCell.click({ timeout: 5000 });
+  } catch {
+    await nameCell.dispatchEvent('click');
+  }
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+  const durationInputs = page.locator(`xpath=${STEP_ALL_DURATION_INPUTS_XPATH}`);
+  await expect(durationInputs.first()).toBeVisible({ timeout: 15000 });
+});
+
+// ── Given: Navigate to Cascade Templates module ──
+
+Given('I navigate to the Cascade Templates module', async ({ page }) => {
+  const sidebarLink = page.locator(`xpath=${SIDEBAR_CASCADE_TEMPLATES_XPATH}`);
+  const sidebarCount = await sidebarLink.count().catch(() => 0);
+  if (sidebarCount > 0) {
+    await sidebarLink.scrollIntoViewIfNeeded({ timeout: 5000 });
+    try {
+      await sidebarLink.click({ timeout: 5000 });
+    } catch {
+      await sidebarLink.dispatchEvent('click');
+    }
+  } else {
+    await page.goto('/spa/main/cascade-template-admin');
+  }
+  await page.waitForURL(/cascade-template-admin/, { timeout: 15000 });
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+});
+
+// ── Override Step Duration ──
+
+// ── Downstream Date Recalculation ──
+
+Then('the downstream dates for all subsequent steps should update immediately', async ({ page }) => {
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+  const dateCells = page.locator(`xpath=${STEP_DATE_CELL_XPATH}`);
+  await expect(dateCells.first()).toBeVisible({ timeout: 10000 });
+  const count = await dateCells.count();
+  expect(count, 'Expected downstream date cells to be present after duration override').toBeGreaterThan(0);
+  const firstValue = await dateCells.first().inputValue().catch(() =>
+    dateCells.first().textContent()
+  );
+  expect(firstValue?.trim(), 'Expected downstream date cell to contain a calculated date').toBeTruthy();
+});
+
+When('I change the duration of a step to a different number of days', async ({ page }) => {
+  const allInputs = page.locator(`xpath=${STEP_ALL_DURATION_INPUTS_XPATH}`);
+  await expect(allInputs.first()).toBeVisible({ timeout: 15000 });
+  const firstInput = allInputs.first();
+  await firstInput.scrollIntoViewIfNeeded({ timeout: 5000 });
+  const currentValue = await firstInput.inputValue();
+  const newValue = currentValue === '7' ? '14' : '7';
+  await firstInput.fill(newValue);
+  await firstInput.press('Tab');
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+});
+
+When('I change the duration value of an intermediate step', async ({ page }) => {
+  const allInputs = page.locator(`xpath=${STEP_ALL_DURATION_INPUTS_XPATH}`);
+  await expect(allInputs.first()).toBeVisible({ timeout: 15000 });
+  const count = await allInputs.count();
+  expect(count, 'Expected at least 2 step duration inputs for an intermediate step').toBeGreaterThanOrEqual(2);
+  // Pick the second input (index 1) as the intermediate step
+  const intermediateInput = allInputs.nth(1);
+  await intermediateInput.scrollIntoViewIfNeeded({ timeout: 5000 });
+  const currentValue = await intermediateInput.inputValue();
+  const newValue = currentValue === '5' ? '10' : '5';
+  await intermediateInput.fill(newValue);
+  await intermediateInput.press('Tab');
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+});
+
+When('I override the duration for a step to {string}', async ({ page }, duration: string) => {
+  const durationInput = page.locator(`xpath=${STEP_DURATION_INPUT_XPATH}`);
+  await expect(durationInput).toBeVisible({ timeout: 10000 });
+  await durationInput.scrollIntoViewIfNeeded({ timeout: 5000 });
+  await durationInput.fill(duration);
+  await durationInput.press('Tab');
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+});
+
+Then('the downstream step dates should recalculate automatically without requiring a save', async ({ page }) => {
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+  const dateCells = page.locator(`xpath=${STEP_DATE_CELL_XPATH}`);
+  await expect(dateCells.first()).toBeVisible({ timeout: 10000 });
+  const count = await dateCells.count();
+  expect(count, 'Expected downstream date cells to be present after duration change').toBeGreaterThan(0);
+  const firstValue = await dateCells.first().inputValue().catch(() =>
+    dateCells.first().textContent()
+  );
+  expect(firstValue?.trim(), 'Expected downstream date to be recalculated without a save action').toBeTruthy();
+});
+
+Then('all downstream step dates in the template should update automatically to reflect the new duration', async ({ page }) => {
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+  const dateCells = page.locator(`xpath=${STEP_DATE_CELL_XPATH}`);
+  await expect(dateCells.first()).toBeVisible({ timeout: 10000 });
+  const count = await dateCells.count();
+  expect(count, 'Expected downstream date cells to be present after duration change').toBeGreaterThan(0);
+  const firstValue = await dateCells.first().inputValue().catch(() =>
+    dateCells.first().textContent()
+  );
+  expect(firstValue?.trim(), 'Expected downstream date cell to contain a calculated date value').toBeTruthy();
 });

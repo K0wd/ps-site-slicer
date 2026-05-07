@@ -1,5 +1,7 @@
 import type { Config } from '../shared/config/Config.js';
 
+export interface JiraAttachment { id: string; filename: string; }
+
 export class JiraService {
   private authHeader: string;
   private baseApiUrl: string;
@@ -69,14 +71,33 @@ export class JiraService {
     return this.request('GET', `issue/${issueKey}/comment`);
   }
 
-  async addComment(issueKey: string, bodyText: string): Promise<any> {
-    const contentBlocks = bodyText.split('\n').map(line => ({
+  async addComment(issueKey: string, bodyText: string, inlineImages?: JiraAttachment[]): Promise<any> {
+    const content: any[] = bodyText.split('\n').map(line => ({
       type: 'paragraph',
       content: [{ type: 'text', text: line.trim() || ' ' }],
     }));
 
+    if (inlineImages && inlineImages.length > 0) {
+      content.push({
+        type: 'heading',
+        attrs: { level: 3 },
+        content: [{ type: 'text', text: 'Test Evidence' }],
+      });
+      for (const img of inlineImages) {
+        content.push({
+          type: 'paragraph',
+          content: [{ type: 'text', text: img.filename, marks: [{ type: 'code' }] }],
+        });
+        content.push({
+          type: 'mediaSingle',
+          attrs: { layout: 'center' },
+          content: [{ type: 'media', attrs: { id: img.id, type: 'file', collection: '' } }],
+        });
+      }
+    }
+
     return this.request('POST', `issue/${issueKey}/comment`, {
-      body: { type: 'doc', version: 1, content: contentBlocks },
+      body: { type: 'doc', version: 1, content },
     });
   }
 
@@ -102,6 +123,25 @@ export class JiraService {
   async getAttachments(issueKey: string): Promise<any[]> {
     const result = await this.request('GET', `issue/${issueKey}?fields=attachment`);
     return result.fields?.attachment || [];
+  }
+
+  // Download a Jira attachment to disk. The attachment `content` URL requires the same
+  // Basic auth as the API (it's not anonymous), and goes to the wiki host, not /rest/api/3.
+  async downloadAttachment(contentUrl: string, destPath: string): Promise<{ bytes: number; contentType: string }> {
+    const resp = await fetch(contentUrl, {
+      headers: { 'Authorization': this.authHeader, 'Accept': '*/*' },
+      redirect: 'follow',
+    });
+    if (!resp.ok) {
+      throw new Error(`Attachment download failed: HTTP ${resp.status} ${resp.statusText} for ${contentUrl}`);
+    }
+    const contentType = resp.headers.get('content-type') || 'application/octet-stream';
+    const buf = Buffer.from(await resp.arrayBuffer());
+    const { writeFileSync, mkdirSync } = await import('fs');
+    const { dirname } = await import('path');
+    mkdirSync(dirname(destPath), { recursive: true });
+    writeFileSync(destPath, buf);
+    return { bytes: buf.length, contentType };
   }
 
   async uploadAttachment(issueKey: string, filePath: string): Promise<any> {

@@ -84,7 +84,7 @@ export const STEP_DEFINITIONS: StepDefinition[] = [
   { number: 4,  name: 'Review Code',             requiresTicket: true },
   { number: 5,  name: 'Draft Test Plan',         requiresTicket: true },
   { number: 6,  name: 'Write Gherkin Steps',     requiresTicket: true },
-  { number: 7,  name: 'Write Automated Tests',   requiresTicket: true },
+  { number: 7,  name: 'Implement Gherkin Steps', requiresTicket: true },
   { number: 8,  name: 'Execute Tests',           requiresTicket: true },
   { number: 9,  name: 'Determine Results',       requiresTicket: true },
   { number: 10, name: 'Post Results',            requiresTicket: true },

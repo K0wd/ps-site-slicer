@@ -26,10 +26,10 @@ _append_file() {
 build_base_context() {
     local out="$_BITE_CTX_DIR/base-context.md"
     echo "# Project Context — SiteManager" > "$out"
-    _append_file "$PROJECT_DIR/.claude/wiki.md" "$out"
-    _append_file "$PROJECT_DIR/.claude/client-powerslice/wiki.md" "$out"
-    _append_file "$PROJECT_DIR/.claude/client-powerslice/brain.md" "$out"
-    _append_file "$PROJECT_DIR/rules/brain.md" "$out"
+    _append_file "$PROJECT_DIR/.claude-self/wiki.md" "$out"
+    _append_file "$PROJECT_DIR/.claude-self/client-powerslice/wiki.md" "$out"
+    _append_file "$PROJECT_DIR/.claude-self/client-powerslice/brain.md" "$out"
+    _append_file "$PROJECT_DIR/.claude-self/rules/brain.md" "$out"
     echo "$out"
 }
 
@@ -40,11 +40,11 @@ build_step6_context() {
     base=$(build_base_context)
     cat "$base" > "$out"
     printf '\n\n# QA Expert Knowledge\n\n' >> "$out"
-    for f in "$PROJECT_DIR/.claude/qa-expert"/*.md; do
+    for f in "$PROJECT_DIR/.claude-self/qa-expert"/*.md; do
         [ -f "$f" ] || continue
         _append_file "$f" "$out"
     done
-    for f in "$PROJECT_DIR/.claude/qa-expert/rules"/*.mdc; do
+    for f in "$PROJECT_DIR/.claude-self/rules"/*.mdc; do
         [ -f "$f" ] || continue
         _append_file "$f" "$out"
     done
@@ -58,14 +58,10 @@ build_step7_context() {
     base=$(build_base_context)
     cat "$base" > "$out"
     printf '\n\n# ISTQB Test Automation References\n\n' >> "$out"
-    _append_file "$PROJECT_DIR/.claude/qa-expert/rules/istqb-ct-tas-test-automation-strategy-aide-context.mdc" "$out"
-    _append_file "$PROJECT_DIR/.claude/qa-expert/rules/istqb-ctal-tae-test-automation-engineering-aide-context.mdc" "$out"
+    _append_file "$PROJECT_DIR/.claude-self/rules/istqb-ct-tas-test-automation-strategy-aide-context.mdc" "$out"
+    _append_file "$PROJECT_DIR/.claude-self/rules/istqb-ctal-tae-test-automation-engineering-aide-context.mdc" "$out"
     printf '\n\n# Test Automation Expert Knowledge\n\n' >> "$out"
-    for f in "$PROJECT_DIR/.claude/test-automation-expert"/*.md; do
-        [ -f "$f" ] || continue
-        _append_file "$f" "$out"
-    done
-    for f in "$PROJECT_DIR/.claude/test-automation-expert/rules"/*.mdc; do
+    for f in "$PROJECT_DIR/.claude-self/test-automation-expert"/*.md; do
         [ -f "$f" ] || continue
         _append_file "$f" "$out"
     done

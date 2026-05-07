@@ -62,7 +62,9 @@ input[type="number"] { width: 44px; text-align: center; }
 }
 .btn-primary:hover { opacity: 0.85; }
 .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
-.btn-primary.is-stop { background: var(--red); }
+.btn-primary.is-stop    { background: var(--red); }
+.btn-primary.is-stopped { background: var(--red); outline: 2px solid var(--red); outline-offset: 2px; animation: pulse-stop 1.5s ease-in-out infinite; }
+@keyframes pulse-stop { 0%,100% { opacity:1; } 50% { opacity:.6; } }
 .btn-primary .hidden { display: none; }
 
 .btn-clear {
@@ -159,11 +161,12 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 .step-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; line-height: 1.3; }
 .step-history-dots { display: flex; gap: 4px; align-items: center; margin-bottom: 6px; min-height: 8px; }
 
-.step-footer { display: flex; justify-content: space-between; align-items: center; }
+.step-footer { display: flex; align-items: center; gap: 4px; }
 .step-duration { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
 .step-message { font-size: 11px; color: var(--text-2); margin-top: 6px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.step-actions { display: flex; gap: 4px; align-items: center; }
+.step-actions-left { display: flex; gap: 4px; align-items: center; }
+.step-actions { display: flex; gap: 4px; align-items: center; margin-left: auto; }
 
 .step-run-btn {
   background: none; border: 1px solid var(--border); color: var(--text-2);
@@ -188,6 +191,7 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 }
 .step-parallel-btn:hover { border-color: var(--accent); color: var(--accent); }
 .step-parallel-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+.step-parallel-btn-text { font-size: 10px; letter-spacing: 0.5px; text-transform: lowercase; padding: 2px 6px; }
 
 .step-debug-btn {
   background: none; border: 1px solid var(--border); color: var(--text-3);
@@ -197,7 +201,42 @@ main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
 .step-debug-btn:hover { border-color: var(--yellow); color: var(--yellow); }
 .step-debug-btn.active { color: var(--yellow); border-color: var(--yellow); background: var(--yellow-dim); }
 
+.step-runall-btn {
+  background: none; border: 1px solid var(--border); color: var(--text-3);
+  padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
+  font-size: 11px; line-height: 1; font-weight: 700; letter-spacing: 0.5px;
+}
+.step-runall-btn:hover { border-color: var(--green); color: var(--green); }
+.step-runall-btn.active { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+
 .sched-badge { font-size: 12px; margin-right: 2px; }
+
+.step-type-btn {
+  background: none; border: 1px solid var(--border); color: var(--text-3);
+  padding: 2px 5px; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+}
+.step-type-btn:hover { border-color: var(--text-2); color: var(--text-2); }
+.step-type-btn.type-ui.active  { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+.step-type-btn.type-api.active { color: var(--green);  border-color: var(--green);  background: var(--green-dim);  }
+.step-type-btn.type-unit.active{ color: var(--yellow); border-color: var(--yellow); background: var(--yellow-dim); }
+
+/* Parallel TC slot dots (Step 06 header, parallel mode) */
+.parallel-indicators { display: flex; gap: 3px; align-items: center; margin-right: 5px; }
+.pdot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+.pdot.pdot-running { background: var(--accent); animation: pulse-dot 1s ease-in-out infinite; }
+.pdot.pdot-pass    { background: var(--green); }
+.pdot.pdot-warn    { background: var(--yellow); }
+.pdot.pdot-fail    { background: var(--red); }
+@keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+/* Thread toggle buttons (Step 01) */
+.thread-btn.locked { cursor: default; }
+.thread-btn.locked:hover { border-color: var(--border); color: var(--text-3); }
+.thread-btn.thread-T1.active { color: var(--text-2);   border-color: var(--border-light); background: var(--bg-elevated); }
+.thread-btn.thread-T2.active { color: var(--accent);   border-color: var(--accent);       background: var(--accent-dim);  }
+.thread-btn.thread-T3.active { color: var(--yellow);   border-color: var(--yellow);       background: var(--yellow-dim);  }
+.thread-btn.thread-T4.active { color: var(--green);    border-color: var(--green);        background: var(--green-dim);   }
 
 /* ═══ BOTTOM PANEL ═══ */
 .bottom-panel {

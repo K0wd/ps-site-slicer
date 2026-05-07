@@ -133,7 +133,7 @@ The expected directory structure is:
 ├── tsconfig.json              # Root TS config
 ├── package.json               # Root dependencies (Playwright, BDD)
 ├── CLAUDE.md                  # AI instructions
-├── .claude/                   # AI context files
+├── .claude-self/                   # AI context files
 │   ├── quality.md
 │   ├── wiki.md
 │   ├── qa-expert/             # ISTQB knowledge base
@@ -247,9 +247,9 @@ These files feed the AI with client-specific knowledge:
 
 | File | Purpose | Action |
 |---|---|---|
-| `.claude/wiki.md` | Project overview, URLs, team info | **Rewrite** for new client |
-| `.claude/client-<name>/wiki.md` | Client workspace context | **Create new** directory |
-| `.claude/client-<name>/brain.md` | Client domain knowledge | **Create new** |
+| `.claude-self/wiki.md` | Project overview, URLs, team info | **Rewrite** for new client |
+| `.claude-self/client-<name>/wiki.md` | Client workspace context | **Create new** directory |
+| `.claude-self/client-<name>/brain.md` | Client domain knowledge | **Create new** |
 | `CLAUDE.md` | AI behavior instructions | **Update** project context section |
 | `rules/brain.md` | Domain rules for AI | **Rewrite** for new client's domain |
 
@@ -280,16 +280,16 @@ The `ContextBuilder` service loads AI context from specific paths. Update these 
 ```typescript
 // src/services/ContextBuilder.ts — paths to update:
 buildBaseContext():
-  .claude/wiki.md
-  .claude/client-<name>/wiki.md      // ← rename directory
-  .claude/client-<name>/brain.md     // ← rename directory
+  .claude-self/wiki.md
+  .claude-self/client-<name>/wiki.md      // ← rename directory
+  .claude-self/client-<name>/brain.md     // ← rename directory
   rules/brain.md
 
 buildStep6Context():
-  .claude/qa-expert/                  // Keep as-is (generic ISTQB knowledge)
+  .claude-self/qa-expert/                  // Keep as-is (generic ISTQB knowledge)
 
 buildStep7Context():
-  .claude/test-automation-expert/     // Keep as-is (generic automation knowledge)
+  .claude-self/test-automation-expert/     // Keep as-is (generic automation knowledge)
 ```
 
 ---
@@ -565,7 +565,7 @@ Assembles markdown context from project files to feed Claude AI.
 | `writeToTempFile(content, name)` | Writes context to temp file for Claude's `--append-system-prompt-file` |
 | `cleanup()` | Removes temp directory |
 
-**Client-specific changes:** Update file paths if you rename the `.claude/client-<name>/` directory.
+**Client-specific changes:** Update file paths if you rename the `.claude-self/client-<name>/` directory.
 
 ---
 
@@ -626,9 +626,9 @@ app/TestGenerator/src/automator/steps/
 
 ```
 .env                                # Client credentials
-.claude/wiki.md                     # Client project overview
-.claude/client-<name>/wiki.md       # Client workspace context
-.claude/client-<name>/brain.md      # Client domain knowledge
+.claude-self/wiki.md                     # Client project overview
+.claude-self/client-<name>/wiki.md       # Client workspace context
+.claude-self/client-<name>/brain.md      # Client domain knowledge
 rules/brain.md                      # Domain rules
 tests/features/*.feature            # Client's test scenarios
 tests/steps/*.steps.ts              # Client's step definitions
@@ -648,7 +648,7 @@ tests/properties/*.properties.ts    # Client's XPath locators
 | SSE connection drops | Server restart | UI auto-reconnects (built-in) |
 | DB locked errors | Concurrent access | WAL mode should handle this; restart if persistent |
 | `npx playwright test` fails | Browsers not installed | Run `npx playwright install` |
-| Steps 5-7 produce poor output | Missing context files | Ensure `.claude/wiki.md` and `qa-expert/` exist |
+| Steps 5-7 produce poor output | Missing context files | Ensure `.claude-self/wiki.md` and `qa-expert/` exist |
 | Port already in use | Another instance running | Set `TESTGEN_PORT` to a different port in `.env` |
 
 ### Reset database
@@ -689,7 +689,7 @@ JIRA_BASE_URL=https://clientorg.atlassian.net
 EOF
 
 # 4. Update client context
-# Edit: .claude/wiki.md (project overview)
+# Edit: .claude-self/wiki.md (project overview)
 # Edit: CLAUDE.md (project context section)
 # Edit: src/shared/config/Config.ts (default Jira URL)
 # Edit: Step02FindTicket.ts (JQL queries, project key)

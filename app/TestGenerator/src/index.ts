@@ -5,6 +5,7 @@ import { StoryLogger } from './shared/logger/StoryLogger.js';
 import { JiraService } from './services/JiraService.js';
 import { ClaudeService } from './services/ClaudeService.js';
 import { GitService } from './services/GitService.js';
+import { GitLabService } from './services/GitLabService.js';
 import { PlaywrightService } from './services/PlaywrightService.js';
 import { ContextBuilder } from './services/ContextBuilder.js';
 import { Pipeline } from './shared/pipeline/Pipeline.js';
@@ -12,7 +13,7 @@ import { Scheduler } from './automator/scheduler/Scheduler.js';
 import { createServer } from './server.js';
 import type { Response } from 'express';
 
-try { execSync('claude config set reasoning_effort low', { timeout: 5000 }); } catch {}
+try { execSync('claude config set reasoning_effort medium', { timeout: 5000 }); } catch {}
 
 const config = new Config();
 const db = new Database(config.dataDir);
@@ -23,6 +24,7 @@ const services = {
   jira: new JiraService(config),
   claude: new ClaudeService(config),
   git: new GitService(config),
+  gitlab: new GitLabService(config),
   playwright: new PlaywrightService(config),
   context: new ContextBuilder(config),
 };
@@ -46,10 +48,22 @@ app.listen(config.port, () => {
   scheduler.start();
 });
 
-process.on('SIGINT', () => {
-  console.log('\nShutting down...');
+async function gracefulShutdown(signal: string): Promise<void> {
+  console.log(`\n${signal} received — shutting down gracefully...`);
   scheduler.stop();
+  if (pipeline.isRunning) {
+    console.log('Pipeline is running — requesting cancel and waiting up to 10s...');
+    pipeline.cancel();
+    const deadline = Date.now() + 10_000;
+    while (pipeline.isRunning && Date.now() < deadline) {
+      await new Promise(r => setTimeout(r, 200));
+    }
+    if (pipeline.isRunning) console.log('Pipeline did not stop in time — force-exiting');
+  }
   services.context.cleanup();
   db.close();
   process.exit(0);
-});
+}
+
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));

@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { resolve } from 'path';
 import { Step, type StepContext, type StepOutput } from '../../shared/pipeline/Step.js';
+import { findLatestTestRunDir } from './stepUtils.js';
 
 export class Step09DetermineResults extends Step {
   readonly stepNumber = 9;
@@ -14,18 +15,19 @@ export class Step09DetermineResults extends Step {
 
     ctx.logger.logStep(9, 'Determine Results');
 
-    let runDir = this.findLatestTestRunDir(ticketDir);
+    let runDir = findLatestTestRunDir(ticketDir);
     if (!runDir && ctx.runPrerequisite) {
       this.log('No test-run directory — auto-running step 7...');
       const p = await ctx.runPrerequisite(7);
       if (p.status === 'fail') return { status: 'fail', message: `Prerequisite step 7 failed: ${p.message}`, artifacts: [] };
-      runDir = this.findLatestTestRunDir(ticketDir);
+      runDir = findLatestTestRunDir(ticketDir);
     }
     if (!runDir) {
       return { status: 'fail', message: 'No test-run directory found. Run step 7 first.', artifacts: [] };
     }
 
-    const resultsFile = resolve(runDir, '8_results.md');
+    const tcSuffix = ctx.tcId ? `_${ctx.tcId}` : '';
+    const resultsFile = resolve(runDir, `8_results${tcSuffix}.md`);
     if (!existsSync(resultsFile) && ctx.runPrerequisite) {
       this.log('Results file not found — auto-running step 8...');
       const p = await ctx.runPrerequisite(8);
@@ -58,7 +60,7 @@ export class Step09DetermineResults extends Step {
     }
 
     const planContent = existsSync(planFile) ? readFileSync(planFile, 'utf-8') : '';
-    const reportFile = resolve(runDir, '9_test_report.md');
+    const reportFile = resolve(runDir, `9_test_report${tcSuffix}.md`);
 
     // Build context
     const contextContent = ctx.services.context.buildBaseContext();
@@ -119,28 +121,23 @@ ${verdict}
       cwd: runDir,
     });
 
-    writeFileSync(resolve(runDir, '9_report_log.md'), result.result, 'utf-8');
+    const reportLogFile = resolve(runDir, `9_report_log${tcSuffix}.md`);
+    writeFileSync(reportLogFile, result.result, 'utf-8');
 
     const reportExists = existsSync(reportFile);
     const verdictStatus = verdict === 'PASS' ? 'pass' : verdict === 'FAIL' ? 'fail' : 'warn';
 
-    ctx.logger.logResult(verdict, `Final result for ${ticketKey} is **${verdict}**`);
+    ctx.logger.logResult(verdict, `Final result for ${ticketKey}${ctx.tcId ? ` (${ctx.tcId})` : ''} is **${verdict}**`);
 
     return {
       status: verdictStatus,
       message: `Verdict: ${verdict}${reportExists ? ' — report generated' : ''}`,
       artifacts: [
-        ...(reportExists ? [{ name: '9_test_report.md', path: reportFile, type: 'md' as const }] : []),
-        { name: '9_report_log.md', path: resolve(runDir, '9_report_log.md'), type: 'md' },
+        ...(reportExists ? [{ name: `9_test_report${tcSuffix}.md`, path: reportFile, type: 'md' as const }] : []),
+        { name: `9_report_log${tcSuffix}.md`, path: reportLogFile, type: 'md' },
       ],
       data: { verdict },
     };
   }
 
-  private findLatestTestRunDir(ticketDir: string): string | null {
-    const testRunsDir = resolve(ticketDir, 'test-runs');
-    if (!existsSync(testRunsDir)) return null;
-    const dirs = readdirSync(testRunsDir).sort().reverse();
-    return dirs.length > 0 ? resolve(testRunsDir, dirs[0]) : null;
-  }
 }
